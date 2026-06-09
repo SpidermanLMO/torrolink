@@ -53,11 +53,11 @@ if (form) {
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
-    // Submit to Netlify Forms
-    fetch('/', {
+    // Submit to Order Agent
+    fetch('/.netlify/functions/order-agent', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ 'form-name': 'contact', ...payload }).toString()
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     })
     .then(() => {
       form.innerHTML = `

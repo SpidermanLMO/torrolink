@@ -2,6 +2,8 @@
 
 [build]
   publish = "."
+  command = "npm install"
+  functions = "netlify/functions"
 
 [[headers]]
   for = "/*"
