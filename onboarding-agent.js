@@ -22,7 +22,8 @@ exports.handler = async (event) => {
 
     // ── WELCOME EMAIL TO SUBSCRIBER ───────────────────
     await resend.emails.send({
-      from: "Torrolink <hello@torrolink.com>",
+      from: "Torrolink <orders@torrolink.com>",
+      reply_to: "orders@torrolink.com",
       to: email,
       subject: `Welcome to Torrolink, ${name?.split(" ")[0] || ""}! Here's everything you need 🚀`,
       html: `

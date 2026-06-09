@@ -34,7 +34,8 @@ exports.handler = async (event) => {
 
     // ── EMAIL QR TO CUSTOMER ──────────────────────────
     await resend.emails.send({
-      from: "Torrolink <hello@torrolink.com>",
+      from: "Torrolink <orders@torrolink.com>",
+      reply_to: "orders@torrolink.com",
       to: email,
       subject: `Your QR Code is ready, ${name?.split(" ")[0] || ""}! 🎉`,
       attachments: [
