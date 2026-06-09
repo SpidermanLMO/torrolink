@@ -1,0 +1,15 @@
+{
+  "name": "torrolink",
+  "version": "1.0.0",
+  "description": "Torrolink QR Code Platform - PTorro Holdings LLC",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.30.0",
+    "qrcode": "^1.5.4",
+    "resend": "^4.0.0",
+    "stripe": "^16.0.0",
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
