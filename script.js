@@ -75,6 +75,25 @@ if (form) {
   });
 }
 
+// Stripe Checkout
+async function checkout(plan) {
+  try {
+    const res = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Something went wrong. Please try again or email hello@torrolink.com');
+    }
+  } catch (err) {
+    alert('Something went wrong. Please try again or email hello@torrolink.com');
+  }
+}
+
 // Animate elements on scroll
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
