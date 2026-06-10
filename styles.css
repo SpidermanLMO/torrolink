@@ -215,6 +215,62 @@ h2 {
   color: rgba(255,255,255,0.7);
 }
 
+/* ===== COMPETITOR COMPARE ===== */
+.compare {
+  background: var(--charcoal);
+  padding: 48px 0;
+}
+.compare-headline {
+  text-align: center;
+  color: rgba(255,255,255,0.75);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  max-width: 700px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+}
+.compare-headline strong { color: var(--white); }
+.compare-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.compare-col {
+  flex: 1;
+  min-width: 260px;
+  max-width: 360px;
+  border-radius: 14px;
+  padding: 28px 32px;
+}
+.compare-them {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.compare-us {
+  background: var(--teal);
+  border: 1px solid var(--teal-light);
+}
+.compare-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 16px;
+}
+.compare-us .compare-label { color: rgba(255,255,255,0.8); }
+.compare-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.compare-them ul li { color: rgba(255,255,255,0.55); font-size: 0.93rem; }
+.compare-us ul li { color: var(--white); font-size: 0.93rem; font-weight: 500; }
+.compare-vs {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: rgba(255,255,255,0.25);
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
 /* ===== HOW IT WORKS ===== */
 .how { background: var(--gray-light); }
 .how h2 { margin-bottom: 56px; }

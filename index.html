@@ -41,6 +41,34 @@
     </div>
   </section>
 
+  <!-- COMPETITOR COMPARISON -->
+  <section class="compare">
+    <div class="container">
+      <div class="compare-headline">Most QR platforms charge you every month just to keep your code alive. Cancel and it dies. <strong>That's not ownership — that's renting.</strong></div>
+      <div class="compare-grid">
+        <div class="compare-col compare-them">
+          <div class="compare-label">Other platforms</div>
+          <ul>
+            <li>✗ $7–$50/month to keep QR active</li>
+            <li>✗ Cancel → QR stops working</li>
+            <li>✗ Paying forever just to stay live</li>
+            <li>✗ They own your QR. You're renting it.</li>
+          </ul>
+        </div>
+        <div class="compare-vs">VS</div>
+        <div class="compare-col compare-us">
+          <div class="compare-label">Torrolink</div>
+          <ul>
+            <li>✓ $28.33 once — yours forever</li>
+            <li>✓ QR never expires, never shuts off</li>
+            <li>✓ Edit your profile page free, anytime</li>
+            <li>✓ You own it. Period.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- HOW IT WORKS -->
   <section class="section how" id="how">
     <div class="container">
@@ -118,23 +146,42 @@
           <button onclick="checkout('metrics')" class="btn btn-primary plan-btn">Start Free Trial</button>
         </div>
 
-        <!-- BRANDING ADD-ON (standalone card) -->
+        <!-- STANDARD BRANDING ADD-ON -->
         <div class="plan">
-          <div class="plan-tag">Personal Branding Add-On</div>
+          <div class="plan-tag">Standard Branding</div>
           <div class="plan-price"><span class="price-amount">$9.28</span><span class="price-note">one time</span></div>
-          <p class="plan-desc">Make your QR code unmistakably yours. We design a custom QR with your logo embedded and your brand colors woven in — ready for print, vinyl, and signage.</p>
+          <p class="plan-desc">Upload your logo and we embed it right in the center of your QR code. You preview the design and approve it before anything goes out.</p>
           <ul class="plan-features">
-            <li>✓ Your logo embedded in the QR code</li>
-            <li>✓ Brand colors &amp; custom styling</li>
-            <li>✓ Delivered as high-res PDF, JPEG &amp; SVG</li>
-            <li>✓ Print-ready &amp; vinyl-cutter ready</li>
-            <li>✓ Works with any sign shop or printer</li>
+            <li>✓ Your logo embedded in the QR center</li>
+            <li>✓ Preview before we finalize</li>
+            <li>✓ High-res PNG delivered to your inbox</li>
+            <li>✓ Print-ready for cards, signs &amp; vinyl</li>
             <li>✓ One-time fee — no recurring charge</li>
           </ul>
           <div class="plan-addon">
             <strong>Add it during checkout</strong> when you buy your QR code, or order it separately anytime.
           </div>
-          <button onclick="checkout('branding')" class="btn btn-outline-dark plan-btn">Add Branding</button>
+          <button onclick="checkout('branding')" class="btn btn-outline-dark plan-btn">Add Standard Branding</button>
+        </div>
+
+        <!-- CUSTOM BRANDING ADD-ON -->
+        <div class="plan">
+          <div class="plan-badge" style="background:#0f6b6b;">Most Branded</div>
+          <div class="plan-tag">Custom Branding</div>
+          <div class="plan-price"><span class="price-amount">$18.28</span><span class="price-note">one time</span></div>
+          <p class="plan-desc">Full control over your QR's look — logo, colors, dot style, and frame. Preview the design without the QR pattern first, then approve it and we generate the final.</p>
+          <ul class="plan-features">
+            <li>✓ Everything in Standard Branding</li>
+            <li>✓ Custom QR dot style (squares, dots, rounded)</li>
+            <li>✓ Custom QR color — match your brand</li>
+            <li>✓ Optional "Scan Me" frame around the QR</li>
+            <li>✓ Preview logo design before QR is generated</li>
+            <li>✓ High-res PDF, PNG &amp; SVG — print &amp; vinyl ready</li>
+          </ul>
+          <div class="plan-addon">
+            <strong>You see and approve the design first.</strong> We don't generate the final QR until you say it looks good.
+          </div>
+          <button onclick="checkout('custom-branding')" class="btn btn-outline-dark plan-btn">Add Custom Branding</button>
         </div>
 
       </div>
@@ -209,9 +256,11 @@
           <select name="plan" required>
             <option value="" disabled selected>Select a plan</option>
             <option value="qr-code">QR Code — $28.33 one-time</option>
-            <option value="qr-code-branding">QR Code + Personal Branding — $37.61</option>
-            <option value="metrics">QR Code + Metrics &amp; Leads — $28.33 + $10.28/mo</option>
-            <option value="full">QR Code + Branding + Metrics — $37.61 + $10.28/mo</option>
+            <option value="qr-code-branding">QR Code + Standard Branding — $37.61</option>
+            <option value="qr-code-custom-branding">QR Code + Custom Branding — $46.61</option>
+            <option value="metrics">Metrics &amp; Leads — $10.28/mo (add-on)</option>
+            <option value="branding">Standard Branding only — $9.28</option>
+            <option value="custom-branding">Custom Branding only — $18.28</option>
           </select>
         </div>
         <textarea name="message" placeholder="Tell us about your business — what does it do, who are your customers, what do you want your QR code to accomplish?" rows="4"></textarea>
