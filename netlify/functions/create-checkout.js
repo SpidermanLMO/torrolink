@@ -14,10 +14,10 @@ exports.handler = async (event) => {
 
     // ── PRICE MAP ─────────────────────────────────────
     const prices = {
-      "one-time":        { amount: 2833, mode: "payment",      name: "Torrolink QR Code — One-Time",          desc: "Permanent QR code, yours forever" },
-      "one-time-design": { amount: 5261, mode: "payment",      name: "Torrolink QR Code + Custom Design",     desc: "Permanent QR code with logo & brand colors embedded" },
-      "subscription":    { amount: 1828, mode: "subscription", name: "Torrolink Subscription",                desc: "Dynamic QR, editable landing page, analytics & leads" },
-      "managed":         { amount: 4028, mode: "subscription", name: "Torrolink Fully Managed",               desc: "Everything in Subscription plus we manage it for you" },
+      "qr-code":          { amount: 2833, mode: "payment",      name: "Torrolink QR Code",                    desc: "Permanent QR code + free profile page — yours forever" },
+      "branding":         { amount:  928, mode: "payment",      name: "Torrolink Personal Branding Add-On",   desc: "Logo embedded in QR code, brand colors, print-ready files" },
+      "qr-code-branding": { amount: 3761, mode: "payment",      name: "Torrolink QR Code + Personal Branding",desc: "QR code with your logo and brand colors embedded, print-ready" },
+      "metrics":          { amount: 1028, mode: "subscription", name: "Torrolink Metrics + Leads",            desc: "Real-time scan analytics and lead capture — cancel anytime" },
     };
 
     const selected = prices[plan];

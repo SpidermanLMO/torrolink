@@ -1,0 +1,69 @@
+// ================================================
+// TORROLINK — QR REDIRECT FUNCTION
+// Handles /q/:code — logs the scan, then redirects
+// to the business's profile page at /p/:handle
+// ================================================
+
+const { createClient } = require("@supabase/supabase-js");
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+exports.handler = async (event) => {
+  const code = event.path.replace(/^\/q\//, "").split("/")[0];
+
+  if (!code) {
+    return { statusCode: 302, headers: { Location: "/" } };
+  }
+
+  // Look up the profile by QR code
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("id, handle, is_active")
+    .eq("code", code)
+    .single();
+
+  if (error || !profile || !profile.is_active) {
+    return { statusCode: 302, headers: { Location: "/" } };
+  }
+
+  // ── LOG SCAN EVENT (async, don't await — don't slow down the redirect) ──────
+  const headers = event.headers || {};
+  const ua = headers["user-agent"] || "";
+  const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim()
+    || headers["client-ip"]
+    || null;
+
+  const deviceType = /mobile|android|iphone|ipad/i.test(ua)
+    ? "mobile"
+    : /tablet|ipad/i.test(ua)
+    ? "tablet"
+    : "desktop";
+
+  const os = /android/i.test(ua) ? "Android"
+    : /iphone|ipad/i.test(ua) ? "iOS"
+    : /windows/i.test(ua) ? "Windows"
+    : /mac/i.test(ua) ? "macOS"
+    : "Other";
+
+  // Fire and forget — scan logging should never delay the redirect
+  supabase.from("scan_events").insert({
+    profile_id: profile.id,
+    ip_address: ip,
+    device_type: deviceType,
+    os,
+    referrer: headers["referer"] || null,
+  }).then(() => {}).catch(() => {});
+
+  // Redirect to the profile page
+  return {
+    statusCode: 302,
+    headers: {
+      Location: `/p/${profile.handle}`,
+      "Cache-Control": "no-store",
+    },
+    body: "",
+  };
+};
