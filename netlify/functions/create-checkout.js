@@ -14,10 +14,12 @@ exports.handler = async (event) => {
 
     // ── PRICE MAP ─────────────────────────────────────
     const prices = {
-      "qr-code":          { amount: 2833, mode: "payment",      name: "Torrolink QR Code",                    desc: "Permanent QR code + free profile page — yours forever" },
-      "branding":         { amount:  928, mode: "payment",      name: "Torrolink Personal Branding Add-On",   desc: "Logo embedded in QR code, brand colors, print-ready files" },
-      "qr-code-branding": { amount: 3761, mode: "payment",      name: "Torrolink QR Code + Personal Branding",desc: "QR code with your logo and brand colors embedded, print-ready" },
-      "metrics":          { amount: 1028, mode: "subscription", name: "Torrolink Metrics + Leads",            desc: "Real-time scan analytics and lead capture — cancel anytime" },
+      "qr-code":                 { amount: 2833, mode: "payment",      name: "Torrolink QR Code",                       desc: "Permanent QR code + free profile page — yours forever" },
+      "branding":                { amount:  928, mode: "payment",      name: "Torrolink Standard Branding",             desc: "Your logo embedded in the QR center — preview before we finalize" },
+      "custom-branding":         { amount: 1828, mode: "payment",      name: "Torrolink Custom Branding",               desc: "Logo + custom dot style, QR color & frame — you approve the design first" },
+      "qr-code-branding":        { amount: 3761, mode: "payment",      name: "Torrolink QR Code + Standard Branding",   desc: "Permanent QR code with your logo embedded, print-ready" },
+      "qr-code-custom-branding": { amount: 4661, mode: "payment",      name: "Torrolink QR Code + Custom Branding",     desc: "Permanent QR code — fully custom colors, dot style, frame & logo" },
+      "metrics":                 { amount: 1028, mode: "subscription", name: "Torrolink Metrics + Leads",               desc: "Real-time scan analytics and lead capture — cancel anytime" },
     };
 
     const selected = prices[plan];
