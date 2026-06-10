@@ -14,6 +14,16 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[redirects]]
+  from = "/p/:handle"
+  to = "/.netlify/functions/profile"
+  status = 200
+
+[[redirects]]
+  from = "/q/:code"
+  to = "/.netlify/functions/qr"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
