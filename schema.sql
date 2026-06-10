@@ -75,6 +75,14 @@ create table if not exists leads (
   submitted_at timestamptz default now()
 );
 
+-- ── SCHEMA ADDITIONS (run these after initial setup) ─────────────────────────
+-- Added for branding tiers and webhook processing
+
+alter table customers add column if not exists metrics_active boolean default false;
+
+alter table profiles add column if not exists branding_tier   text;    -- 'standard' | 'custom' | null
+alter table profiles add column if not exists branding_status text;    -- 'pending_upload' | 'approved' | null
+
 -- ── INDEXES ───────────────────────────────────────────────────────────────────
 create index if not exists idx_profiles_handle     on profiles(handle);
 create index if not exists idx_profiles_code       on profiles(code);
@@ -119,8 +127,18 @@ create trigger profiles_updated_at
   for each row execute function update_updated_at();
 
 -- ================================================
--- DONE. After running this, add these to Netlify:
---   SUPABASE_URL        → your project URL
---   SUPABASE_ANON_KEY   → your anon/public key
---   SUPABASE_SERVICE_KEY → your service_role key (for admin functions)
+-- DONE. After running this, also do:
+--
+-- 1. Add env vars to Netlify:
+--      SUPABASE_URL         → your project URL
+--      SUPABASE_ANON_KEY    → your anon/public key
+--      SUPABASE_SERVICE_KEY → your service_role key
+--      STRIPE_SECRET_KEY    → from Stripe dashboard
+--      STRIPE_WEBHOOK_SECRET → from Stripe webhook endpoint
+--      RESEND_API_KEY       → from resend.com
+--      DEPLOY_URL           → https://torrolink.com
+--
+-- 2. Create a Supabase Storage bucket named "qr-assets":
+--      Go to Storage → New bucket → Name: qr-assets → Public: false
+--      This is where branded QR PNGs are stored after approval.
 -- ================================================

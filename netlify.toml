@@ -27,6 +27,11 @@
   status = 200
 
 [[redirects]]
+  from = "/design/:code"
+  to = "/.netlify/functions/design-portal"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
