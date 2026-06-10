@@ -4,6 +4,9 @@
   publish = "."
   command = "npm install"
   functions = "netlify/functions"
+  # Only deploy when actual site/function files change.
+  # Changes to schema.sql, STATUS.md, etc. will NOT trigger a deploy.
+  ignore = "git diff --quiet HEAD^ HEAD -- netlify/ index.html netlify.toml package.json script.js styles.css success.html"
 
 [[headers]]
   for = "/*"
