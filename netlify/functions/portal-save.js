@@ -49,6 +49,9 @@ exports.handler = async (event) => {
     links,
     socials,
     theme,
+    leadFormEnabled,
+    leadFormHasTextbox,
+    leadFormCheckboxes,
     logoBase64,
     headshotBase64,
   } = body;
@@ -111,9 +114,12 @@ exports.handler = async (event) => {
     owner_name:    ownerName    || null,
     links:         Array.isArray(links) ? links : [],
     socials:       socials || {},
-    theme:         theme   || {},
-    logo_url:      logoUrl,
-    photo_url:     photoUrl,
+    theme:                theme   || {},
+    lead_form_enabled:    typeof leadFormEnabled === 'boolean' ? leadFormEnabled : false,
+    lead_form_has_textbox: typeof leadFormHasTextbox === 'boolean' ? leadFormHasTextbox : false,
+    lead_form_checkboxes: Array.isArray(leadFormCheckboxes) ? leadFormCheckboxes : [],
+    logo_url:             logoUrl,
+    photo_url:            photoUrl,
     updated_at:    new Date().toISOString(),
   };
 

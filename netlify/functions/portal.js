@@ -57,6 +57,15 @@ exports.handler = async () => {
     }
     .file-btn:hover { background: #edf8f8; }
     #fileInput, #headshotInput { display: none; }
+    .checkbox-list { list-style: none; padding: 0; margin: 0 0 8px; }
+    .checkbox-list li { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .checkbox-list input { flex: 1; }
+    .checkbox-list .rm-btn {
+      background: none; border: 1.5px solid #e2e6ea; border-radius: 6px;
+      color: #999; cursor: pointer; padding: 6px 10px; font-size: 1rem;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .checkbox-list .rm-btn:hover { color: #c0392b; border-color: #c0392b; }
     .section-tabs { display: flex; gap: 4px; margin-bottom: 24px; flex-wrap: wrap; }
     .tab-btn {
       padding: 8px 18px; border-radius: 8px; border: 1.5px solid #e2e6ea;
@@ -226,6 +235,39 @@ exports.handler = async () => {
           <div class="tl-field">
             <label>Video URL <span style="color:#999;font-weight:400;">(YouTube or Vimeo — optional intro video)</span></label>
             <input type="url" id="fieldVideo" placeholder="https://youtube.com/watch?v=..." />
+          </div>
+        </div>
+
+        <!-- LEAD FORM CONFIG -->
+        <div class="tl-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div>
+              <h2 style="margin-bottom:2px;">Lead / contact form</h2>
+              <p style="font-size:0.85rem;color:#666;">Show a contact form at the bottom of your profile page so visitors can reach out directly.</p>
+            </div>
+            <label class="toggle-switch" style="margin-left:16px;flex-shrink:0;">
+              <input type="checkbox" id="leadFormEnabled" onchange="toggleLeadFormConfig()" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div id="leadFormConfig" style="display:none;margin-top:20px;border-top:1px solid #e5e5ea;padding-top:20px;">
+            <div class="dark-toggle-row" style="margin-bottom:12px;">
+              <div>
+                <label for="leadHasTextbox">Comment / message box</label>
+                <p>Let visitors type a free-form message</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="leadHasTextbox" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="tl-field" style="margin-bottom:8px;">
+              <label>Interest checkboxes <span style="color:#999;font-weight:400;">(optional — let visitors select what they need)</span></label>
+            </div>
+            <ul id="checkboxList" class="links-list" style="margin-bottom:8px;"></ul>
+            <button class="add-link-btn" onclick="addCheckbox()">+ Add option</button>
           </div>
         </div>
       </div>
@@ -554,6 +596,14 @@ exports.handler = async () => {
       document.getElementById('socYelp').value      = s.yelp      || '';
       document.getElementById('socGoogle').value    = s.google    || '';
 
+      // Lead form config
+      const leadEnabled = !!p.lead_form_enabled;
+      document.getElementById('leadFormEnabled').checked = leadEnabled;
+      document.getElementById('leadHasTextbox').checked  = !!p.lead_form_has_textbox;
+      document.getElementById('leadFormConfig').style.display = leadEnabled ? 'block' : 'none';
+      const checkboxes = Array.isArray(p.lead_form_checkboxes) ? p.lead_form_checkboxes : [];
+      checkboxes.forEach(opt => addCheckbox(opt));
+
       // Theme
       populateThemeControls(p.theme || null);
 
@@ -585,6 +635,27 @@ exports.handler = async () => {
         label: li.querySelector('.link-label').value.trim(),
         url:   li.querySelector('.link-url').value.trim(),
       })).filter(l => l.label || l.url);
+    }
+
+    // ── Lead form config ───────────────────────────────────────────
+    function toggleLeadFormConfig() {
+      const enabled = document.getElementById('leadFormEnabled').checked;
+      document.getElementById('leadFormConfig').style.display = enabled ? 'block' : 'none';
+    }
+
+    function addCheckbox(value = '') {
+      const li = document.createElement('li');
+      li.className = 'checkbox-list-item';
+      li.innerHTML =
+        '<input type="text" placeholder="e.g. Free estimate, Emergency service, New installation" value="' + escAttr(value) + '" class="checkbox-option" />' +
+        '<button class="rm-btn" onclick="this.parentElement.remove()" title="Remove">✕</button>';
+      document.getElementById('checkboxList').appendChild(li);
+    }
+
+    function getCheckboxOptions() {
+      return Array.from(document.querySelectorAll('.checkbox-option'))
+        .map(i => i.value.trim())
+        .filter(v => v);
     }
 
     // ── Image upload ───────────────────────────────────────────────
@@ -644,9 +715,12 @@ exports.handler = async () => {
           yelp:      document.getElementById('socYelp').value.trim(),
           google:    document.getElementById('socGoogle').value.trim(),
         },
-        theme:          getThemePayload(),
-        logoBase64:     _logoBase64     || null,
-        headshotBase64: _headshotBase64 || null,
+        theme:              getThemePayload(),
+        leadFormEnabled:    document.getElementById('leadFormEnabled').checked,
+        leadFormHasTextbox: document.getElementById('leadHasTextbox').checked,
+        leadFormCheckboxes: getCheckboxOptions(),
+        logoBase64:         _logoBase64     || null,
+        headshotBase64:     _headshotBase64 || null,
       };
 
       try {

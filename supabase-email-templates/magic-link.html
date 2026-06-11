@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in to Torrolink</title>
+  <style>
+    body { margin: 0; padding: 0; background: #f5f7fa; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .wrapper { max-width: 520px; margin: 40px auto; padding: 0 16px; }
+    .card {
+      background: #ffffff; border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #0f6b6b 0%, #0a4d4d 100%);
+      padding: 32px 40px; text-align: center;
+    }
+    .logo {
+      font-size: 1.8rem; font-weight: 800; color: #ffffff;
+      letter-spacing: -0.02em; text-decoration: none;
+    }
+    .logo span { color: rgba(255,255,255,0.6); }
+    .body { padding: 40px 40px 32px; }
+    h1 {
+      font-size: 1.4rem; font-weight: 700; color: #1a1a2e;
+      margin: 0 0 12px; line-height: 1.3;
+    }
+    p {
+      font-size: 0.95rem; color: #555; line-height: 1.7;
+      margin: 0 0 24px;
+    }
+    .btn {
+      display: block; text-align: center;
+      background: #0f6b6b; color: #ffffff !important;
+      text-decoration: none; padding: 16px 32px;
+      border-radius: 10px; font-size: 1rem; font-weight: 700;
+      margin-bottom: 24px; letter-spacing: 0.01em;
+    }
+    .btn:hover { background: #0a4d4d; }
+    .divider { border: none; border-top: 1px solid #e5e5ea; margin: 0 0 24px; }
+    .small { font-size: 0.82rem; color: #999; line-height: 1.6; margin: 0; }
+    .small a { color: #0f6b6b; word-break: break-all; }
+    .footer { background: #f5f7fa; padding: 20px 40px; text-align: center; }
+    .footer p { font-size: 0.78rem; color: #aaa; margin: 0; line-height: 1.6; }
+    .footer a { color: #0f6b6b; text-decoration: none; }
+    @media (max-width: 560px) {
+      .body, .footer { padding-left: 24px; padding-right: 24px; }
+      .header { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+
+      <div class="header">
+        <span class="logo">Torro<span>link</span></span>
+      </div>
+
+      <div class="body">
+        <h1>Your sign-in link is ready</h1>
+        <p>
+          Click the button below to sign in to your Torrolink portal.
+          This link expires in <strong>1 hour</strong> and can only be used once.
+        </p>
+
+        <a href="{{ .ConfirmationURL }}" class="btn">Sign in to my portal →</a>
+
+        <hr class="divider" />
+
+        <p class="small">
+          If the button doesn't work, copy and paste this link into your browser:<br />
+          <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+        </p>
+        <p class="small" style="margin-top:12px;">
+          If you didn't request this, you can safely ignore this email.
+          Someone may have entered your email by mistake.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          © 2026 PTorro Holdings LLC · <a href="https://torrolink.com">torrolink.com</a><br />
+          Questions? Email us at <a href="mailto:hello@torrolink.com">hello@torrolink.com</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
