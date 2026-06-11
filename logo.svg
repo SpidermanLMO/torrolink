@@ -1,0 +1,36 @@
+<svg viewBox="0 0 500 84" fill="none" xmlns="http://www.w3.org/2000/svg" width="500" height="84">
+  <title>Torrolink logo</title>
+
+  <!-- Top-left finder square -->
+  <rect x="4" y="4" width="32" height="32" rx="6" fill="#0f6b6b"/>
+  <rect x="9" y="9" width="22" height="22" rx="3.5" fill="white"/>
+  <rect x="14" y="14" width="12" height="12" rx="2" fill="#0f6b6b"/>
+
+  <!-- Bottom-left finder square -->
+  <rect x="4" y="44" width="32" height="32" rx="6" fill="#0f6b6b"/>
+  <rect x="9" y="49" width="22" height="22" rx="3.5" fill="white"/>
+  <rect x="14" y="54" width="12" height="12" rx="2" fill="#0f6b6b"/>
+
+  <!-- Top-right finder square -->
+  <rect x="44" y="4" width="32" height="32" rx="6" fill="#0f6b6b"/>
+  <rect x="49" y="9" width="22" height="22" rx="3.5" fill="white"/>
+  <rect x="54" y="14" width="12" height="12" rx="2" fill="#0f6b6b"/>
+
+  <!-- Bottom-right data dots -->
+  <rect x="44" y="44" width="13" height="13" rx="2.5" fill="#0f6b6b"/>
+  <rect x="61" y="44" width="13" height="13" rx="2.5" fill="#f4752b"/>
+  <rect x="44" y="61" width="13" height="13" rx="2.5" fill="#f4752b"/>
+  <rect x="61" y="61" width="13" height="13" rx="2.5" fill="#0f6b6b" opacity="0.4"/>
+
+  <!-- Wordmark: TORROLINK in Barlow 800 -->
+  <text
+    x="92"
+    y="57"
+    font-family="Barlow, sans-serif"
+    font-weight="800"
+    font-size="44"
+    fill="#1a1a2e"
+    letter-spacing="1"
+  >TORROLINK</text>
+
+</svg>

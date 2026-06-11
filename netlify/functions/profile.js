@@ -571,15 +571,15 @@ function renderProfile(p) {
         btn.disabled = true; btn.textContent = 'Sending…';
         var fd = new FormData(leadForm);
         var payload = {
-          profileHandle: '${escJs(p.handle)}',
-          name:     fd.get('lead_name'),
-          phone:    fd.get('lead_phone'),
-          email:    fd.get('lead_email'),
-          comment:  fd.get('lead_comment'),
+          profileId: '${escJs(p.id)}',
+          name:      fd.get('lead_name'),
+          phone:     fd.get('lead_phone'),
+          email:     fd.get('lead_email'),
+          message:   fd.get('lead_comment'),
           interests: fd.getAll('interests'),
         };
         try {
-          await fetch('/.netlify/functions/lead-router-agent', {
+          await fetch('/.netlify/functions/lead-notify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
