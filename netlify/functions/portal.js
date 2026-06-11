@@ -238,6 +238,7 @@ exports.handler = async () => {
         <button class="tab-btn" onclick="switchTab('links')">Links &amp; Socials</button>
         <button class="tab-btn" onclick="switchTab('themes')">🎨 Themes</button>
         <button class="tab-btn" onclick="switchTab('qr')">My QR Code</button>
+        <button class="tab-btn" onclick="switchTab('upgrade')" style="color:#f4752b;border-color:#f4752b;">⬆ Upgrade</button>
       </div>
 
       <!-- PROFILE TAB -->
@@ -432,8 +433,16 @@ exports.handler = async () => {
         </div>
       </div>
 
-      <!-- SAVE BUTTON (always visible) -->
-      <div style="text-align:right;margin-top:8px;">
+      <!-- UPGRADE TAB -->
+      <div id="tab-upgrade" class="tab-panel">
+        <div id="upgradeContent">
+          <!-- Populated by buildUpgradeTab() after profile loads -->
+          <div class="tl-card" style="text-align:center;color:#888;padding:40px;">Loading…</div>
+        </div>
+      </div>
+
+      <!-- SAVE BUTTON (always visible, hidden on upgrade tab) -->
+      <div id="saveRow" style="text-align:right;margin-top:8px;">
         <button class="tl-btn tl-btn-teal" onclick="saveProfile()">Save Changes</button>
       </div>
 
@@ -887,12 +896,139 @@ exports.handler = async () => {
 
     // ── Tab switching ──────────────────────────────────────────────
     function switchTab(name) {
-      const tabs = ['profile', 'links', 'themes', 'qr'];
+      const tabs = ['profile', 'links', 'themes', 'qr', 'upgrade'];
       document.querySelectorAll('.tab-btn').forEach((b, i) => {
         b.classList.toggle('active', tabs[i] === name);
       });
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
+      // Hide save button on upgrade tab
+      const saveRow = document.getElementById('saveRow');
+      if (saveRow) saveRow.style.display = name === 'upgrade' ? 'none' : 'block';
+      // Build upgrade tab content on first open
+      if (name === 'upgrade' && _profile) buildUpgradeTab(_profile);
+    }
+
+    // ── Upgrade tab ────────────────────────────────────────────────
+    function buildUpgradeTab(profile) {
+      const plan = profile.plan || 'qr-code';
+      const hasStandard = plan.includes('branding') && !plan.includes('custom');
+      const hasCustom   = plan.includes('custom');
+      const hasBranding = hasStandard || hasCustom;
+      // metrics_active comes from customers table — we don't have it here, infer from plan
+      const hasMetrics  = plan === 'metrics' || (profile.metrics_active === true);
+
+      const SITE = window.location.origin;
+
+      let cards = '';
+
+      // ── Branding upgrades ──
+      if (!hasBranding) {
+        cards += upgradeCard({
+          title:    'Standard Branding',
+          price:    '$9.28',
+          note:     'one time',
+          desc:     'Your logo embedded in the center of your QR code. Preview and approve before we finalize.',
+          features: ['Your logo in the QR center', 'High-res PNG delivered to inbox', 'Print-ready for cards, signs & vinyl'],
+          plan:     'branding',
+          cta:      'Add Standard Branding',
+        });
+        cards += upgradeCard({
+          title:    'Custom Branding',
+          price:    '$18.28',
+          note:     'one time',
+          desc:     'Full control — logo, custom dot style, QR color, and a "Scan Me" frame. You approve the design first.',
+          features: ['Custom dot style & QR color', 'Optional "Scan Me" frame', 'High-res PDF, PNG & SVG'],
+          plan:     'custom-branding',
+          cta:      'Add Custom Branding',
+          featured: true,
+        });
+      } else if (hasStandard && !hasCustom) {
+        cards += upgradeCard({
+          title:    'Upgrade to Custom Branding',
+          price:    '$9.00',
+          note:     'one time',
+          desc:     'You already have Standard — upgrade to full custom colors, dot style, and a frame for just $9 more.',
+          features: ['Custom dot style & QR color', 'Optional "Scan Me" frame', 'High-res PDF, PNG & SVG'],
+          plan:     'custom-branding',
+          cta:      'Upgrade to Custom',
+          featured: true,
+        });
+      }
+
+      // ── Metrics ──
+      if (!hasMetrics) {
+        cards += upgradeCard({
+          title:    'Metrics & Leads',
+          price:    '$10.28',
+          note:     '/month',
+          desc:     'See who is scanning your QR and automatically capture leads. Cancel anytime — your QR and profile stay active.',
+          features: ['Real-time scan analytics', 'Lead capture form on your profile', 'All leads delivered to your inbox'],
+          plan:     'metrics',
+          cta:      'Add Metrics & Leads',
+        });
+      }
+
+      // ── Buy another QR code ──
+      cards += \`
+        <div style="background:#fff;border:1px solid #e2e6ea;border-radius:12px;padding:24px 28px;">
+          <h3 style="font-size:1rem;font-weight:700;margin:0 0 8px;">Need another QR code?</h3>
+          <p style="font-size:0.88rem;color:#666;line-height:1.6;margin:0 0 16px;">
+            Each QR code gets its own customizable profile page. If you want to market your business differently across events, platforms, or promotions — buy a new QR code and set it up separately.
+          </p>
+          <a href="/#pricing" style="display:inline-block;background:#1a1a2e;color:#fff;padding:10px 22px;border-radius:8px;font-size:0.88rem;font-weight:700;text-decoration:none;">
+            Buy Another QR Code →
+          </a>
+        </div>\`;
+
+      if (!cards) {
+        cards = '<div style="text-align:center;padding:40px;color:#888;"><p style="font-size:1.1rem;font-weight:700;">You have everything! 🎉</p><p>Your plan is fully loaded. Buy another QR code if you need a separate profile.</p></div>';
+      }
+
+      document.getElementById('upgradeContent').innerHTML = \`
+        <div style="display:flex;flex-direction:column;gap:16px;">\${cards}</div>\`;
+    }
+
+    function upgradeCard({ title, price, note, desc, features, plan, cta, featured }) {
+      const border = featured ? 'border:2px solid #0f6b6b;' : 'border:1px solid #e2e6ea;';
+      const btnStyle = featured
+        ? 'background:#0f6b6b;color:#fff;'
+        : 'background:#fff;color:#1a1a2e;border:1.5px solid #1a1a2e;';
+      return \`
+        <div style="background:#fff;\${border}border-radius:12px;padding:24px 28px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:200px;">
+              <h3 style="font-size:1rem;font-weight:700;margin:0 0 4px;">\${title}</h3>
+              <p style="font-size:1.4rem;font-weight:800;color:#0f6b6b;margin:0 0 8px;">\${price} <span style="font-size:0.85rem;font-weight:400;color:#888;">\${note}</span></p>
+              <p style="font-size:0.88rem;color:#555;line-height:1.6;margin:0 0 12px;">\${desc}</p>
+              <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem;color:#444;display:flex;flex-direction:column;gap:4px;">
+                \${features.map(f => '<li>✓ ' + f + '</li>').join('')}
+              </ul>
+            </div>
+            <div style="padding-top:4px;">
+              <button onclick="startUpgrade('\${plan}')" style="\${btnStyle}padding:10px 20px;border-radius:8px;font-family:inherit;font-size:0.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                \${cta} →
+              </button>
+            </div>
+          </div>
+        </div>\`;
+    }
+
+    async function startUpgrade(plan) {
+      const email = _session?.user?.email || '';
+      const businessName = _profile?.business_name || '';
+      try {
+        const res = await fetch('/.netlify/functions/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan, businessName, customerEmail: email }),
+        });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+        else alert('Something went wrong. Please try again or email hello@torrolink.com');
+      } catch {
+        alert('Something went wrong. Please try again or email hello@torrolink.com');
+      }
     }
 
     // ── Helpers ────────────────────────────────────────────────────

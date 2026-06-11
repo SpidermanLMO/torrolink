@@ -389,6 +389,72 @@ h2 {
 .plan-featured .plan-addon { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); }
 .plan-btn { width: 100%; text-align: center; }
 
+/* ── Metrics add-on callout ── */
+.metrics-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  background: linear-gradient(135deg, #edf8f8, #f4f6f8);
+  border: 1px solid #c5e8e8;
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-top: 32px;
+  text-align: left;
+}
+.metrics-callout-left { flex: 1; }
+.metrics-callout-badge {
+  display: inline-block;
+  background: #0f6b6b;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.metrics-callout h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; }
+.metrics-callout p  { font-size: 0.92rem; color: var(--gray-dark); line-height: 1.6; margin: 0; }
+.metrics-callout-features {
+  list-style: none;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--gray-dark);
+  padding-top: 4px;
+}
+@media (max-width: 640px) {
+  .metrics-callout { flex-direction: column; gap: 16px; }
+  .metrics-callout-features { flex-direction: row; flex-wrap: wrap; gap: 8px 16px; }
+}
+
+/* ── Modal metrics add-on toggle ── */
+.modal-addon-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f0fafa;
+  border: 1.5px solid #c5e8e8;
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+.modal-addon-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: #0f6b6b;
+  margin-top: 2px;
+  cursor: pointer;
+}
+.modal-addon-info { display: flex; flex-direction: column; gap: 2px; }
+.modal-addon-info strong { font-size: 0.92rem; color: #1a1a2e; }
+.modal-addon-info span { font-size: 0.82rem; color: #666; }
+
 /* ===== USE CASES ===== */
 .usecases { background: var(--gray-light); }
 .cases {

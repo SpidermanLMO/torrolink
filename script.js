@@ -78,29 +78,49 @@ if (form) {
 // Stripe Checkout — shows modal to collect business name first
 const PLAN_LABELS = {
   'qr-code':                 'QR Code — $28.33',
-  'branding':                'Standard Branding — $9.28',
-  'custom-branding':         'Custom Branding — $18.28',
   'qr-code-branding':        'QR Code + Standard Branding — $37.61',
   'qr-code-custom-branding': 'QR Code + Custom Branding — $46.61',
+  // upgrade-only (from portal)
+  'branding':                'Standard Branding — $9.28',
+  'custom-branding':         'Custom Branding — $18.28',
   'metrics':                 'Metrics + Leads — $10.28/mo',
 };
+
+// Plans that include a QR purchase — show the metrics add-on toggle
+const QR_PLANS = new Set(['qr-code', 'qr-code-branding', 'qr-code-custom-branding']);
 
 let _pendingPlan = null;
 
 function checkout(plan) {
   _pendingPlan = plan;
-  const nameInput  = document.getElementById('modalBusinessName');
-  const emailInput = document.getElementById('modalEmail');
-  const label      = document.getElementById('modalPlanLabel');
-  const btn        = document.getElementById('modalSubmitBtn');
+  const nameInput     = document.getElementById('modalBusinessName');
+  const emailInput    = document.getElementById('modalEmail');
+  const label         = document.getElementById('modalPlanLabel');
+  const btn           = document.getElementById('modalSubmitBtn');
+  const metricsToggle = document.getElementById('modalMetricsToggle');
+  const metricsCheck  = document.getElementById('modalAddMetrics');
+
   nameInput.value  = '';
   emailInput.value = '';
   nameInput.classList.remove('error');
   btn.textContent  = 'Continue to Payment →';
   btn.disabled     = false;
+  if (metricsCheck) metricsCheck.checked = false;
+
+  // Only show add-on toggle when buying a QR plan
+  if (metricsToggle) metricsToggle.style.display = QR_PLANS.has(plan) ? 'flex' : 'none';
+
   label.textContent = PLAN_LABELS[plan] || plan;
   document.getElementById('checkoutModal').style.display = 'flex';
   setTimeout(() => nameInput.focus(), 60);
+}
+
+function updateModalPrice() {
+  const label      = document.getElementById('modalPlanLabel');
+  const addMetrics = document.getElementById('modalAddMetrics')?.checked;
+  let text = PLAN_LABELS[_pendingPlan] || _pendingPlan;
+  if (addMetrics) text += ' + Metrics $10.28/mo';
+  label.textContent = text;
 }
 
 function closeCheckoutModal() {
@@ -122,9 +142,10 @@ document.addEventListener('keydown', function (e) {
 });
 
 async function submitCheckoutModal() {
-  const nameInput = document.getElementById('modalBusinessName');
+  const nameInput     = document.getElementById('modalBusinessName');
   const businessName  = nameInput.value.trim();
   const customerEmail = document.getElementById('modalEmail').value.trim();
+  const addMetrics    = document.getElementById('modalAddMetrics')?.checked || false;
   const btn = document.getElementById('modalSubmitBtn');
 
   if (!businessName) {
@@ -145,6 +166,7 @@ async function submitCheckoutModal() {
         plan: _pendingPlan,
         businessName,
         customerEmail: customerEmail || undefined,
+        addMetrics: addMetrics || undefined,
       }),
     });
     const data = await res.json();

@@ -94,6 +94,7 @@ exports.handler = async (event) => {
   const customerName  = session.customer_details?.name  || "";
   const plan          = session.metadata?.plan          || "qr-code";
   const businessName  = session.metadata?.businessName  || customerName || "My Business";
+  const addMetrics    = session.metadata?.addMetrics === "true";
   const stripeCustomerId = session.customer || null;
 
   const hasBranding = plan.includes("branding");
@@ -179,6 +180,53 @@ exports.handler = async (event) => {
         to:      customerEmail,
         subject: "Design your branded QR code — Torrolink",
         html: buildDesignEmail({ customerName, businessName, designUrl, plan, portalUrl: `${SITE}/portal` }),
+      });
+    }
+
+    // ── 5. Metrics activation email (if add-on selected) ─────────
+    if (addMetrics) {
+      // Create a separate Stripe checkout link for the metrics subscription
+      const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+      const metricsSession = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{
+          price_data: {
+            currency: "usd",
+            product_data: { name: "Torrolink Metrics + Leads", description: "Real-time scan analytics and lead capture — cancel anytime" },
+            unit_amount: 1028,
+            recurring: { interval: "month" },
+          },
+          quantity: 1,
+        }],
+        mode: "subscription",
+        customer_email: customerEmail,
+        success_url: `${SITE}/portal`,
+        cancel_url: `${SITE}/portal`,
+        metadata: { plan: "metrics", businessName },
+      });
+
+      const firstName = customerName.split(" ")[0] || "there";
+      await resend.emails.send({
+        from:    "Torrolink <hello@torrolink.com>",
+        to:      customerEmail,
+        subject: "Activate your Metrics & Leads — one more step",
+        html: `
+<div style="font-family:sans-serif;max-width:580px;margin:0 auto;">
+  <div style="background:linear-gradient(135deg,#0f6b6b,#0a4d4d);padding:28px 32px;border-radius:12px 12px 0 0;">
+    <span style="font-size:1.4rem;font-weight:800;color:#fff;">Torrolink</span>
+  </div>
+  <div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;">
+    <p style="font-size:1rem;color:#333;">Hey ${firstName},</p>
+    <p style="color:#555;line-height:1.7;">Your QR code is set up! Now let's activate your <strong>Metrics &amp; Leads</strong> add-on so you can see who's scanning and start capturing leads.</p>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${metricsSession.url}" style="background:#f4752b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">
+        Activate Metrics &amp; Leads →
+      </a>
+      <p style="font-size:0.82rem;color:#aaa;margin:10px 0 0;">$10.28/mo — cancel anytime from your portal</p>
+    </div>
+    <p style="font-size:0.85rem;color:#888;margin-top:24px;">— The Torrolink Team<br><a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+  </div>
+</div>`,
       });
     }
 
