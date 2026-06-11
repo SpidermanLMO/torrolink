@@ -1,5 +1,6 @@
 # API keys and secrets
 RESEND/
+Extras/
 *.key
 *.pem
 .env
