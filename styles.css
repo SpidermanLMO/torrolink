@@ -69,6 +69,15 @@ body {
 }
 .btn-outline-dark:hover { background: var(--teal); color: var(--white); }
 
+.btn-outline-ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.3);
+  font-size: 0.85rem;
+  padding: 8px 16px;
+}
+.btn-outline-ghost:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); color: #fff; }
+
 .btn-ghost {
   background: transparent;
   color: rgba(255,255,255,0.85);

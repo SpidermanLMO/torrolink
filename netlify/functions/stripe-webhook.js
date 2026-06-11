@@ -168,7 +168,7 @@ exports.handler = async (event) => {
         to:      customerEmail,
         subject: "Your Torrolink QR code is ready 🎉",
         attachments: [{ filename: "torrolink-qr.png", content: base64Data }],
-        html: buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan }),
+        html: buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan, portalUrl: `${SITE}/portal` }),
       });
     }
 
@@ -178,7 +178,7 @@ exports.handler = async (event) => {
         from:    "Torrolink <hello@torrolink.com>",
         to:      customerEmail,
         subject: "Design your branded QR code — Torrolink",
-        html: buildDesignEmail({ customerName, businessName, designUrl, plan }),
+        html: buildDesignEmail({ customerName, businessName, designUrl, plan, portalUrl: `${SITE}/portal` }),
       });
     }
 
@@ -192,7 +192,7 @@ exports.handler = async (event) => {
 
 // ── EMAIL TEMPLATES ──────────────────────────────
 
-function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan }) {
+function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan, portalUrl }) {
   const firstName = customerName.split(" ")[0] || "there";
   return `
 <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
@@ -208,15 +208,24 @@ function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan }) {
     </p>
 
     <div style="background:#fff;border-radius:10px;padding:20px;margin:24px 0;border:1px solid #e5e5ea;text-align:center;">
-      <p style="margin:0 0 8px;font-size:0.9rem;color:#888;">Your profile page</p>
+      <p style="margin:0 0 4px;font-size:0.9rem;color:#888;">Your public profile page</p>
       <a href="${profileUrl}" style="color:#0f6b6b;font-weight:700;font-size:1rem;">${profileUrl}</a>
-      <p style="margin:12px 0 0;font-size:0.85rem;color:#aaa;">Log in anytime to edit your links, photo, video, and info — free, forever.</p>
+      <p style="margin:10px 0 0;font-size:0.85rem;color:#aaa;">This is what customers see when they scan your QR code.</p>
+    </div>
+
+    <div style="text-align:center;margin:28px 0;">
+      <p style="font-size:1rem;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Customize your profile page</p>
+      <p style="font-size:0.9rem;color:#555;margin:0 0 16px;">Add your logo, photo, links, socials, theme — all free, all yours.</p>
+      <a href="${portalUrl}" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">
+        Manage My Profile →
+      </a>
+      <p style="font-size:0.82rem;color:#aaa;margin:10px 0 0;">Sign in with your email — no password needed.</p>
     </div>
 
     <h3 style="color:#333;margin:24px 0 12px;">Next steps:</h3>
     <ol style="color:#555;line-height:2;padding-left:20px;">
       <li>Save the attached QR code PNG</li>
-      <li>Visit your profile page above and set it up (add logo, links, bio)</li>
+      <li>Click "Manage My Profile" above to set up your page (logo, links, theme)</li>
       <li>Print your QR on business cards, signs, truck wraps, windows — anywhere</li>
     </ol>
 
@@ -228,7 +237,7 @@ function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan }) {
 </div>`;
 }
 
-function buildDesignEmail({ customerName, businessName, designUrl, plan }) {
+function buildDesignEmail({ customerName, businessName, designUrl, plan, portalUrl }) {
   const firstName  = customerName.split(" ")[0] || "there";
   const tierLabel  = plan.includes("custom") ? "Custom Branding" : "Standard Branding";
   return `
@@ -258,6 +267,12 @@ function buildDesignEmail({ customerName, businessName, designUrl, plan }) {
         <li>Preview the design — see exactly how it looks</li>
         <li>Click "Looks good" and your branded QR is generated and emailed to you instantly</li>
       </ol>
+    </div>
+
+    <div style="background:#f0fafa;border-radius:10px;padding:16px 20px;margin:24px 0;text-align:center;border:1px solid #c5e8e8;">
+      <p style="margin:0 0 8px;font-size:0.9rem;color:#555;">After your branded QR is sent, customize your profile page anytime:</p>
+      <a href="${portalUrl}" style="color:#0f6b6b;font-weight:700;text-decoration:none;">Manage My Profile →</a>
+      <p style="margin:6px 0 0;font-size:0.8rem;color:#aaa;">Sign in with your email — no password needed.</p>
     </div>
 
     <p style="font-size:0.85rem;color:#888;margin-top:24px;">

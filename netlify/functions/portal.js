@@ -1,7 +1,7 @@
 // ================================================
 // TORROLINK — CUSTOMER PORTAL
 // GET  /portal  → serves the portal HTML (login + profile editor)
-// Auth: Supabase magic-link (OTP), client-side via Supabase JS CDN
+// Auth: Supabase email + password, client-side via Supabase JS CDN
 // After login, the client calls /portal-save to persist changes
 // ================================================
 
@@ -165,15 +165,67 @@ exports.handler = async () => {
 
     <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="tl-card" style="max-width:420px;margin:60px auto;">
-      <h2 style="margin-bottom:6px;">Sign in to your portal</h2>
-      <p style="font-size:0.9rem;color:#666;margin-bottom:24px;">We'll email you a sign-in link — no password needed.</p>
-      <div id="loginMsg"></div>
-      <div class="tl-field">
-        <label for="loginEmail">Email address</label>
-        <input type="email" id="loginEmail" placeholder="you@yourbusiness.com" autocomplete="email" />
+      <h2 style="margin-bottom:6px;">Manage your QR profile</h2>
+      <p style="font-size:0.9rem;color:#666;margin-bottom:20px;">Use the same email you purchased with.</p>
+
+      <!-- Auth tabs -->
+      <div style="display:flex;gap:0;margin-bottom:20px;border-radius:10px;overflow:hidden;border:1.5px solid #e2e6ea;">
+        <button id="tabSignIn" onclick="switchAuthTab('signin')"
+          style="flex:1;padding:10px;border:none;font-family:inherit;font-size:0.88rem;font-weight:700;cursor:pointer;background:#0f6b6b;color:#fff;transition:background 0.15s;">
+          Sign In
+        </button>
+        <button id="tabCreate" onclick="switchAuthTab('create')"
+          style="flex:1;padding:10px;border:none;font-family:inherit;font-size:0.88rem;font-weight:700;cursor:pointer;background:#fff;color:#666;transition:background 0.15s;">
+          Create Account
+        </button>
       </div>
-      <button class="tl-btn tl-btn-full" onclick="sendMagicLink()">Send Sign-In Link</button>
-      <p style="font-size:0.8rem;color:#999;margin-top:14px;text-align:center;">Use the same email you used when you purchased.</p>
+
+      <div id="loginMsg"></div>
+
+      <!-- Sign In panel -->
+      <div id="panelSignIn">
+        <div class="tl-field">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="you@yourbusiness.com" autocomplete="email" />
+        </div>
+        <div class="tl-field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter') signInWithPassword()" />
+        </div>
+        <button class="tl-btn tl-btn-full" onclick="signInWithPassword()">Sign In</button>
+        <p style="font-size:0.82rem;color:#999;margin-top:12px;text-align:center;">
+          <a href="#" onclick="showResetForm(event)" style="color:#0f6b6b;">Forgot password?</a>
+        </p>
+      </div>
+
+      <!-- Create Account panel -->
+      <div id="panelCreate" style="display:none;">
+        <div class="tl-field">
+          <label for="createEmail">Email</label>
+          <input type="email" id="createEmail" placeholder="Same email you purchased with" autocomplete="email" />
+        </div>
+        <div class="tl-field">
+          <label for="createPassword">Create a password</label>
+          <input type="password" id="createPassword" placeholder="At least 8 characters" autocomplete="new-password"
+            onkeydown="if(event.key==='Enter') createAccount()" />
+        </div>
+        <button class="tl-btn tl-btn-full" onclick="createAccount()">Create Account</button>
+        <p style="font-size:0.82rem;color:#999;margin-top:12px;text-align:center;">Already have an account? <a href="#" onclick="switchAuthTab('signin');return false;" style="color:#0f6b6b;">Sign in</a></p>
+      </div>
+
+      <!-- Password reset panel -->
+      <div id="panelReset" style="display:none;">
+        <p style="font-size:0.9rem;color:#555;margin-bottom:16px;">Enter your email and we'll send a password reset link.</p>
+        <div class="tl-field">
+          <label for="resetEmail">Email</label>
+          <input type="email" id="resetEmail" placeholder="you@yourbusiness.com" autocomplete="email" />
+        </div>
+        <button class="tl-btn tl-btn-full" onclick="sendPasswordReset()">Send Reset Link</button>
+        <p style="font-size:0.82rem;color:#999;margin-top:12px;text-align:center;">
+          <a href="#" onclick="switchAuthTab('signin');return false;" style="color:#0f6b6b;">Back to sign in</a>
+        </p>
+      </div>
     </div>
 
     <!-- EDITOR SCREEN (hidden until logged in) -->
@@ -487,10 +539,22 @@ exports.handler = async () => {
       } else {
         document.getElementById('loginScreen').style.display = 'block';
       }
-      // Listen for auth changes (magic link click)
+      // Listen for auth state changes (password reset redirect, etc.)
       _supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
           await onSignedIn(session);
+        } else if (event === 'PASSWORD_RECOVERY') {
+          // User clicked the reset link — show a new password form
+          document.getElementById('loginScreen').style.display = 'block';
+          document.getElementById('loginMsg').innerHTML =
+            '<div class="tl-msg success" style="margin-bottom:16px;">Enter a new password below.</div>';
+          document.getElementById('panelSignIn').style.display = 'none';
+          document.getElementById('panelCreate').style.display = 'none';
+          document.getElementById('panelReset').innerHTML =
+            '<div class="tl-field"><label>New password</label>' +
+            '<input type="password" id="newPassword" placeholder="At least 8 characters" /></div>' +
+            '<button class="tl-btn tl-btn-full" onclick="updatePassword()">Set New Password</button>';
+          document.getElementById('panelReset').style.display = 'block';
         } else if (event === 'SIGNED_OUT') {
           location.reload();
         }
@@ -498,19 +562,94 @@ exports.handler = async () => {
     })();
 
     // ── Auth ───────────────────────────────────────────────────────
-    async function sendMagicLink() {
-      const email = document.getElementById('loginEmail').value.trim();
+    function switchAuthTab(tab) {
+      const isSignIn = tab === 'signin';
+      const isCreate = tab === 'create';
+      document.getElementById('panelSignIn').style.display  = isSignIn ? 'block' : 'none';
+      document.getElementById('panelCreate').style.display  = isCreate ? 'block' : 'none';
+      document.getElementById('panelReset').style.display   = 'none';
+      document.getElementById('tabSignIn').style.background = isSignIn ? '#0f6b6b' : '#fff';
+      document.getElementById('tabSignIn').style.color      = isSignIn ? '#fff'    : '#666';
+      document.getElementById('tabCreate').style.background = isCreate ? '#0f6b6b' : '#fff';
+      document.getElementById('tabCreate').style.color      = isCreate ? '#fff'    : '#666';
+      document.getElementById('loginMsg').innerHTML = '';
+    }
+
+    function showResetForm(e) {
+      e.preventDefault();
+      document.getElementById('panelSignIn').style.display = 'none';
+      document.getElementById('panelCreate').style.display = 'none';
+      document.getElementById('panelReset').style.display  = 'block';
+      document.getElementById('loginMsg').innerHTML = '';
+    }
+
+    async function signInWithPassword() {
+      const email    = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const msgEl    = document.getElementById('loginMsg');
+      if (!email || !password) {
+        msgEl.innerHTML = '<div class="tl-msg error">Please enter your email and password.</div>'; return;
+      }
+      msgEl.innerHTML = '<div class="tl-msg">Signing in…</div>';
+      const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
+      } else {
+        await onSignedIn(data.session);
+      }
+    }
+
+    async function createAccount() {
+      const email    = document.getElementById('createEmail').value.trim();
+      const password = document.getElementById('createPassword').value;
+      const msgEl    = document.getElementById('loginMsg');
+      if (!email || !password) {
+        msgEl.innerHTML = '<div class="tl-msg error">Please enter your email and a password.</div>'; return;
+      }
+      if (password.length < 8) {
+        msgEl.innerHTML = '<div class="tl-msg error">Password must be at least 8 characters.</div>'; return;
+      }
+      msgEl.innerHTML = '<div class="tl-msg">Creating account…</div>';
+      const { data, error } = await _supabase.auth.signUp({ email, password });
+      if (error) {
+        msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
+      } else if (data.session) {
+        // Email confirmation disabled — signed in immediately
+        await onSignedIn(data.session);
+      } else {
+        // Email confirmation required
+        msgEl.innerHTML = '<div class="tl-msg success">Account created! Check your email to confirm it, then sign in.</div>';
+        switchAuthTab('signin');
+        document.getElementById('loginEmail').value = email;
+      }
+    }
+
+    async function sendPasswordReset() {
+      const email = document.getElementById('resetEmail').value.trim();
       const msgEl = document.getElementById('loginMsg');
       if (!email) { msgEl.innerHTML = '<div class="tl-msg error">Please enter your email.</div>'; return; }
-      msgEl.innerHTML = '<div class="tl-msg">Sending…</div>';
-      const { error } = await _supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: window.location.origin + '/portal' },
+      msgEl.innerHTML = '<div class="tl-msg">Sending reset link…</div>';
+      const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/portal',
       });
       if (error) {
         msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
       } else {
-        msgEl.innerHTML = '<div class="tl-msg success">Check your email — we sent you a sign-in link! It expires in 1 hour.</div>';
+        msgEl.innerHTML = '<div class="tl-msg success">Password reset link sent! Check your inbox.</div>';
+      }
+    }
+
+    async function updatePassword() {
+      const password = document.getElementById('newPassword').value;
+      const msgEl    = document.getElementById('loginMsg');
+      if (!password || password.length < 8) {
+        msgEl.innerHTML = '<div class="tl-msg error">Password must be at least 8 characters.</div>'; return;
+      }
+      const { error } = await _supabase.auth.updateUser({ password });
+      if (error) {
+        msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
+      } else {
+        msgEl.innerHTML = '<div class="tl-msg success">Password updated! You\'re now signed in.</div>';
       }
     }
 
