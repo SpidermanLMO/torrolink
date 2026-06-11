@@ -75,22 +75,90 @@ if (form) {
   });
 }
 
-// Stripe Checkout
-async function checkout(plan) {
+// Stripe Checkout — shows modal to collect business name first
+const PLAN_LABELS = {
+  'qr-code':                 'QR Code — $28.33',
+  'branding':                'Standard Branding — $9.28',
+  'custom-branding':         'Custom Branding — $18.28',
+  'qr-code-branding':        'QR Code + Standard Branding — $37.61',
+  'qr-code-custom-branding': 'QR Code + Custom Branding — $46.61',
+  'metrics':                 'Metrics + Leads — $10.28/mo',
+};
+
+let _pendingPlan = null;
+
+function checkout(plan) {
+  _pendingPlan = plan;
+  const nameInput  = document.getElementById('modalBusinessName');
+  const emailInput = document.getElementById('modalEmail');
+  const label      = document.getElementById('modalPlanLabel');
+  const btn        = document.getElementById('modalSubmitBtn');
+  nameInput.value  = '';
+  emailInput.value = '';
+  nameInput.classList.remove('error');
+  btn.textContent  = 'Continue to Payment →';
+  btn.disabled     = false;
+  label.textContent = PLAN_LABELS[plan] || plan;
+  document.getElementById('checkoutModal').style.display = 'flex';
+  setTimeout(() => nameInput.focus(), 60);
+}
+
+function closeCheckoutModal() {
+  document.getElementById('checkoutModal').style.display = 'none';
+  _pendingPlan = null;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const overlay = document.getElementById('checkoutModal');
+  if (overlay) {
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeCheckoutModal();
+    });
+  }
+});
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeCheckoutModal();
+});
+
+async function submitCheckoutModal() {
+  const nameInput = document.getElementById('modalBusinessName');
+  const businessName  = nameInput.value.trim();
+  const customerEmail = document.getElementById('modalEmail').value.trim();
+  const btn = document.getElementById('modalSubmitBtn');
+
+  if (!businessName) {
+    nameInput.classList.add('error');
+    nameInput.focus();
+    return;
+  }
+  nameInput.classList.remove('error');
+
+  btn.textContent = 'Redirecting to Stripe…';
+  btn.disabled    = true;
+
   try {
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan })
+      body: JSON.stringify({
+        plan: _pendingPlan,
+        businessName,
+        customerEmail: customerEmail || undefined,
+      }),
     });
     const data = await res.json();
     if (data.url) {
       window.location.href = data.url;
     } else {
       alert('Something went wrong. Please try again or email hello@torrolink.com');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled    = false;
     }
   } catch (err) {
     alert('Something went wrong. Please try again or email hello@torrolink.com');
+    btn.textContent = 'Continue to Payment →';
+    btn.disabled    = false;
   }
 }
 

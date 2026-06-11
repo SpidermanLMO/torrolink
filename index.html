@@ -288,6 +288,26 @@
     </div>
   </footer>
 
+  <!-- PRE-CHECKOUT MODAL -->
+  <div id="checkoutModal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeCheckoutModal()" aria-label="Close">&times;</button>
+      <div id="modalPlanLabel" class="modal-plan-label"></div>
+      <h3 class="modal-title" id="modalTitle">One quick step</h3>
+      <p class="modal-sub">We need your business name to personalize your QR code and profile page.</p>
+      <div class="modal-field">
+        <label for="modalBusinessName">Business name <span style="color:#e53e3e;">*</span></label>
+        <input type="text" id="modalBusinessName" placeholder="e.g. Mike's Plumbing LLC" autocomplete="organization" />
+      </div>
+      <div class="modal-field">
+        <label for="modalEmail">Email address <span style="color:#999;font-weight:400;">(optional — speeds up checkout)</span></label>
+        <input type="email" id="modalEmail" placeholder="you@yourbusiness.com" autocomplete="email" />
+      </div>
+      <button id="modalSubmitBtn" class="btn btn-primary btn-full" onclick="submitCheckoutModal()">Continue to Payment →</button>
+      <p class="modal-secure">🔒 Secure checkout powered by Stripe</p>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

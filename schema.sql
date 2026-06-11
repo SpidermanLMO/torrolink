@@ -83,6 +83,10 @@ alter table customers add column if not exists metrics_active boolean default fa
 alter table profiles add column if not exists branding_tier   text;    -- 'standard' | 'custom' | null
 alter table profiles add column if not exists branding_status text;    -- 'pending_upload' | 'approved' | null
 
+-- Added for customer portal
+alter table profiles add column if not exists bio   text;
+alter table profiles add column if not exists phone text;
+
 -- ── INDEXES ───────────────────────────────────────────────────────────────────
 create index if not exists idx_profiles_handle     on profiles(handle);
 create index if not exists idx_profiles_code       on profiles(code);
@@ -112,6 +116,12 @@ create policy "Anon can log scans"
 create policy "Anon can submit leads"
   on leads for insert
   with check (true);
+
+-- ── SUPABASE AUTH — PORTAL MAGIC LINK ────────────────────────────────────────
+-- In Supabase Dashboard → Authentication → URL Configuration, add:
+--   Site URL:          https://torrolink.com
+--   Redirect URLs:     https://torrolink.com/portal
+--                      https://torrolink.com/metrics/*
 
 -- ── UPDATED_AT TRIGGER ────────────────────────────────────────────────────────
 create or replace function update_updated_at()

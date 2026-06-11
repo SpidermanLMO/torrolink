@@ -3,15 +3,18 @@ Last updated: 2026-06-10 (post-restart save)
 
 ---
 
-## ✅ ALL CODE COMPLETE — GitHub: SpidermanLMO/torrolink, 27 commits
+## ✅ ALL CODE COMPLETE — GitHub: SpidermanLMO/torrolink (push pending — run git commands below)
 
 ### Functions live in netlify/functions/
 - `profile.js` — profile page at /p/:handle
 - `qr.js` — QR redirect + scan logging at /q/:code
 - `create-checkout.js` — Stripe Checkout for all plan combos
 - `lead-router-agent.js` — lead form → Supabase + email
-- `stripe-webhook.js` — ⭐ NEW: payment → DB record → email QR or design portal link
-- `design-portal.js` — ⭐ NEW: customer logo upload + branded QR generation (GET/POST)
+- `stripe-webhook.js` — payment → DB record → email QR or design portal link
+- `design-portal.js` — customer logo upload + branded QR generation (GET/POST)
+- `portal.js` — ⭐ NEW: customer login + profile editor at /portal
+- `portal-save.js` — ⭐ NEW: API endpoint for portal saves (verifies Supabase JWT)
+- `metrics.js` — ⭐ NEW: scan analytics + lead dashboard at /metrics/:handle
 
 ### Pricing
 | Plan key | Price | Mode |
@@ -69,21 +72,34 @@ Create bucket: Storage → New bucket → Name: **qr-assets** → Public: false
 
 ---
 
-## 🔜 NEXT TO BUILD
+## PUSH TO GITHUB (do this when you return)
+```
+cd TorroLink
+git add .
+git commit -m "Add portal, metrics dashboard, pre-checkout modal"
+git push
+```
 
-### Task A: Customer Portal
-- Login page (Supabase Auth)
-- Profile editor: change bio, links, logo, photo, video
-- Keeps customers on platform → platform lock-in
+## BUILT THIS SESSION (Tasks 10-12)
+- Task 10: Pre-checkout modal — collects businessName before Stripe redirect (index.html + script.js + styles.css)
+- Task 11: Customer portal — /portal with Supabase magic-link login + full profile editor (portal.js + portal-save.js)
+- Task 12: Metrics dashboard — /metrics/:handle with scan chart, device/country breakdown, leads table + CSV export (metrics.js)
+- New routes added to netlify.toml: /portal, /metrics/:handle
+- schema.sql updated: bio + phone columns, Supabase Auth redirect URL instructions
 
-### Task B: Metrics Dashboard
-- For $10.28/mo subscribers
-- Scan count, scan timeline, device breakdown
-- Lead list with contact info
+## STILL NEEDED (config, not code)
+### Supabase Auth URL config (portal + metrics magic links)
+Go to: Supabase → Authentication → URL Configuration
+- Site URL: https://torrolink.com
+- Redirect URLs (add both):
+  - https://torrolink.com/portal
+  - https://torrolink.com/metrics/*
 
-### Task C: businessName in Stripe metadata
-- create-checkout.js needs businessName passed in metadata
-- Collect it before/at checkout (pre-checkout form or design portal fallback)
+### New schema columns (run in Supabase SQL Editor)
+```sql
+alter table profiles add column if not exists bio text;
+alter table profiles add column if not exists phone text;
+```
 
 ---
 
@@ -99,7 +115,7 @@ Google Drive (laign@ptorro.com → TorroLink folder):
 - /Project Docs/ → package.json, netlify.toml, schema.sql
 
 ## SESSION NOTES
-- GitHub Monaco editor freezes on this machine → always use "Upload files" interface
+- Git + gh CLI now fully set up on this machine — use `git add . && git commit -m "..." && git push` from C:\Users\Laign\TorroLink
 - netlify.toml ignore rule: only triggers deploy on code file changes (not schema.sql, STATUS.md)
 - QR: teal #0a4d4d, 1200px, error correction H
 - jimp compositing: logo at 22% of QR width, white bg pad 15%, Lanczos3 resize
