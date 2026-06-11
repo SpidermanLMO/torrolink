@@ -25,10 +25,10 @@ exports.handler = async (event) => {
     return page404();
   }
 
-  // Look up the profile
+  // Look up the profile + customer metrics status
   const { data: profile } = await supabaseAdmin
     .from("profiles")
-    .select("id, handle, business_name, has_metrics, customer_id, customers(email)")
+    .select("id, handle, business_name, customer_id, customers(email, metrics_active)")
     .eq("handle", handle)
     .maybeSingle();
 
@@ -36,6 +36,7 @@ exports.handler = async (event) => {
 
   const ownerEmail    = profile.customers?.email || "";
   const businessName  = profile.business_name || handle;
+  const hasMetrics    = profile.customers?.metrics_active === true;
 
   // Serve the dashboard HTML — auth is handled client-side
   const html = buildDashboardHtml({
@@ -43,7 +44,7 @@ exports.handler = async (event) => {
     businessName,
     ownerEmail,
     profileId: profile.id,
-    hasMetrics: profile.has_metrics,
+    hasMetrics,
     supabaseUrl: SUPABASE_URL,
     supabaseAnonKey: SUPABASE_ANON_KEY,
   });

@@ -62,7 +62,7 @@ exports.handler = async (event) => {
   // The profile must belong to the customer whose email matches the JWT
   const { data: profile, error: profErr } = await supabaseAdmin
     .from("profiles")
-    .select("id, customer_id, logo_url, customers(email)")
+    .select("id, customer_id, logo_url, photo_url, customers(email)")
     .eq("id", profileId)
     .maybeSingle();
 

@@ -24,10 +24,10 @@
     <h1>You're all set!</h1>
     <p>Your payment was received and your order is being processed right now.</p>
     <div class="highlight" id="nextStep">
-      Check your email — your QR code will arrive within 48 hours.
+      Check your email — your QR code is on its way right now.
     </div>
-    <p>If you have any questions, reply to your confirmation email or reach us at <strong>hello@torrolink.com</strong>.</p>
-    <a href="/">Back to Torrolink</a>
+    <p>If you don't see it within a few minutes, check your spam folder or email us at <strong>hello@torrolink.com</strong>.</p>
+    <a href="/portal">Set Up My Profile →</a>
     <div class="footer">A PTorro Holdings Company &bull; torrolink.com</div>
   </div>
 
@@ -35,8 +35,10 @@
     const params = new URLSearchParams(window.location.search);
     const plan = params.get('plan');
     const step = document.getElementById('nextStep');
-    if (plan === 'subscription' || plan === 'managed') {
-      step.textContent = 'Check your email — your QR code and subscriber dashboard link are on their way!';
+    if (plan && plan.includes('branding')) {
+      step.textContent = 'Check your email — your design portal link is on its way. Upload your logo and approve the design.';
+    } else if (plan === 'metrics') {
+      step.textContent = 'Metrics & Leads is now active. Check your email then head to your portal to see your dashboard.';
     }
   </script>
 </body>

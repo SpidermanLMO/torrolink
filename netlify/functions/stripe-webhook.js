@@ -97,8 +97,11 @@ exports.handler = async (event) => {
   const addMetrics    = session.metadata?.addMetrics === "true";
   const stripeCustomerId = session.customer || null;
 
-  const hasBranding = plan.includes("branding");
-  const hasQR       = plan.includes("qr-code") || plan === "branding" || plan === "custom-branding";
+  // Classify the purchase type
+  const isNewQR         = plan.includes("qr-code");   // new purchase with a QR code
+  const isMetricsUpgrade  = plan === "metrics";          // standalone metrics upgrade
+  const isBrandingUpgrade = plan === "branding" || plan === "custom-branding"; // branding-only upgrade
+  const hasBranding     = plan.includes("branding");
 
   try {
     // ── 1. Upsert customer ───────────────────────
@@ -119,7 +122,7 @@ exports.handler = async (event) => {
           name:               customerName,
           stripe_customer_id: stripeCustomerId,
           plan,
-          metrics_active:     plan === "metrics",
+          metrics_active:     isMetricsUpgrade,
         })
         .select("id")
         .single();
@@ -127,7 +130,70 @@ exports.handler = async (event) => {
       customerId = newCustomer.id;
     }
 
-    // ── 2. Create profile ────────────────────────
+    // ── 2a. UPGRADE: Metrics only ────────────────
+    if (isMetricsUpgrade) {
+      // Update both customers.metrics_active AND profiles.has_metrics (keeps both in sync)
+      await supabase
+        .from("customers")
+        .update({ metrics_active: true })
+        .eq("id", customerId);
+      await supabase
+        .from("profiles")
+        .update({ has_metrics: true })
+        .eq("customer_id", customerId);
+
+      const firstName = customerName.split(" ")[0] || "there";
+      await resend.emails.send({
+        from:    "Torrolink <hello@torrolink.com>",
+        to:      customerEmail,
+        subject: "Metrics & Leads is now active — Torrolink",
+        html: `
+<div style="font-family:sans-serif;max-width:580px;margin:0 auto;">
+  <div style="background:linear-gradient(135deg,#0f6b6b,#0a4d4d);padding:28px 32px;border-radius:12px 12px 0 0;text-align:center;">
+    <span style="font-size:1.4rem;font-weight:800;color:#fff;">Torrolink</span>
+  </div>
+  <div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;">
+    <p style="font-size:1rem;color:#333;">Hey ${escHtml(firstName)},</p>
+    <p style="color:#555;line-height:1.7;">Your <strong>Metrics &amp; Leads</strong> add-on is now active. You can see real-time scan analytics and captured leads from your portal.</p>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${SITE}/portal" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">View My Dashboard →</a>
+    </div>
+    <p style="font-size:0.85rem;color:#888;">— The Torrolink Team<br><a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+  </div>
+</div>`,
+      });
+      return { statusCode: 200, body: JSON.stringify({ received: true }) };
+    }
+
+    // ── 2b. UPGRADE: Branding only (customer already has QR) ────────
+    if (isBrandingUpgrade) {
+      const brandingTier = plan === "custom-branding" ? "custom" : "standard";
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id, handle, code")
+        .eq("customer_id", customerId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existingProfile) {
+        await supabase
+          .from("profiles")
+          .update({ branding_tier: brandingTier, branding_status: "pending_upload" })
+          .eq("id", existingProfile.id);
+
+        const designUrl = `${SITE}/design/${existingProfile.code}`;
+        await resend.emails.send({
+          from:    "Torrolink <hello@torrolink.com>",
+          to:      customerEmail,
+          subject: "Design your branded QR code — Torrolink",
+          html: buildDesignEmail({ customerName, businessName, designUrl, plan, portalUrl: `${SITE}/portal` }),
+        });
+      }
+      return { statusCode: 200, body: JSON.stringify({ received: true }) };
+    }
+
+    // ── 2c. NEW QR PURCHASE: Create profile ──────
     const handle     = await uniqueHandle(businessName);
     const code       = await uniqueCode();
     const brandingTier = hasBranding
@@ -154,14 +220,13 @@ exports.handler = async (event) => {
     const designUrl  = `${SITE}/design/${profile.code}`;
 
     // ── 3. Generate & email QR (non-branding) ────
-    if (!hasBranding || plan === "metrics") {
+    if (!hasBranding) {
       const qrDataUrl = await QRCode.toDataURL(qrUrl, {
         errorCorrectionLevel: "H",
         width: 1200,
         margin: 2,
         color: { dark: "#0a4d4d", light: "#ffffff" },
       });
-      // Convert data URL to buffer for email attachment
       const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, "");
 
       await resend.emails.send({
@@ -183,10 +248,8 @@ exports.handler = async (event) => {
       });
     }
 
-    // ── 5. Metrics activation email (if add-on selected) ─────────
+    // ── 5. Metrics add-on email (if selected at checkout) ─────────
     if (addMetrics) {
-      // Create a separate Stripe checkout link for the metrics subscription
-      const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
       const metricsSession = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: [{
@@ -267,7 +330,7 @@ function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan, por
       <a href="${portalUrl}" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">
         Manage My Profile →
       </a>
-      <p style="font-size:0.82rem;color:#aaa;margin:10px 0 0;">Sign in with your email — no password needed.</p>
+      <p style="font-size:0.82rem;color:#aaa;margin:10px 0 0;">Sign in with your purchase email and the password you set.</p>
     </div>
 
     <h3 style="color:#333;margin:24px 0 12px;">Next steps:</h3>
@@ -320,7 +383,7 @@ function buildDesignEmail({ customerName, businessName, designUrl, plan, portalU
     <div style="background:#f0fafa;border-radius:10px;padding:16px 20px;margin:24px 0;text-align:center;border:1px solid #c5e8e8;">
       <p style="margin:0 0 8px;font-size:0.9rem;color:#555;">After your branded QR is sent, customize your profile page anytime:</p>
       <a href="${portalUrl}" style="color:#0f6b6b;font-weight:700;text-decoration:none;">Manage My Profile →</a>
-      <p style="margin:6px 0 0;font-size:0.8rem;color:#aaa;">Sign in with your email — no password needed.</p>
+      <p style="margin:6px 0 0;font-size:0.8rem;color:#aaa;">Sign in with your purchase email and the password you set.</p>
     </div>
 
     <p style="font-size:0.85rem;color:#888;margin-top:24px;">
