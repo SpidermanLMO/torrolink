@@ -53,24 +53,24 @@ if (form) {
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
-    // Submit to Order Agent
-    fetch('/.netlify/functions/order-agent', {
+    fetch('/.netlify/functions/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
+    .then(r => r.json())
     .then(() => {
       form.innerHTML = `
         <div style="text-align:center;padding:48px 24px;">
           <div style="font-size:3rem;margin-bottom:16px;">✅</div>
-          <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:10px;color:#0f6b6b;">Order received!</h3>
-          <p style="color:#444457;font-size:1rem;">We'll follow up at <strong>${payload.email}</strong> within 24 hours to confirm your order and get started.</p>
+          <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:10px;color:#0f6b6b;">Message sent!</h3>
+          <p style="color:#444457;font-size:1rem;">We'll get back to you at <strong>${payload.email}</strong> within one business day.</p>
         </div>`;
     })
     .catch(() => {
-      btn.textContent = 'Send My Order →';
+      btn.textContent = 'Send Message →';
       btn.disabled = false;
-      alert('Something went wrong. Please email us directly at hello@torrolink.com');
+      alert('Something went wrong. Please email us at hello@torrolink.com');
     });
   });
 }

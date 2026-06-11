@@ -135,6 +135,7 @@ h2 {
   font-size: 1.45rem;
   font-weight: 900;
   color: var(--teal);
+  display: flex; align-items: center;
   text-decoration: none;
   letter-spacing: -0.5px;
 }
@@ -403,7 +404,20 @@ h2 {
   transition: box-shadow 0.2s, transform 0.2s;
 }
 .case:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
-.case-icon { font-size: 2.2rem; margin-bottom: 14px; }
+.case-photo {
+  margin: -32px -28px 20px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  overflow: hidden;
+  height: 180px;
+}
+.case-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.case:hover .case-photo img { transform: scale(1.04); }
 .case h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
 .case p { font-size: 0.92rem; color: var(--gray-dark); line-height: 1.6; }
 
@@ -455,6 +469,89 @@ h2 {
 .contact-form textarea { resize: vertical; margin-bottom: 16px; display: block; }
 .contact-form select { appearance: none; cursor: pointer; }
 
+/* ===== PROFILE PREVIEW SECTION ===== */
+.preview { background: var(--gray-light); }
+.preview-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin: 48px 0 40px;
+  align-items: start;
+}
+.preview-scenario { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.preview-label { font-size: 0.95rem; font-weight: 700; color: var(--charcoal); }
+.phone-frame {
+  width: 200px;
+  background: #1a1a2e;
+  border-radius: 32px;
+  padding: 12px 8px 16px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+}
+.phone-notch {
+  width: 64px; height: 14px;
+  background: #0d0d1a; border-radius: 0 0 10px 10px;
+  margin: 0 auto 8px;
+}
+.phone-screen {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.mock-profile {}
+.mock-header {
+  padding: 20px 14px 16px;
+  text-align: center;
+  color: #fff;
+}
+.mock-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+.mock-name { font-size: 0.85rem; font-weight: 800; line-height: 1.2; }
+.mock-tag { font-size: 0.65rem; opacity: 0.75; margin-top: 2px; }
+.mock-body { padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.mock-link {
+  display: block; text-align: center; padding: 8px 10px;
+  border-radius: 8px; font-size: 0.65rem; font-weight: 700;
+  text-decoration: none; cursor: default;
+}
+.mock-form {
+  background: #f9f9fb; border-radius: 8px; padding: 8px 10px;
+  border: 1px solid #e5e5ea; margin-top: 2px;
+}
+.mock-form-title { font-size: 0.62rem; font-weight: 700; color: #333; margin-bottom: 6px; }
+.mock-input {
+  background: #fff; border: 1px solid #e2e6ea; border-radius: 5px;
+  padding: 5px 8px; font-size: 0.6rem; color: #bbb; margin-bottom: 5px;
+}
+.mock-check { font-size: 0.58rem; color: #666; margin-bottom: 6px; }
+.mock-submit {
+  text-align: center; color: #fff; border-radius: 6px;
+  padding: 6px; font-size: 0.62rem; font-weight: 700;
+}
+.preview-caption {
+  font-size: 0.83rem; color: var(--gray-mid); text-align: center;
+  max-width: 190px; line-height: 1.5;
+}
+.preview-more {
+  text-align: center; background: #fff; border-radius: 16px;
+  padding: 28px 32px; box-shadow: var(--shadow);
+}
+.preview-more p { font-size: 1rem; color: var(--gray-dark); line-height: 1.7; }
+
+/* ===== SUPPORT NOTE ===== */
+.support-note {
+  margin-top: 28px; padding: 20px 24px;
+  background: var(--gray-light); border-radius: 12px;
+  text-align: center; font-size: 0.92rem; color: var(--gray-dark);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.support-note a { color: var(--teal); font-weight: 600; text-decoration: none; }
+.support-note a:hover { text-decoration: underline; }
+
 /* ===== FOOTER ===== */
 .footer { background: var(--charcoal); color: rgba(255,255,255,0.7); padding: 56px 0 32px; }
 .footer-inner {
@@ -482,6 +579,7 @@ h2 {
   .plan-featured { transform: none; }
   .form-row { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; }
+  .preview-cards { grid-template-columns: 1fr; align-items: center; }
   .section { padding: 64px 0; }
 }
 

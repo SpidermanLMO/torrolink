@@ -12,7 +12,27 @@
   <!-- NAV -->
   <nav class="nav">
     <div class="container nav-inner">
-      <a href="#" class="logo">Torrolink</a>
+      <a href="#" class="logo">
+        <svg viewBox="0 0 148 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:28px;display:block;">
+          <!-- QR corner icon: 3 finder squares -->
+          <rect x="0" y="0" width="16" height="16" rx="2.5" fill="currentColor"/>
+          <rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="white"/>
+          <rect x="5" y="5" width="6" height="6" rx="1" fill="currentColor"/>
+          <rect x="0" y="20" width="16" height="16" rx="2.5" fill="currentColor"/>
+          <rect x="2.5" y="22.5" width="11" height="11" rx="1.5" fill="white"/>
+          <rect x="5" y="25" width="6" height="6" rx="1" fill="currentColor"/>
+          <rect x="20" y="0" width="16" height="16" rx="2.5" fill="currentColor"/>
+          <rect x="22.5" y="2.5" width="11" height="11" rx="1.5" fill="white"/>
+          <rect x="25" y="5" width="6" height="6" rx="1" fill="currentColor"/>
+          <!-- QR data dots -->
+          <rect x="20" y="20" width="5" height="5" rx="1" fill="currentColor"/>
+          <rect x="27" y="20" width="5" height="5" rx="1" fill="currentColor" opacity="0.7"/>
+          <rect x="20" y="27" width="5" height="5" rx="1" fill="currentColor" opacity="0.7"/>
+          <rect x="27" y="27" width="5" height="5" rx="1" fill="currentColor" opacity="0.45"/>
+          <!-- Wordmark -->
+          <text x="44" y="26" font-family="Inter,sans-serif" font-weight="800" font-size="20" fill="currentColor" letter-spacing="-0.4">Torrolink</text>
+        </svg>
+      </a>
       <ul class="nav-links">
         <li><a href="#how">How It Works</a></li>
         <li><a href="#pricing">Pricing</a></li>
@@ -93,6 +113,112 @@
           <h3>Put it everywhere</h3>
           <p>Download your QR as a PDF, JPEG, or print-ready vector file. Stick it on your truck, windows, cards, and flyers. Every scan lands on your profile — and if you subscribe, you'll know exactly who showed up.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE CARD PREVIEW -->
+  <section class="section preview" id="preview">
+    <div class="container">
+      <div class="section-label">What customers see</div>
+      <h2>This is what shows up when someone scans your QR</h2>
+      <p class="section-sub">Your own branded page — on their phone, in seconds. No app to download. No login required. Just a clean, professional profile that works everywhere.</p>
+
+      <div class="preview-cards">
+
+        <!-- DJ Card -->
+        <div class="preview-scenario">
+          <div class="preview-label">🎧 DJ at an event</div>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="mock-profile" style="--p1:#1a0533;--p2:#6d28d9;">
+                <div class="mock-header" style="background:linear-gradient(135deg,var(--p1),var(--p2));">
+                  <div class="mock-avatar" style="background:#7c3aed;font-size:1.1rem;">🎧</div>
+                  <div class="mock-name">DJ Phantom</div>
+                  <div class="mock-tag">Electronic · House · Events</div>
+                </div>
+                <div class="mock-body">
+                  <a class="mock-link" style="background:#7c3aed;color:#fff;">📅 Book a Set</a>
+                  <a class="mock-link" style="background:#f8f4ff;color:#6d28d9;">🎵 Listen on SoundCloud</a>
+                  <a class="mock-link" style="background:#f8f4ff;color:#6d28d9;">📸 Follow on Instagram</a>
+                  <div class="mock-form">
+                    <div class="mock-form-title">📬 Send a booking inquiry</div>
+                    <div class="mock-input">Your name</div>
+                    <div class="mock-input">Phone / email</div>
+                    <div class="mock-check">☐ Wedding  ☐ Corporate  ☐ Festival</div>
+                    <div class="mock-submit" style="background:#7c3aed;">Send Inquiry</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="preview-caption">QR on the DJ booth — guests scan it to book future events</div>
+        </div>
+
+        <!-- Personal Trainer -->
+        <div class="preview-scenario">
+          <div class="preview-label">💪 Personal Trainer</div>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="mock-profile" style="--p1:#0c2a1e;--p2:#059669;">
+                <div class="mock-header" style="background:linear-gradient(135deg,var(--p1),var(--p2));">
+                  <div class="mock-avatar" style="background:#10b981;font-size:1.1rem;">💪</div>
+                  <div class="mock-name">Coach Sarah Kim</div>
+                  <div class="mock-tag">Personal Training · Nutrition</div>
+                </div>
+                <div class="mock-body">
+                  <a class="mock-link" style="background:#059669;color:#fff;">📅 Book a Session</a>
+                  <a class="mock-link" style="background:#f0fdf4;color:#059669;">📸 Instagram</a>
+                  <a class="mock-link" style="background:#f0fdf4;color:#059669;">⭐ Google Reviews</a>
+                  <div class="mock-form">
+                    <div class="mock-form-title">📬 Free intro call</div>
+                    <div class="mock-input">Your name + number</div>
+                    <div class="mock-check">☐ Weight loss  ☐ Strength</div>
+                    <div class="mock-submit" style="background:#059669;">Let's Talk</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="preview-caption">QR on the gym floor — new members scan to book a free intro</div>
+        </div>
+
+        <!-- Chef / Private Dining -->
+        <div class="preview-scenario">
+          <div class="preview-label">👨‍🍳 Private Chef</div>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="mock-profile" style="--p1:#2c1a00;--p2:#b45309;">
+                <div class="mock-header" style="background:linear-gradient(135deg,var(--p1),var(--p2));">
+                  <div class="mock-avatar" style="background:#d97706;font-size:1.1rem;">👨‍🍳</div>
+                  <div class="mock-name">Chef Marco Rivera</div>
+                  <div class="mock-tag">Private Dinners · Events</div>
+                </div>
+                <div class="mock-body">
+                  <a class="mock-link" style="background:#b45309;color:#fff;">🍽️ Inquire About an Event</a>
+                  <a class="mock-link" style="background:#fffbeb;color:#b45309;">📸 See My Work</a>
+                  <a class="mock-link" style="background:#fffbeb;color:#b45309;">⭐ Reviews</a>
+                  <div class="mock-form">
+                    <div class="mock-form-title">📬 Tell me about your event</div>
+                    <div class="mock-input">Name + date + guests</div>
+                    <div class="mock-check">☐ Dinner party  ☐ Wedding</div>
+                    <div class="mock-submit" style="background:#b45309;">Send Inquiry</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="preview-caption">QR on the table at a pop-up — guests scan to book a private dinner</div>
+        </div>
+
+      </div>
+
+      <div class="preview-more">
+        <p>Works the same for <strong>DJs · Face painters · Singer-songwriters · HVAC technicians · Food trucks · Barbers · Real estate agents</strong> — and hundreds more.</p>
+        <a href="#pricing" class="btn btn-primary" style="display:inline-block;margin-top:16px;">Get Your QR Code →</a>
       </div>
     </div>
   </section>
@@ -193,38 +319,50 @@
   <section class="section usecases" id="usecases">
     <div class="container">
       <div class="section-label">Who it's for</div>
-      <h2>Built for the independent builder</h2>
-      <p class="section-sub">Whether you're running a food truck or a full salon — if you own the business, this is for you.</p>
+      <h2>Built for the people who do the work themselves</h2>
+      <p class="section-sub">If you're the business — this is your tool. Put your QR anywhere someone might ask "how do I reach you?" and let it do the talking.</p>
       <div class="cases">
         <div class="case">
-          <div class="case-icon">🔨</div>
-          <h3>Contractors &amp; Trades</h3>
-          <p>Put your QR on your truck, yard signs, and flyers. When someone scans it they see your work, your intro video, and can leave their name, number, and what they need — straight to your inbox.</p>
+          <div class="case-photo">
+            <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=480&h=260&fit=crop&auto=format&q=80" alt="DJ performing at an event" loading="lazy" />
+          </div>
+          <h3>DJs &amp; Performers</h3>
+          <p>Tape your QR to the booth. When a guest loves the music, they scan it — and land on your booking form, your SoundCloud, your Instagram. No business card needed.</p>
         </div>
         <div class="case">
-          <div class="case-icon">💇</div>
-          <h3>Salons &amp; Spas</h3>
-          <p>QR on your window, your cards, your station. Your profile page links to your booking page, your Instagram, and your promotions — all in one scan.</p>
+          <div class="case-photo">
+            <img src="https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=480&h=260&fit=crop&auto=format&q=80" alt="Artist face painting at an event" loading="lazy" />
+          </div>
+          <h3>Face Painters &amp; Artists</h3>
+          <p>Working a birthday party or event? QR on your setup. Parents scan it for a tip link, your Venmo, your next event dates — all in one place.</p>
         </div>
         <div class="case">
-          <div class="case-icon">🍽️</div>
-          <h3>Restaurants &amp; Food</h3>
-          <p>Put a QR code on your menu, table tents, and to-go bags. Update your links and specials anytime without printing anything new.</p>
+          <div class="case-photo">
+            <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=480&h=260&fit=crop&auto=format&q=80" alt="Singer performing at open mic" loading="lazy" />
+          </div>
+          <h3>Singer-Songwriters &amp; Musicians</h3>
+          <p>At an open mic or a gig, put your QR on the merch table. Fans scan it to follow your Spotify, grab your booking info, or sign up for shows.</p>
         </div>
         <div class="case">
-          <div class="case-icon">🏠</div>
-          <h3>Home Services</h3>
-          <p>Lawn care, cleaning, HVAC — your profile page shows who you are and what you do. Leads fill out exactly what they need: "interested in gutters, siding, windows" — right in the form.</p>
+          <div class="case-photo">
+            <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=480&h=260&fit=crop&auto=format&q=80" alt="HVAC technician working" loading="lazy" />
+          </div>
+          <h3>HVAC, Plumbers &amp; Trades</h3>
+          <p>Just starting out? Put your QR on your truck and business cards. Every job you finish becomes a potential referral — they scan it, leave a review, send a friend.</p>
         </div>
         <div class="case">
-          <div class="case-icon">📦</div>
-          <h3>Side Hustles &amp; Makers</h3>
-          <p>Selling at markets, pop-ups, or online? One QR on your packaging or table sends people to your full profile — your store, your socials, your story.</p>
+          <div class="case-photo">
+            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=480&h=260&fit=crop&auto=format&q=80" alt="Chef cooking in kitchen" loading="lazy" />
+          </div>
+          <h3>Private Chefs &amp; Caterers</h3>
+          <p>Leave a card at every event. Guests scan it and see your photos, your menu options, and an inquiry form — "interested in: dinner party, wedding, corporate."</p>
         </div>
         <div class="case">
-          <div class="case-icon">🏢</div>
-          <h3>Small &amp; Mid-Size Business</h3>
-          <p>Multiple locations or product lines? A branded QR on every asset ties it all back to one professional profile — and every scan tells you what's working.</p>
+          <div class="case-photo">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=480&h=260&fit=crop&auto=format&q=80" alt="Personal trainer coaching a client" loading="lazy" />
+          </div>
+          <h3>Personal Trainers &amp; Coaches</h3>
+          <p>QR on your gym floor card or locker room flyer. New members scan it to see your packages, book a free intro, and follow you on social — without you having to say a word.</p>
         </div>
       </div>
     </div>
@@ -246,7 +384,7 @@
     <div class="container contact-inner">
       <div class="section-label">Get started</div>
       <h2>Ready to put your business on the map?</h2>
-      <p class="section-sub">Tell us a little about your business and we'll get your QR code set up and in your hands fast.</p>
+      <p class="section-sub">Have a question or want help choosing a plan? Fill out the form and we'll respond same day. Or jump straight to checkout above.</p>
       <form class="contact-form" id="contactForm">
         <div class="form-row">
           <input type="text" name="name" placeholder="Your name" required />
@@ -265,8 +403,12 @@
           </select>
         </div>
         <textarea name="message" placeholder="Tell us about your business — what does it do, who are your customers, what do you want your QR code to accomplish?" rows="4"></textarea>
-        <button type="submit" class="btn btn-primary btn-full">Send My Order →</button>
+        <button type="submit" class="btn btn-primary btn-full">Send Message →</button>
       </form>
+      <div class="support-note">
+        <p>Need quick help? Email us directly at <a href="mailto:hello@torrolink.com">hello@torrolink.com</a> — we respond same day.</p>
+        <p>Already a customer? <a href="/portal">Log in to your portal →</a></p>
+      </div>
     </div>
   </section>
 
@@ -274,14 +416,31 @@
   <footer class="footer">
     <div class="container footer-inner">
       <div class="footer-brand">
-        <span class="logo">Torrolink</span>
+        <svg viewBox="0 0 148 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="height:26px;display:block;margin-bottom:10px;color:#fff;">
+          <rect x="0" y="0" width="16" height="16" rx="2.5" fill="currentColor"/>
+          <rect x="2.5" y="2.5" width="11" height="11" rx="1.5" fill="#0a4d4d"/>
+          <rect x="5" y="5" width="6" height="6" rx="1" fill="currentColor"/>
+          <rect x="0" y="20" width="16" height="16" rx="2.5" fill="currentColor"/>
+          <rect x="2.5" y="22.5" width="11" height="11" rx="1.5" fill="#0a4d4d"/>
+          <rect x="5" y="25" width="6" height="6" rx="1" fill="currentColor"/>
+          <rect x="20" y="0" width="16" height="16" rx="2.5" fill="currentColor"/>
+          <rect x="22.5" y="2.5" width="11" height="11" rx="1.5" fill="#0a4d4d"/>
+          <rect x="25" y="5" width="6" height="6" rx="1" fill="currentColor"/>
+          <rect x="20" y="20" width="5" height="5" rx="1" fill="currentColor"/>
+          <rect x="27" y="20" width="5" height="5" rx="1" fill="currentColor" opacity="0.7"/>
+          <rect x="20" y="27" width="5" height="5" rx="1" fill="currentColor" opacity="0.7"/>
+          <rect x="27" y="27" width="5" height="5" rx="1" fill="currentColor" opacity="0.45"/>
+          <text x="44" y="26" font-family="Inter,sans-serif" font-weight="800" font-size="20" fill="currentColor" letter-spacing="-0.4">Torrolink</text>
+        </svg>
         <p>A PTorro Holdings company.<br>QR codes and digital profiles built for real business owners.</p>
       </div>
       <div class="footer-links">
         <a href="#how">How It Works</a>
         <a href="#pricing">Pricing</a>
         <a href="#usecases">Who It's For</a>
-        <a href="#contact">Get Started</a>
+        <a href="#contact">Contact Us</a>
+        <a href="/portal">Manage My QR</a>
+        <a href="mailto:hello@torrolink.com">hello@torrolink.com</a>
       </div>
       <div class="footer-copy">
         &copy; 2026 PTorro Holdings LLC. All rights reserved.

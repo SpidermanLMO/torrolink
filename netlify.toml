@@ -37,6 +37,11 @@
   status = 200
 
 [[redirects]]
+  from = "/contact"
+  to = "/.netlify/functions/contact"
+  status = 200
+
+[[redirects]]
   from = "/portal"
   to = "/.netlify/functions/portal"
   status = 200
