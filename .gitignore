@@ -5,6 +5,9 @@ RESEND/
 .env
 .env.*
 
+# Session notes — never commit (may contain URLs or internal references)
+STATUS.md
+
 # Node
 node_modules/
 
