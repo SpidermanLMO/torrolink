@@ -454,6 +454,7 @@ exports.handler = async () => {
     const _supabase = window.supabase.createClient('${SUPABASE_URL}', '${SUPABASE_ANON_KEY}');
     let _session      = null;
     let _profile      = null;
+    let _customer     = null;
     let _logoBase64   = null;
     let _headshotBase64 = null;
     let _selectedPattern = 'solid';
@@ -677,7 +678,7 @@ exports.handler = async () => {
       const email = session.user.email;
       const { data: customer } = await _supabase
         .from('customers')
-        .select('id')
+        .select('id, plan, metrics_active')
         .eq('email', email)
         .maybeSingle();
 
@@ -685,6 +686,7 @@ exports.handler = async () => {
         showMsg('error', 'No account found for ' + escHtml(email) + '. Use the email you purchased with.');
         return;
       }
+      _customer = customer;
 
       const { data: profile } = await _supabase
         .from('profiles')
@@ -911,12 +913,11 @@ exports.handler = async () => {
 
     // ── Upgrade tab ────────────────────────────────────────────────
     function buildUpgradeTab(profile) {
-      const plan = profile.plan || 'qr-code';
+      const plan = _customer?.plan || 'qr-code';
       const hasStandard = plan.includes('branding') && !plan.includes('custom');
       const hasCustom   = plan.includes('custom');
       const hasBranding = hasStandard || hasCustom;
-      // metrics_active comes from customers table — we don't have it here, infer from plan
-      const hasMetrics  = plan === 'metrics' || (profile.metrics_active === true);
+      const hasMetrics  = plan === 'metrics' || (_customer?.metrics_active === true);
 
       const SITE = window.location.origin;
 
