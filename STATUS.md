@@ -5,6 +5,12 @@ Last updated: 2026-06-10 (post-restart save)
 
 ## ✅ ALL CODE COMPLETE — GitHub: SpidermanLMO/torrolink (push pending — run git commands below)
 
+### Tasks 13 + 14 — Profile Theme System (DONE, push pending)
+- `profile.js` — full rewrite: 9 CSS-only background patterns, dark mode, photo carousel (logo + headshot), section show/hide
+- `portal.js` — new "Themes" tab: pattern swatches, color pickers, dark mode toggle, card style, section toggles; headshot upload + owner name on Profile tab
+- `portal-save.js` — handles theme jsonb, headshotBase64 → Storage upload at headshots/{id}, owner_name, photo_url
+- `schema.sql` — 2 new ALTER TABLE lines: `theme jsonb`, `owner_name text`
+
 ### Functions live in netlify/functions/
 - `profile.js` — profile page at /p/:handle
 - `qr.js` — QR redirect + scan logging at /q/:code

@@ -87,6 +87,11 @@ alter table profiles add column if not exists branding_status text;    -- 'pendi
 alter table profiles add column if not exists bio   text;
 alter table profiles add column if not exists phone text;
 
+-- Added for theme system (Task 13/14)
+alter table profiles add column if not exists theme      jsonb default '{}';   -- full theme settings object
+alter table profiles add column if not exists owner_name text;                 -- rep/owner name shown under headshot
+-- Note: photo_url already exists in the main table definition above
+
 -- ── INDEXES ───────────────────────────────────────────────────────────────────
 create index if not exists idx_profiles_handle     on profiles(handle);
 create index if not exists idx_profiles_code       on profiles(code);

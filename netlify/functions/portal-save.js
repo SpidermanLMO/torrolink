@@ -45,9 +45,12 @@ exports.handler = async (event) => {
     bio,
     phone,
     videoUrl,
+    ownerName,
     links,
     socials,
+    theme,
     logoBase64,
+    headshotBase64,
   } = body;
 
   if (!profileId) return respond(400, { error: "profileId required" });
@@ -69,36 +72,34 @@ exports.handler = async (event) => {
     return respond(403, { error: "You don't have permission to edit this profile." });
   }
 
-  // ── 4. Handle logo upload ────────────────────────
-  let logoUrl = profile.logo_url || null;
-  if (logoBase64) {
+  // ── 4. Handle image uploads ──────────────────────
+  const uploadImage = async (base64, pathKey) => {
     try {
-      // Strip data URL prefix
-      const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
-      const ext = logoBase64.includes("image/png") ? "png" : "jpg";
+      const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+      const ext    = base64.includes("image/png") ? "png" : "jpg";
       const buffer = Buffer.from(base64Data, "base64");
-      const path = `logos/${profileId}.${ext}`;
-
       const { error: uploadErr } = await supabaseAdmin
-        .storage
-        .from("qr-assets")
-        .upload(path, buffer, {
+        .storage.from("qr-assets")
+        .upload(pathKey + "." + ext, buffer, {
           contentType: ext === "png" ? "image/png" : "image/jpeg",
           upsert: true,
         });
-
-      if (!uploadErr) {
-        const { data: urlData } = supabaseAdmin
-          .storage
-          .from("qr-assets")
-          .getPublicUrl(path);
-        logoUrl = urlData?.publicUrl || logoUrl;
-      }
-    } catch (uploadEx) {
-      console.error("Logo upload failed:", uploadEx);
-      // Non-fatal — continue saving other fields
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabaseAdmin
+        .storage.from("qr-assets")
+        .getPublicUrl(pathKey + "." + ext);
+      return urlData?.publicUrl || null;
+    } catch (e) {
+      console.error("Image upload failed:", pathKey, e);
+      return null;
     }
   }
+
+  let logoUrl     = profile.logo_url  || null;
+  let photoUrl    = profile.photo_url || null;
+
+  if (logoBase64)     { const url = await uploadImage(logoBase64,     `logos/${profileId}`);     if (url) logoUrl  = url; }
+  if (headshotBase64) { const url = await uploadImage(headshotBase64, `headshots/${profileId}`); if (url) photoUrl = url; }
 
   // ── 5. Update profile ────────────────────────────
   const updates = {
@@ -107,9 +108,12 @@ exports.handler = async (event) => {
     bio:           bio          || null,
     phone:         phone        || null,
     video_url:     videoUrl     || null,
+    owner_name:    ownerName    || null,
     links:         Array.isArray(links) ? links : [],
     socials:       socials || {},
+    theme:         theme   || {},
     logo_url:      logoUrl,
+    photo_url:     photoUrl,
     updated_at:    new Date().toISOString(),
   };
 
