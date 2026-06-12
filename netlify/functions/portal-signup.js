@@ -36,7 +36,7 @@ exports.handler = async (event) => {
   if (!/[A-Z]/.test(password)) {
     return { statusCode: 400, body: JSON.stringify({ error: "Password must include at least one capital letter." }) };
   }
-  if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>?/\\|`~]/.test(password)) {
+  if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>?\/\\|~]/.test(password)) {
     return { statusCode: 400, body: JSON.stringify({ error: "Password must include at least one symbol (e.g. ! @ # $)." }) };
   }
 
