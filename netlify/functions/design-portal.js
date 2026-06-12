@@ -65,6 +65,85 @@ exports.handler = async (event) => {
   return { statusCode: 405, body: "Method not allowed" };
 };
 
+// ── QR RENDERER (supports square / dots / rounded) ───────────────
+
+async function renderQRWithStyle(qrUrl, dotStyle = "square", qrColor = "#0a4d4d") {
+  const IMG_SIZE = 1200;
+  const qrData   = QRCode.create(qrUrl, { errorCorrectionLevel: "H" });
+  const modules  = qrData.modules;
+  const modCount = modules.size;
+  const margin   = 2; // module-width margin
+  const cell     = Math.floor(IMG_SIZE / (modCount + margin * 2));
+  const off      = Math.floor((IMG_SIZE - cell * modCount) / 2);
+
+  // Parse hex color → RGBA bytes
+  const hex = qrColor.replace("#", "").padEnd(6, "0");
+  const dr  = parseInt(hex.slice(0, 2), 16);
+  const dg  = parseInt(hex.slice(2, 4), 16);
+  const db  = parseInt(hex.slice(4, 6), 16);
+
+  const img = new Jimp(IMG_SIZE, IMG_SIZE, 0xffffffff);
+
+  function setCell(x, y, w, h) {
+    img.scan(x, y, w, h, (_px, _py, idx) => {
+      img.bitmap.data[idx]     = dr;
+      img.bitmap.data[idx + 1] = dg;
+      img.bitmap.data[idx + 2] = db;
+      img.bitmap.data[idx + 3] = 255;
+    });
+  }
+
+  for (let row = 0; row < modCount; row++) {
+    for (let col = 0; col < modCount; col++) {
+      if (!modules.get(row, col)) continue;
+      const x = off + col * cell;
+      const y = off + row * cell;
+
+      if (dotStyle === "dots") {
+        // Circle
+        const cx = x + cell / 2;
+        const cy = y + cell / 2;
+        const r  = cell * 0.44;
+        const r2 = r * r;
+        for (let dy = Math.ceil(-r); dy <= Math.floor(r); dy++) {
+          for (let dx = Math.ceil(-r); dx <= Math.floor(r); dx++) {
+            if (dx * dx + dy * dy > r2) continue;
+            const px = Math.round(cx + dx);
+            const py = Math.round(cy + dy);
+            if (px < 0 || py < 0 || px >= IMG_SIZE || py >= IMG_SIZE) continue;
+            const idx = (py * IMG_SIZE + px) * 4;
+            img.bitmap.data[idx]     = dr;
+            img.bitmap.data[idx + 1] = dg;
+            img.bitmap.data[idx + 2] = db;
+            img.bitmap.data[idx + 3] = 255;
+          }
+        }
+      } else if (dotStyle === "rounded") {
+        // Square with rounded corners
+        const cr = Math.round(cell * 0.28); // corner radius in px
+        img.scan(x, y, cell, cell, (_px, _py, idx) => {
+          const rx = _px - x;
+          const ry = _py - y;
+          const inTL = rx < cr && ry < cr && (rx - cr) ** 2 + (ry - cr) ** 2 > cr * cr;
+          const inTR = rx >= cell - cr && ry < cr && (rx - (cell - cr)) ** 2 + (ry - cr) ** 2 > cr * cr;
+          const inBL = rx < cr && ry >= cell - cr && (rx - cr) ** 2 + (ry - (cell - cr)) ** 2 > cr * cr;
+          const inBR = rx >= cell - cr && ry >= cell - cr && (rx - (cell - cr)) ** 2 + (ry - (cell - cr)) ** 2 > cr * cr;
+          if (inTL || inTR || inBL || inBR) return;
+          img.bitmap.data[idx]     = dr;
+          img.bitmap.data[idx + 1] = dg;
+          img.bitmap.data[idx + 2] = db;
+          img.bitmap.data[idx + 3] = 255;
+        });
+      } else {
+        // Square (classic)
+        setCell(x, y, cell, cell);
+      }
+    }
+  }
+
+  return img.getBufferAsync(Jimp.MIME_PNG);
+}
+
 // ── PROCESS APPROVAL ─────────────────────────────
 
 async function processApproval(event, profile) {
@@ -85,14 +164,9 @@ async function processApproval(event, profile) {
       frameLabel = body.frameLabel || "";
     }
 
-    // Generate QR PNG
-    const qrUrl     = `${SITE}/q/${profile.code}`;
-    const qrBuffer  = await QRCode.toBuffer(qrUrl, {
-      errorCorrectionLevel: "H",
-      width: 1200,
-      margin: 2,
-      color: { dark: qrColor.replace("#", "").padEnd(6, "0") + "ff", light: "#ffffffff" },
-    });
+    // Generate QR PNG with dot style support
+    const qrUrl    = `${SITE}/q/${profile.code}`;
+    const qrBuffer = await renderQRWithStyle(qrUrl, dotStyle, qrColor);
 
     let finalBuffer = qrBuffer;
 
