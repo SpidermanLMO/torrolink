@@ -1,0 +1,71 @@
+// ================================================
+// TORROLINK — PORTAL SIGNUP
+// POST /.netlify/functions/portal-signup
+// Body: { email, password }
+// Uses service key to create auth user without email confirmation.
+// After this returns ok:true, the client signs in with signInWithPassword.
+// ================================================
+
+const { createClient } = require("@supabase/supabase-js");
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: "Method not allowed" };
+  }
+
+  let email, password;
+  try {
+    ({ email, password } = JSON.parse(event.body || "{}"));
+  } catch {
+    return { statusCode: 400, body: JSON.stringify({ error: "Invalid request body" }) };
+  }
+
+  if (!email || !password) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Email and password are required." }) };
+  }
+
+  // Server-side password validation
+  if (password.length < 8) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Password must be at least 8 characters." }) };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Password must include at least one capital letter." }) };
+  }
+  if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>?/\\|`~]/.test(password)) {
+    return { statusCode: 400, body: JSON.stringify({ error: "Password must include at least one symbol (e.g. ! @ # $)." }) };
+  }
+
+  // Create user via admin API — email_confirm:true skips confirmation email
+  const { data, error } = await supabase.auth.admin.createUser({
+    email: email.trim().toLowerCase(),
+    password,
+    email_confirm: true,
+  });
+
+  if (error) {
+    // User already exists — tell them to sign in
+    if (
+      error.message.toLowerCase().includes("already") ||
+      error.message.toLowerCase().includes("duplicate") ||
+      error.status === 422
+    ) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "An account with this email already exists. Please sign in instead.",
+        }),
+      };
+    }
+    return { statusCode: 400, body: JSON.stringify({ error: error.message }) };
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ ok: true, userId: data.user.id }),
+  };
+};

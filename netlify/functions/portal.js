@@ -207,9 +207,14 @@ exports.handler = async () => {
         </div>
         <div class="tl-field">
           <label for="createPassword">Create a password</label>
-          <input type="password" id="createPassword" placeholder="At least 8 characters" autocomplete="new-password"
+          <input type="password" id="createPassword" placeholder="Min 8 chars, 1 capital, 1 symbol" autocomplete="new-password" />
+        </div>
+        <div class="tl-field">
+          <label for="createPasswordConfirm">Re-enter password</label>
+          <input type="password" id="createPasswordConfirm" placeholder="Type it again to confirm" autocomplete="new-password"
             onkeydown="if(event.key==='Enter') createAccount()" />
         </div>
+        <p style="font-size:0.78rem;color:#888;margin:-4px 0 12px;">Must be at least 8 characters with at least one capital letter and one symbol.</p>
         <button class="tl-btn tl-btn-full" onclick="createAccount()">Create Account</button>
         <p style="font-size:0.82rem;color:#999;margin-top:12px;text-align:center;">Already have an account? <a href="#" onclick="switchAuthTab('signin');return false;" style="color:#0f6b6b;">Sign in</a></p>
       </div>
@@ -612,25 +617,49 @@ exports.handler = async () => {
     async function createAccount() {
       const email    = document.getElementById('createEmail').value.trim();
       const password = document.getElementById('createPassword').value;
+      const confirm  = document.getElementById('createPasswordConfirm').value;
       const msgEl    = document.getElementById('loginMsg');
+
       if (!email || !password) {
         msgEl.innerHTML = '<div class="tl-msg error">Please enter your email and a password.</div>'; return;
       }
       if (password.length < 8) {
         msgEl.innerHTML = '<div class="tl-msg error">Password must be at least 8 characters.</div>'; return;
       }
+      if (!/[A-Z]/.test(password)) {
+        msgEl.innerHTML = '<div class="tl-msg error">Password must include at least one capital letter.</div>'; return;
+      }
+      if (!/[!@#$%^&*()\-_=+\[\]{};:\'",.<>?\/\\|`~]/.test(password)) {
+        msgEl.innerHTML = '<div class="tl-msg error">Password must include at least one symbol (e.g. ! @ # $).</div>'; return;
+      }
+      if (password !== confirm) {
+        msgEl.innerHTML = '<div class="tl-msg error">Passwords do not match. Please re-enter.</div>'; return;
+      }
+
       msgEl.innerHTML = '<div class="tl-msg">Creating account…</div>';
-      const { data, error } = await _supabase.auth.signUp({ email, password });
+
+      // Call server-side signup (bypasses email confirmation)
+      const res = await fetch('/.netlify/functions/portal-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const result = await res.json();
+
+      if (!res.ok) {
+        msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(result.error || 'Account creation failed.') + '</div>';
+        return;
+      }
+
+      // Account created — sign in immediately
+      msgEl.innerHTML = '<div class="tl-msg">Account created! Signing you in…</div>';
+      const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
-      } else if (data.session) {
-        // Email confirmation disabled — signed in immediately
-        await onSignedIn(data.session);
-      } else {
-        // Email confirmation required
-        msgEl.innerHTML = '<div class="tl-msg success">Account created! Check your email to confirm it, then sign in.</div>';
+        msgEl.innerHTML = '<div class="tl-msg error">Account created but sign-in failed: ' + escHtml(error.message) + '. Please use the Sign In tab.</div>';
         switchAuthTab('signin');
         document.getElementById('loginEmail').value = email;
+      } else {
+        await onSignedIn(data.session);
       }
     }
 
@@ -639,14 +668,16 @@ exports.handler = async () => {
       const msgEl = document.getElementById('loginMsg');
       if (!email) { msgEl.innerHTML = '<div class="tl-msg error">Please enter your email.</div>'; return; }
       msgEl.innerHTML = '<div class="tl-msg">Sending reset link…</div>';
-      const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/portal',
+
+      // Call server-side reset (sends via Resend, not Supabase email)
+      await fetch('/.netlify/functions/portal-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
-      if (error) {
-        msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
-      } else {
-        msgEl.innerHTML = '<div class="tl-msg success">Password reset link sent! Check your inbox.</div>';
-      }
+
+      // Always show success (never reveal whether account exists)
+      msgEl.innerHTML = '<div class="tl-msg success">If an account exists for that email, a reset link has been sent. Check your inbox.</div>';
     }
 
     async function updatePassword() {
