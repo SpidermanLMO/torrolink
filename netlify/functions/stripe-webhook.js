@@ -335,14 +335,14 @@ function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan, por
       <a href="${portalUrl}" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">
         Manage My Profile →
       </a>
-      <p style="font-size:0.82rem;color:#aaa;margin:10px 0 0;">Sign in with your purchase email and the password you set.</p>
+      <p style="font-size:0.82rem;color:#aaa;margin:10px 0 0;">Click Create Account and use this email — takes 30 seconds.</p>
     </div>
 
     <h3 style="color:#333;margin:24px 0 12px;">Next steps:</h3>
     <ol style="color:#555;line-height:2;padding-left:20px;">
       <li>Save the attached QR code PNG</li>
-      <li>Click "Manage My Profile" above to set up your page (logo, links, theme)</li>
-      <li>Print your QR on business cards, signs, truck wraps, windows — anywhere</li>
+      <li>Click "Manage My Profile" → click <strong>Create Account</strong> with this email to customize your page</li>
+      <li>Print your QR on business cards, signs, truck wraps, yard signs, windows — anywhere people will see it</li>
     </ol>
 
     <p style="font-size:0.85rem;color:#888;margin-top:24px;">
@@ -388,7 +388,7 @@ function buildDesignEmail({ customerName, businessName, designUrl, plan, portalU
     <div style="background:#f0fafa;border-radius:10px;padding:16px 20px;margin:24px 0;text-align:center;border:1px solid #c5e8e8;">
       <p style="margin:0 0 8px;font-size:0.9rem;color:#555;">After your branded QR is sent, customize your profile page anytime:</p>
       <a href="${portalUrl}" style="color:#0f6b6b;font-weight:700;text-decoration:none;">Manage My Profile →</a>
-      <p style="margin:6px 0 0;font-size:0.8rem;color:#aaa;">Sign in with your purchase email and the password you set.</p>
+      <p style="margin:6px 0 0;font-size:0.8rem;color:#aaa;">Click Create Account with this email — it's free and takes 30 seconds.</p>
     </div>
 
     <p style="font-size:0.85rem;color:#888;margin-top:24px;">

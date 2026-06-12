@@ -72,7 +72,7 @@ exports.handler = async (event) => {
 
   // ── Send email if owner address found ────────
   if (ownerEmail && RESEND_API_KEY) {
-    const htmlEmail = buildLeadEmail({ businessName, name, phone, email, message, weekScans });
+    const htmlEmail = buildLeadEmail({ businessName, name, phone, email, message, interests, weekScans });
     await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -92,8 +92,11 @@ exports.handler = async (event) => {
 };
 
 // ── HTML Email Template ──────────────────────
-function buildLeadEmail({ businessName, name, phone, email, message, weekScans }) {
+function buildLeadEmail({ businessName, name, phone, email, message, interests, weekScans }) {
   const contactLine = [phone, email].filter(Boolean).join(" · ");
+  const interestsBlock = Array.isArray(interests) && interests.length
+    ? `<div style="margin-top:10px;"><span style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;">Interested in:</span><div style="margin-top:6px;">${interests.map(i => `<span style="display:inline-block;background:#e8f5f5;color:#0f6b6b;font-size:13px;font-weight:600;border-radius:20px;padding:4px 12px;margin:3px 4px 3px 0;">${escHtml(i)}</span>`).join('')}</div></div>`
+    : "";
   const msgBlock = message
     ? `<div style="background:#f8f8f8;border-radius:8px;padding:14px 16px;margin-top:12px;font-style:italic;color:#444;font-size:14px;line-height:1.6;">"${escHtml(message)}"</div>`
     : "";
@@ -126,6 +129,7 @@ function buildLeadEmail({ businessName, name, phone, email, message, weekScans }
           <td style="padding:20px 22px;">
             <div style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:8px;">${escHtml(name)}</div>
             <div style="font-size:14px;color:#0f6b6b;font-weight:600;margin-bottom:4px;">${escHtml(contactLine)}</div>
+            ${interestsBlock}
             ${msgBlock}
           </td>
         </tr>
@@ -156,7 +160,7 @@ function buildLeadEmail({ businessName, name, phone, email, message, weekScans }
       <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
         <tr>
           <td align="center">
-            <a href="https://torrolink.com/metrics" style="display:inline-block;background:#0f6b6b;color:#ffffff;font-size:14px;font-weight:700;padding:14px 36px;border-radius:8px;text-decoration:none;">View full dashboard →</a>
+            <a href="https://torrolink.com/portal" style="display:inline-block;background:#0f6b6b;color:#ffffff;font-size:14px;font-weight:700;padding:14px 36px;border-radius:8px;text-decoration:none;">View leads &amp; dashboard →</a>
           </td>
         </tr>
       </table>

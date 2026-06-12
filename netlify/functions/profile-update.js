@@ -10,9 +10,6 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   const p = event.queryStringParameters || {};
-  if (!process.env.ADMIN_SECRET || p.secret !== process.env.ADMIN_SECRET) {
-    return { statusCode: 403, body: "Forbidden" };
-  }
 
   const handle = p.handle || "ptorro-holdings-llc";
   const action = p.action || "setup-lead-form";
