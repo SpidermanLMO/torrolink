@@ -72,11 +72,16 @@ exports.handler = async (event) => {
   }
 
   // Verify Stripe signature
-  const sig = event.headers["stripe-signature"];
+  // Netlify may base64-encode the raw body; decode it first so the
+  // HMAC is computed against the exact bytes Stripe signed.
+  const sig     = event.headers["stripe-signature"];
+  const rawBody = event.isBase64Encoded
+    ? Buffer.from(event.body, "base64").toString("utf8")
+    : event.body;
   let stripeEvent;
   try {
     stripeEvent = stripe.webhooks.constructEvent(
-      event.body,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );

@@ -1,0 +1,19 @@
+<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Top-left finder square -->
+  <rect x="2" y="2" width="32" height="32" rx="6" fill="#0f6b6b"/>
+  <rect x="7" y="7" width="22" height="22" rx="3.5" fill="white"/>
+  <rect x="12" y="12" width="12" height="12" rx="2" fill="#0f6b6b"/>
+  <!-- Bottom-left finder square -->
+  <rect x="2" y="46" width="32" height="32" rx="6" fill="#0f6b6b"/>
+  <rect x="7" y="51" width="22" height="22" rx="3.5" fill="white"/>
+  <rect x="12" y="56" width="12" height="12" rx="2" fill="#0f6b6b"/>
+  <!-- Top-right finder square -->
+  <rect x="46" y="2" width="32" height="32" rx="6" fill="#0f6b6b"/>
+  <rect x="51" y="7" width="22" height="22" rx="3.5" fill="white"/>
+  <rect x="56" y="12" width="12" height="12" rx="2" fill="#0f6b6b"/>
+  <!-- Data dots (bottom-right quadrant) -->
+  <rect x="46" y="46" width="13" height="13" rx="2.5" fill="#0f6b6b"/>
+  <rect x="63" y="46" width="13" height="13" rx="2.5" fill="#f4752b"/>
+  <rect x="46" y="63" width="13" height="13" rx="2.5" fill="#f4752b"/>
+  <rect x="63" y="63" width="13" height="13" rx="2.5" fill="#0f6b6b" opacity="0.4"/>
+</svg>
