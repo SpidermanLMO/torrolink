@@ -629,7 +629,7 @@ exports.handler = async () => {
       if (!/[A-Z]/.test(password)) {
         msgEl.innerHTML = '<div class="tl-msg error">Password must include at least one capital letter.</div>'; return;
       }
-      if (!/[!@#$%^&*()\-_=+\[\]{};:'",.<>?\/\\|~]/.test(password)) {
+      if (!/[^a-zA-Z0-9]/.test(password)) {
         msgEl.innerHTML = '<div class="tl-msg error">Password must include at least one symbol (e.g. ! @ # $).</div>'; return;
       }
       if (password !== confirm) {
@@ -690,7 +690,7 @@ exports.handler = async () => {
       if (error) {
         msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
       } else {
-        msgEl.innerHTML = '<div class="tl-msg success">Password updated! You\'re now signed in.</div>';
+        msgEl.innerHTML = '<div class="tl-msg success">Password updated! You are now signed in.</div>';
       }
     }
 

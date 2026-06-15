@@ -75,6 +75,11 @@ create table if not exists leads (
   submitted_at timestamptz default now()
 );
 
+-- REQUIRED: grant service_role access (raw SQL tables do not auto-grant like Table Editor does)
+-- Run this in Supabase SQL Editor after creating the tables:
+grant all on table public.leads      to service_role;
+grant all on table public.scan_events to service_role;
+
 -- ── SCHEMA ADDITIONS (run these after initial setup) ─────────────────────────
 -- Added for branding tiers and webhook processing
 

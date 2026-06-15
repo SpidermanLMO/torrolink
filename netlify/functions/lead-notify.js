@@ -10,13 +10,23 @@
 
 const { createClient } = require("@supabase/supabase-js");
 
+// supabaseAdmin: service_role — bypasses RLS, used for reading profiles/customers/scan_events
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
 );
 
+// supabaseAnon: anon key — used for leads INSERT (RLS policy "Anon can submit leads" allows this)
+// Note: SUPABASE_SERVICE_KEY lacks GRANT on public.leads (table created via raw SQL).
+// Fix: run `GRANT ALL ON public.leads TO service_role;` in Supabase SQL editor.
+// Workaround until fixed: use anon key for insert (RLS policy already permits it).
+const supabaseAnon = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
 const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
-const FROM_EMAIL     = "alerts@torrolink.com";
+const FROM_EMAIL     = "orders@torrolink.com";
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -35,7 +45,8 @@ exports.handler = async (event) => {
   }
 
   // ── Insert lead ──────────────────────────────
-  const { error: insertErr } = await supabaseAdmin
+  // Uses anon client: RLS policy "Anon can submit leads" (with check true) permits this.
+  const { error: insertErr } = await supabaseAnon
     .from("leads")
     .insert({
       profile_id:   profileId,
@@ -93,7 +104,7 @@ exports.handler = async (event) => {
 
 // ── HTML Email Template ──────────────────────
 function buildLeadEmail({ businessName, name, phone, email, message, interests, weekScans }) {
-  const contactLine = [phone, email].filter(Boolean).join(" · ");
+  const contactLine = [phone, email].filter(Boolean).join(" \xb7 ");
   const interestsBlock = Array.isArray(interests) && interests.length
     ? `<div style="margin-top:10px;"><span style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;">Interested in:</span><div style="margin-top:6px;">${interests.map(i => `<span style="display:inline-block;background:#e8f5f5;color:#0f6b6b;font-size:13px;font-weight:600;border-radius:20px;padding:4px 12px;margin:3px 4px 3px 0;">${escHtml(i)}</span>`).join('')}</div></div>`
     : "";
@@ -113,7 +124,7 @@ function buildLeadEmail({ businessName, name, phone, email, message, interests, 
   <tr>
     <td style="background:#0f6b6b;padding:22px 28px;">
       <div style="font-family:Barlow,Arial,sans-serif;font-weight:800;font-size:18px;color:#ffffff;letter-spacing:1px;">TORROLINK</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px;">New lead alert · ${escHtml(businessName)}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px;">New lead alert \xb7 ${escHtml(businessName)}</div>
     </td>
   </tr>
 
@@ -121,7 +132,7 @@ function buildLeadEmail({ businessName, name, phone, email, message, interests, 
   <tr>
     <td style="padding:28px 28px 0;">
       <div style="font-size:22px;font-weight:700;color:#1a1a2e;margin-bottom:6px;">You have a new lead 🎯</div>
-      <div style="font-size:14px;color:#888;margin-bottom:24px;">Someone scanned your QR code and left their contact info — follow up while it's fresh.</div>
+      <div style="font-size:14px;color:#888;margin-bottom:24px;">Someone scanned your QR code and left their contact info — follow up while it is fresh.</div>
 
       <!-- Lead info card -->
       <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fbfb;border-radius:10px;border:1px solid #e0eded;margin-bottom:24px;">
@@ -171,8 +182,8 @@ function buildLeadEmail({ businessName, name, phone, email, message, interests, 
   <tr>
     <td style="border-top:1px solid #f0f0f0;padding:16px 28px;text-align:center;">
       <div style="font-size:11px;color:#bbb;line-height:1.6;">
-        You're receiving this because you're a Torrolink Metrics subscriber.<br>
-        PTorro Holdings LLC · <a href="https://torrolink.com" style="color:#0f6b6b;text-decoration:none;">torrolink.com</a>
+        You are receiving this because you are a Torrolink Metrics subscriber.<br>
+        PTorro Holdings LLC \xb7 <a href="https://torrolink.com" style="color:#0f6b6b;text-decoration:none;">torrolink.com</a>
       </div>
     </td>
   </tr>
@@ -181,7 +192,7 @@ function buildLeadEmail({ businessName, name, phone, email, message, interests, 
 </td></tr>
 </table>
 </body>
-</html>`;
+</html>\`;
 }
 
 function json(status, obj) {
