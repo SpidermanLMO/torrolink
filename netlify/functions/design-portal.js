@@ -220,7 +220,7 @@ async function processApproval(event, profile) {
     const profileUrl = `${SITE}/p/${profile.handle}`;
 
     await resend.emails.send({
-      from:    "Torrolink <hello@torrolink.com>",
+      from:    "Torrolink <orders@torrolink.com>",
       to:      customer?.email,
       subject: "Your branded QR code is ready! 🎉",
       attachments: [{ filename: "torrolink-branded-qr.png", content: finalBuffer.toString("base64") }],
@@ -239,7 +239,7 @@ async function processApproval(event, profile) {
       <p style="margin:0 0 8px;font-size:0.9rem;color:#888;">Your profile page</p>
       <a href="${profileUrl}" style="color:#0f6b6b;font-weight:700;">${profileUrl}</a>
     </div>
-    <p style="font-size:0.85rem;color:#888;">Questions? Reply to this email or reach us at <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+    <p style="font-size:0.85rem;color:#888;">Questions? Reply to this email or reach us at <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
     <p style="font-size:0.75rem;color:#bbb;">A PTorro Holdings Company &bull; torrolink.com</p>
   </div>
 </div>`,
@@ -420,7 +420,7 @@ function portalHtml(profile) {
       } else {
         approveBtn.disabled = false;
         approveBtn.textContent = 'Looks good — generate my QR →';
-        alert('Something went wrong. Please try again or email hello@torrolink.com');
+        alert('Something went wrong. Please try again or email orders@torrolink.com');
       }
     });
   </script>
@@ -439,7 +439,7 @@ function alreadyDoneHtml(profile) {
 <body>
   <div class="box">
     <h2>✓ Already approved!</h2>
-    <p>Your branded QR code for <strong>${esc(profile.business_name)}</strong> was already generated and sent to your inbox.<br><br>If you didn't receive it, email us at <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+    <p>Your branded QR code for <strong>${esc(profile.business_name)}</strong> was already generated and sent to your inbox.<br><br>If you didn't receive it, email us at <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
   </div>
 </body>
 </html>`;
@@ -456,7 +456,7 @@ function notFoundHtml() {
 <body>
   <div class="box">
     <h2>Design link not found</h2>
-    <p>This link may have already been used, or it may be invalid. Email <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a> if you need help.</p>
+    <p>This link may have already been used, or it may be invalid. Email <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a> if you need help.</p>
   </div>
 </body>
 </html>`;

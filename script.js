@@ -70,7 +70,7 @@ if (form) {
     .catch(() => {
       btn.textContent = 'Send Message →';
       btn.disabled = false;
-      alert('Something went wrong. Please email us at hello@torrolink.com');
+      alert('Something went wrong. Please email us at orders@torrolink.com');
     });
   });
 }
@@ -173,12 +173,12 @@ async function submitCheckoutModal() {
     if (data.url) {
       window.location.href = data.url;
     } else {
-      alert('Something went wrong. Please try again or email hello@torrolink.com');
+      alert('Something went wrong. Please try again or email orders@torrolink.com');
       btn.textContent = 'Continue to Payment →';
       btn.disabled    = false;
     }
   } catch (err) {
-    alert('Something went wrong. Please try again or email hello@torrolink.com');
+    alert('Something went wrong. Please try again or email orders@torrolink.com');
     btn.textContent = 'Continue to Payment →';
     btn.disabled    = false;
   }

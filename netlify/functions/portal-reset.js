@@ -45,7 +45,7 @@ exports.handler = async (event) => {
       const link = data.properties.action_link;
 
       await resend.emails.send({
-        from:    "Torrolink <hello@torrolink.com>",
+        from:    "Torrolink <orders@torrolink.com>",
         to:      email,
         subject: "Reset your Torrolink password",
         html: `

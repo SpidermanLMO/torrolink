@@ -728,7 +728,7 @@ exports.handler = async () => {
         .maybeSingle();
 
       if (!profile) {
-        showMsg('error', 'No profile found. Contact hello@torrolink.com for help.');
+        showMsg('error', 'No profile found. Contact orders@torrolink.com for help.');
         return;
       }
 
@@ -1057,9 +1057,9 @@ exports.handler = async () => {
         });
         const data = await res.json();
         if (data.url) window.location.href = data.url;
-        else alert('Something went wrong. Please try again or email hello@torrolink.com');
+        else alert('Something went wrong. Please try again or email orders@torrolink.com');
       } catch {
-        alert('Something went wrong. Please try again or email hello@torrolink.com');
+        alert('Something went wrong. Please try again or email orders@torrolink.com');
       }
     }
 

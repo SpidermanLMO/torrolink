@@ -149,7 +149,7 @@ exports.handler = async (event) => {
 
       const firstName = customerName.split(" ")[0] || "there";
       await resend.emails.send({
-        from:    "Torrolink <hello@torrolink.com>",
+        from:    "Torrolink <orders@torrolink.com>",
         to:      customerEmail,
         subject: "Metrics & Leads is now active — Torrolink",
         html: `
@@ -163,7 +163,7 @@ exports.handler = async (event) => {
     <div style="text-align:center;margin:28px 0;">
       <a href="${SITE}/portal" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">View My Dashboard →</a>
     </div>
-    <p style="font-size:0.85rem;color:#888;">— The Torrolink Team<br><a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+    <p style="font-size:0.85rem;color:#888;">— The Torrolink Team<br><a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
   </div>
 </div>`,
       });
@@ -189,7 +189,7 @@ exports.handler = async (event) => {
 
         const designUrl = `${SITE}/design/${existingProfile.code}`;
         await resend.emails.send({
-          from:    "Torrolink <hello@torrolink.com>",
+          from:    "Torrolink <orders@torrolink.com>",
           to:      customerEmail,
           subject: "Design your branded QR code — Torrolink",
           html: buildDesignEmail({ customerName, businessName, designUrl, plan, portalUrl: `${SITE}/portal` }),
@@ -235,7 +235,7 @@ exports.handler = async (event) => {
       const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, "");
 
       await resend.emails.send({
-        from:    "Torrolink <hello@torrolink.com>",
+        from:    "Torrolink <orders@torrolink.com>",
         to:      customerEmail,
         subject: "Your Torrolink QR code is ready 🎉",
         attachments: [{ filename: "torrolink-qr.png", content: base64Data }],
@@ -246,7 +246,7 @@ exports.handler = async (event) => {
     // ── 4. Email design portal link (branding) ───
     if (hasBranding) {
       await resend.emails.send({
-        from:    "Torrolink <hello@torrolink.com>",
+        from:    "Torrolink <orders@torrolink.com>",
         to:      customerEmail,
         subject: "Design your branded QR code — Torrolink",
         html: buildDesignEmail({ customerName, businessName, designUrl, plan, portalUrl: `${SITE}/portal` }),
@@ -275,7 +275,7 @@ exports.handler = async (event) => {
 
       const firstName = customerName.split(" ")[0] || "there";
       await resend.emails.send({
-        from:    "Torrolink <hello@torrolink.com>",
+        from:    "Torrolink <orders@torrolink.com>",
         to:      customerEmail,
         subject: "Activate your Metrics & Leads — one more step",
         html: `
@@ -292,7 +292,7 @@ exports.handler = async (event) => {
       </a>
       <p style="font-size:0.82rem;color:#aaa;margin:10px 0 0;">$10.28/mo — cancel anytime from your portal</p>
     </div>
-    <p style="font-size:0.85rem;color:#888;margin-top:24px;">— The Torrolink Team<br><a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+    <p style="font-size:0.85rem;color:#888;margin-top:24px;">— The Torrolink Team<br><a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
   </div>
 </div>`,
       });
@@ -346,7 +346,7 @@ function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan, por
     </ol>
 
     <p style="font-size:0.85rem;color:#888;margin-top:24px;">
-      Questions? Reply to this email or reach us at <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a>
+      Questions? Reply to this email or reach us at <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a>
     </p>
     <p style="font-size:0.75rem;color:#bbb;margin-top:16px;">A PTorro Holdings Company &bull; torrolink.com</p>
   </div>
@@ -392,7 +392,7 @@ function buildDesignEmail({ customerName, businessName, designUrl, plan, portalU
     </div>
 
     <p style="font-size:0.85rem;color:#888;margin-top:24px;">
-      Questions? Reply to this email or reach us at <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a>
+      Questions? Reply to this email or reach us at <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a>
     </p>
     <p style="font-size:0.75rem;color:#bbb;margin-top:16px;">A PTorro Holdings Company &bull; torrolink.com</p>
   </div>

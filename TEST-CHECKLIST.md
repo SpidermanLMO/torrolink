@@ -31,7 +31,7 @@ Use Stripe's **test mode** with card number `4242 4242 4242 4242` (any future ex
 - [ ] Check Netlify function logs (Functions tab) — `stripe-webhook` was called
 - [ ] Check Supabase — new row in `customers` table with correct email
 - [ ] Check Supabase — new row in `profiles` table with handle + code
-- [ ] Check email inbox — QR code delivery email received from hello@torrolink.com
+- [ ] Check email inbox — QR code delivery email received from orders@torrolink.com
 - [ ] QR code image in email is valid and scannable
 
 ---

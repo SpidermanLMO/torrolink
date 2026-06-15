@@ -23,7 +23,7 @@ exports.handler = async (event) => {
 
     // ── CONFIRM TO SUBSCRIBER ─────────────────────────
     await resend.emails.send({
-      from: "Torrolink <hello@torrolink.com>",
+      from: "Torrolink <orders@torrolink.com>",
       to: subscriberEmail,
       subject: `✅ Your ${business} page has been updated`,
       html: `

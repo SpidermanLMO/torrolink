@@ -22,6 +22,6 @@ After saving, go to **Authentication → Users** → find a test user → click 
 
 ## Notes
 
-- The "From" address is controlled by your Resend domain settings (already verified as hello@torrolink.com)
+- The "From" address is controlled by your Resend domain settings (already verified as orders@torrolink.com)
 - The email renders in both light and dark mode email clients
 - Mobile-responsive at 560px breakpoint

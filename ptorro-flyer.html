@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PTorro Roofing — Print Flyer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Barlow:wght@800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8e8e8;
+      padding: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+    }
+
+    @media print {
+      body { background: white; padding: 0; gap: 0; }
+      .no-print { display: none; }
+      .flyer { break-inside: avoid; box-shadow: none; margin: 0; }
+      .page-break { page-break-after: always; }
+    }
+
+    /* ── DOOR HANGER (4" x 8.5") ── */
+    .flyer {
+      width: 4in;
+      min-height: 8.5in;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flyer-header {
+      background: linear-gradient(160deg, #0a2e2e 0%, #0f6b6b 100%);
+      padding: 36px 28px 32px;
+      text-align: center;
+      color: white;
+    }
+
+    .flyer-badge {
+      background: #f4752b;
+      display: inline-block;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .flyer-headline {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 900;
+      font-size: 36px;
+      line-height: 1.05;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+
+    .flyer-headline span {
+      color: #f4752b;
+    }
+
+    .flyer-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .flyer-qr-section {
+      background: #f8fbfb;
+      padding: 28px 24px;
+      text-align: center;
+      border-bottom: 2px dashed #c5e8e8;
+    }
+
+    .qr-wrap {
+      display: inline-block;
+      background: white;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2px solid #0f6b6b;
+      margin-bottom: 12px;
+    }
+
+    .qr-wrap img {
+      display: block;
+      width: 160px;
+      height: 160px;
+    }
+
+    .qr-cta {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f6b6b;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .qr-url {
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    .flyer-body {
+      padding: 24px 24px 20px;
+      flex: 1;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #333;
+      font-weight: 600;
+      padding: 7px 0;
+      border-bottom: 1px solid #f0f0f0;
+      line-height: 1.4;
+    }
+
+    .feature-list li:last-child { border-bottom: none; }
+
+    .feat-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .services-section {
+      background: #f0fafa;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+
+    .services-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0f6b6b;
+      margin-bottom: 10px;
+    }
+
+    .service-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      background: white;
+      border: 1px solid #c5e8e8;
+      color: #0a4d4d;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .flyer-footer {
+      background: #1a1a2e;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .footer-brand {
+      color: white;
+    }
+
+    .footer-name {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .footer-tagline {
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+    }
+
+    .footer-phone {
+      background: #f4752b;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .footer-phone small {
+      display: block;
+      font-size: 9px;
+      font-weight: 600;
+      opacity: 0.85;
+      margin-bottom: 2px;
+    }
+
+    /* ── BUSINESS CARD (3.5" x 2") ── */
+    .card-set {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .biz-card {
+      width: 3.5in;
+      height: 2in;
+      background: linear-gradient(135deg, #0a2e2e 0%, #0f6b6b 100%);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      padding: 18px 20px;
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      color: white;
+    }
+
+    .biz-card-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .biz-card-name {
+      font-family: 'Barlow', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 0.2px;
+      line-height: 1.1;
+    }
+
+    .biz-card-sub {
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 3px;
+      margin-bottom: 10px;
+    }
+
+    .biz-card-services {
+      font-size: 10px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.7;
+    }
+
+    .biz-card-contact {
+      margin-top: auto;
+      font-size: 10px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+
+    .biz-card-phone {
+      color: #f4752b;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .biz-card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .biz-card-qr {
+      background: white;
+      padding: 5px;
+      border-radius: 6px;
+    }
+
+    .biz-card-qr img {
+      display: block;
+      width: 72px;
+      height: 72px;
+    }
+
+    .biz-card-scan {
+      font-size: 8px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* ── PRINT CONTROLS ── */
+    .controls {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .controls h1 {
+      font-size: 1.5rem;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+
+    .controls p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .print-btn {
+      background: #0f6b6b;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .print-btn:hover { background: #0a4d4d; }
+  </style>
+</head>
+<body>
+
+  <!-- Controls -->
+  <div class="controls no-print" style="width:100%">
+    <h1>PTorro Roofing — Print Materials</h1>
+    <p>Door hanger (left) and business cards (right). Add your phone number before printing.</p>
+    <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+
+  <!-- DOOR HANGER FLYER -->
+  <div class="flyer">
+    <div class="flyer-header">
+      <div class="flyer-badge">⚡ Storm Ready · Fast Response</div>
+      <div class="flyer-headline">FREE<br>ROOFING<br><span>ESTIMATE</span></div>
+      <div class="flyer-sub">Licensed &amp; Insured · Veteran-Owned<br>Residential &amp; Commercial</div>
+    </div>
+
+    <div class="flyer-qr-section">
+      <div class="qr-wrap">
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Ftorrolink.com%2Fq%2Fqpdc8hhb&size=480x480&color=0a4d4d&margin=1"
+          alt="Scan for free estimate"
+        />
+      </div>
+      <div class="qr-cta">📱 Scan for a Free Estimate</div>
+      <div class="qr-url">torrolink.com/p/ptorro-holdings-llc</div>
+    </div>
+
+    <div class="flyer-body">
+      <div class="services-section">
+        <div class="services-title">We Handle</div>
+        <div class="service-tags">
+          <span class="tag">🌧️ Storm Damage</span>
+          <span class="tag">🔨 Full Replacement</span>
+          <span class="tag">🔧 Repairs</span>
+          <span class="tag">📋 Insurance Claims</span>
+          <span class="tag">🏢 Commercial</span>
+          <span class="tag">🏠 Residential</span>
+        </div>
+      </div>
+
+      <ul class="feature-list">
+        <li><span class="feat-icon">✅</span><span>Free on-site estimates — no pressure, no obligation</span></li>
+        <li><span class="feat-icon">📸</span><span>Scan QR code to see past jobs &amp; reviews</span></li>
+        <li><span class="feat-icon">⚡</span><span>Quick turnaround — storm damage response priority</span></li>
+        <li><span class="feat-icon">🏅</span><span>Licensed, insured &amp; community-focused</span></li>
+        <li><span class="feat-icon">📲</span><span>Request online or call — we respond same day</span></li>
+      </ul>
+    </div>
+
+    <div class="flyer-footer">
+      <div class="footer-brand">
+        <div class="footer-name">PTorro Holdings LLC</div>
+        <div class="footer-tagline">Professional Roofing Services</div>
+      </div>
+      <div class="footer-phone">
+        <small>Call Us</small>
+        (___) ___-____
+      </div>
+    </div>
+  </div>
+
+  <!-- BUSINESS CARDS -->
+  <div class="card-set">
+    <div class="no-print" style="font-size:0.85rem;color:#888;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Business Cards (print 10-up)</div>
+
+    <!-- Card 1 -->
+    <div class="biz-card">
+      <div class="biz-card-left">
+        <div>
+          <div class="biz-card-name">PTorro<br>Holdings LLC</div>
+          <div class="biz-card-sub">Professional Roofing · Licensed &amp; Insured</div>
+        </div>
+        <div class="biz-card-services">
+          Storm Damage · Full Replacement<br>
+          Repairs · Insurance Claims · Commercial
+        </div>
+        <div class="biz-card-contact">
+          <div class="biz-card-phone">(___) ___-____</div>
+          torrolink.com/p/ptorro-holdings-llc
+        </div>
+      </div>
+      <div class="biz-card-right">
+        <div class="biz-card-qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Ftorrolink.com%2Fq%2Fqpdc8hhb&size=288x288&color=0a4d4d&margin=1"
+            alt="QR"
+          />
+        </div>
+        <div class="biz-card-scan">Scan for<br>free estimate</div>
+      </div>
+    </div>
+
+    <!-- 5 more copies for cut sheet -->
+    <div class="biz-card">
+      <div class="biz-card-left">
+        <div>
+          <div class="biz-card-name">PTorro<br>Holdings LLC</div>
+          <div class="biz-card-sub">Professional Roofing · Licensed &amp; Insured</div>
+        </div>
+        <div class="biz-card-services">
+          Storm Damage · Full Replacement<br>
+          Repairs · Insurance Claims · Commercial
+        </div>
+        <div class="biz-card-contact">
+          <div class="biz-card-phone">(___) ___-____</div>
+          torrolink.com/p/ptorro-holdings-llc
+        </div>
+      </div>
+      <div class="biz-card-right">
+        <div class="biz-card-qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Ftorrolink.com%2Fq%2Fqpdc8hhb&size=288x288&color=0a4d4d&margin=1"
+            alt="QR"
+          />
+        </div>
+        <div class="biz-card-scan">Scan for<br>free estimate</div>
+      </div>
+    </div>
+
+    <div class="biz-card">
+      <div class="biz-card-left">
+        <div>
+          <div class="biz-card-name">PTorro<br>Holdings LLC</div>
+          <div class="biz-card-sub">Professional Roofing · Licensed &amp; Insured</div>
+        </div>
+        <div class="biz-card-services">
+          Storm Damage · Full Replacement<br>
+          Repairs · Insurance Claims · Commercial
+        </div>
+        <div class="biz-card-contact">
+          <div class="biz-card-phone">(___) ___-____</div>
+          torrolink.com/p/ptorro-holdings-llc
+        </div>
+      </div>
+      <div class="biz-card-right">
+        <div class="biz-card-qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Ftorrolink.com%2Fq%2Fqpdc8hhb&size=288x288&color=0a4d4d&margin=1"
+            alt="QR"
+          />
+        </div>
+        <div class="biz-card-scan">Scan for<br>free estimate</div>
+      </div>
+    </div>
+
+    <div class="biz-card">
+      <div class="biz-card-left">
+        <div>
+          <div class="biz-card-name">PTorro<br>Holdings LLC</div>
+          <div class="biz-card-sub">Professional Roofing · Licensed &amp; Insured</div>
+        </div>
+        <div class="biz-card-services">
+          Storm Damage · Full Replacement<br>
+          Repairs · Insurance Claims · Commercial
+        </div>
+        <div class="biz-card-contact">
+          <div class="biz-card-phone">(___) ___-____</div>
+          torrolink.com/p/ptorro-holdings-llc
+        </div>
+      </div>
+      <div class="biz-card-right">
+        <div class="biz-card-qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Ftorrolink.com%2Fq%2Fqpdc8hhb&size=288x288&color=0a4d4d&margin=1"
+            alt="QR"
+          />
+        </div>
+        <div class="biz-card-scan">Scan for<br>free estimate</div>
+      </div>
+    </div>
+
+    <div class="biz-card">
+      <div class="biz-card-left">
+        <div>
+          <div class="biz-card-name">PTorro<br>Holdings LLC</div>
+          <div class="biz-card-sub">Professional Roofing · Licensed &amp; Insured</div>
+        </div>
+        <div class="biz-card-services">
+          Storm Damage · Full Replacement<br>
+          Repairs · Insurance Claims · Commercial
+        </div>
+        <div class="biz-card-contact">
+          <div class="biz-card-phone">(___) ___-____</div>
+          torrolink.com/p/ptorro-holdings-llc
+        </div>
+      </div>
+      <div class="biz-card-right">
+        <div class="biz-card-qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Ftorrolink.com%2Fq%2Fqpdc8hhb&size=288x288&color=0a4d4d&margin=1"
+            alt="QR"
+          />
+        </div>
+        <div class="biz-card-scan">Scan for<br>free estimate</div>
+      </div>
+    </div>
+
+    <div class="biz-card">
+      <div class="biz-card-left">
+        <div>
+          <div class="biz-card-name">PTorro<br>Holdings LLC</div>
+          <div class="biz-card-sub">Professional Roofing · Licensed &amp; Insured</div>
+        </div>
+        <div class="biz-card-services">
+          Storm Damage · Full Replacement<br>
+          Repairs · Insurance Claims · Commercial
+        </div>
+        <div class="biz-card-contact">
+          <div class="biz-card-phone">(___) ___-____</div>
+          torrolink.com/p/ptorro-holdings-llc
+        </div>
+      </div>
+      <div class="biz-card-right">
+        <div class="biz-card-qr">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?data=https%3A%2F%2Ftorrolink.com%2Fq%2Fqpdc8hhb&size=288x288&color=0a4d4d&margin=1"
+            alt="QR"
+          />
+        </div>
+        <div class="biz-card-scan">Scan for<br>free estimate</div>
+      </div>
+    </div>
+
+  </div><!-- end card-set -->
+
+</body>
+</html>

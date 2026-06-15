@@ -1,81 +1,110 @@
-# Good Morning — Torrolink Overnight Briefing
-## June 11, 2026
+# Torrolink — Morning Briefing
+**Updated:** June 12, 2026 — overnight session
 
 ---
 
-## What Got Done While You Slept
+## ✅ EVERYTHING THAT'S NOW WORKING
 
-All 6 overnight tasks are complete.
+### 1. Portal — Create Account & Forgot Password (FIXED)
+- **Create Account** works — customers enter email, password, confirm password. Account is created immediately, no email confirmation loop.
+- Password requirements enforced: 8+ chars, 1 capital letter, 1 symbol
+- **Forgot Password** works — sends a real reset link via Resend email (bypasses Supabase's broken SMTP)
+- Both are confirmed live and working at https://torrolink.com/portal
 
-### ✅ Task 15 — Lead Form Config
-Customers can now enable a lead capture form from their portal. They can add checkbox options (e.g., "I'm interested in...", "Best time to call"), toggle a text comment box, and it all shows up live on their profile page.
+### 2. Your Roofing Profile is Live
+- **URL:** https://torrolink.com/p/ptorro-holdings-llc
+- **QR Code URL:** https://torrolink.com/q/qpdc8hhb
+- Tagline: "Professional Roofing — Licensed & Insured"
+- Bio: residential, commercial, storm damage, free estimates, veteran-owned
+- Lead form ON with 6 checkboxes: Free estimate, Roof repair, Full replacement, Storm/hail damage, Insurance claim help, Commercial roofing
+- When a homeowner scans your QR and fills out the form → **you get an email immediately at laigno@gmail.com** with their name, number, and what they want
 
-### ✅ Task 16 — Branded Email Template
-A custom Torrolink-branded magic link email was built. Deep teal gradient header, clean button, mobile-responsive. Ready to paste into Supabase — see `supabase-email-templates/HOW-TO-APPLY.md` for the 5-step instructions.
+### 3. Homepage Updated
+- New **Roofer / Contractor** phone card preview shows your profile style
+- New **"Roofers & Contractors"** use case section
+- Contact form dropdown fixed to "I'm interested in..."
+- Live at: https://torrolink.com
 
-### ✅ Task 17 — Admin Dashboard at /admin
-A password-protected admin panel is live at torrolink.com/admin. Shows total customers, active QR codes, MRR, total scans, and tables for all profiles and customers. Protected by a Basic Auth password.
+### 4. Lead Notification Emails Fixed
+- Lead emails now show **which checkboxes the customer selected** (storm damage, repair, etc.) — was missing before
+- CTA in lead email now links to `/portal` correctly
 
-⚠️ **ACTION REQUIRED:** Add `ADMIN_PASSWORD` to Netlify environment variables (Netlify → Site settings → Environment variables). Set a strong password — it currently defaults to "changeme".
+### 5. Purchase Email Fixed
+- After checkout, customers now see: "Click **Create Account** with this email"
+- Previously said "sign in with the password you set" which confused new customers
 
-### ✅ Task 18 — Test Checklist
-`TEST-CHECKLIST.md` is written. 9 sections, 50+ checkboxes covering every flow from homepage through admin dashboard. Use test card `4242 4242 4242 4242`.
-
-### ✅ Task 19 — Marketing Strategy + Content
-Full marketing folder built at `marketing/`:
-- `STRATEGY.md` — full go-to-market plan, revenue projections, 30-day launch sequence
-- `social/launch-posts.md` — 6 ready-to-post captions + TikTok/Reels script
-- `outreach/cold-email-template.md` — 3 email templates + walk-in script + Facebook group post
-- `outreach/affiliate-program.md` — 3-tier referral program (customer → partner → agency)
-- `content/seo-keywords.md` — keyword research with estimated search volumes
-- `content/blog-post-ideas.md` — 13 blog post ideas with publishing schedule
-- `paid/paid-ads-strategy.md` — Meta + Google ads playbook, targeting, budgets, creative angles
-
-### ✅ Task 20 — Google Drive Upload
-All files uploaded to Drive → Torrolink folder:
-- Marketing folder with all 7 files across 4 subfolders
-- TEST-CHECKLIST.md in Project Docs
-- Email Templates folder with magic-link.html + HOW-TO-APPLY.md
-
----
-
-## Git Push Command (Run This First)
-
-Open Command Prompt and run:
-
-```
-cd TorroLink && git add . && git commit -m "Add lead form config, admin dashboard, email templates, test checklist, marketing strategy" && git push
-```
-
-After pushing, Netlify will check the ignore rule. The new Netlify function (admin.js) and updated functions (portal.js, portal-save.js, profile.js) will trigger a deploy.
+### 6. Print Materials Created
+- **ptorro-flyer.html** — open it, add your phone number, and print at Staples/FedEx Office
+- Includes a door hanger and 6 business card copies, all with your QR code embedded
 
 ---
 
-## Action Items Before Going Live
+## 🚨 DO THIS FIRST WHEN YOU WAKE UP
 
-| Priority | Action |
-|----------|--------|
-| 🔴 Required | Add `ADMIN_PASSWORD` to Netlify env vars (not "changeme") |
-| 🔴 Required | Verify `STRIPE_SECRET_KEY` is the live key (`sk_live_...`), not test key |
-| 🔴 Required | Verify `STRIPE_WEBHOOK_SECRET` is the live webhook secret |
-| 🟡 Important | Apply branded email template in Supabase (see `supabase-email-templates/HOW-TO-APPLY.md`) |
-| 🟡 Important | Run TEST-CHECKLIST.md end-to-end with test card before going live |
-| 🟢 When ready | Run first marketing post using `marketing/social/launch-posts.md` |
+### Step 1 — Complete your portal profile (5 minutes)
+1. Go to **https://torrolink.com/portal**
+2. Click **Create Account** → use **laigno@gmail.com**, set a password
+3. Once logged in, go to the Profile tab and add:
+   - **Phone number** ← makes a tap-to-call button appear on your profile
+   - **Owner name** (your name)
+   - Your **Google Reviews** link (paste the URL in Links)
+4. Upload your logo if you have one
 
----
+### Step 2 — Print your door hangers and business cards
+- Open **ptorro-flyer.html** in your TorroLink folder in Chrome
+- Fill in your phone number where it says `(___) ___-____`
+- Ctrl+P → Save as PDF (or print directly)
+- Take to FedEx Office / Staples to print on cardstock
 
-## Schema Update (Supabase)
-
-The `schema.sql` was updated with two new columns. If your Supabase database was created before yesterday, run this in the SQL editor:
-
-```sql
-alter table profiles add column if not exists theme jsonb default '{}';
-alter table profiles add column if not exists owner_name text;
-alter table profiles add column if not exists lead_form_enabled boolean default false;
-alter table profiles add column if not exists lead_form_has_textbox boolean default false;
-alter table profiles add column if not exists lead_form_checkboxes text[] default '{}';
-```
+### Step 3 — Delete the "fascinating-spark" Stripe webhook (2 minutes)
+- Go to https://dashboard.stripe.com → Webhooks
+- Delete "fascinating-spark" (the sandbox one)
+- Keep "vibrant-wonder" — that's the live one that processes payments
 
 ---
 
-*Built by Claude overnight. All files are committed and pushed when you run the command above.*
+## 💡 HOW TO CLOSE ROOFING DEALS WITH YOUR QR CODE
+
+### QR Code: `https://torrolink.com/q/qpdc8hhb`
+### Profile: `https://torrolink.com/p/ptorro-holdings-llc`
+
+**Put your QR code here:**
+1. **Truck** — magnetic sign: "Free Roofing Estimate — Scan Me"
+2. **Yard signs** — at every active job: "ROOFING IN PROGRESS — Free Estimates"
+3. **Business cards** — leave one with every customer after finishing a job
+4. **Door hangers** — hit the 10 nearest homes to every job site
+5. **Storm neighborhoods** — drive impacted areas after storms, leave door hangers
+
+**Your pitch when talking to homeowners:**
+> "I'm working on a roof just down the street — scan this code if you ever want a free estimate. I'll call you back the same day. No pressure."
+
+Every scan lands on your lead form. When they submit it, you get an email at laigno@gmail.com within seconds with their name and contact info.
+
+---
+
+## 🔧 TECHNICAL STATUS
+
+| System | Status |
+|---|---|
+| Portal Create Account | ✅ Working |
+| Portal Sign In | ✅ Working |
+| Portal Forgot Password | ✅ Working |
+| Stripe Checkout | ✅ Working |
+| QR Generation & Email | ✅ Working |
+| PTorro Profile + Lead Form | ✅ Live |
+| Lead Notification Emails | ✅ Working (goes to laigno@gmail.com) |
+| Homepage (with Roofer content) | ✅ Live |
+| Contact Form | ✅ Working |
+| Print Materials (ptorro-flyer.html) | ✅ Ready to print |
+
+---
+
+## 📌 OPTIONAL UPGRADES (when you're ready)
+- Upload a logo to your profile — makes it look professional
+- Add your Google Reviews link to your profile links
+- Record a quick 30-second phone video of a finished job and add it to your profile
+- Activate Metrics & Leads ($10.28/mo) from the portal Upgrade tab — lets you see scan analytics
+
+---
+
+God bless. Go get those roofs.

@@ -1,11 +1,11 @@
 // ================================================
 // TORROLINK — CONTACT FORM
-// POST /contact → receives form submission, emails hello@torrolink.com
+// POST /contact → receives form submission, emails orders@torrolink.com
 // ================================================
 
 const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
-const OWNER_EMAIL = process.env.OWNER_EMAIL || "hello@torrolink.com";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "orders@torrolink.com";
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -34,7 +34,7 @@ exports.handler = async (event) => {
 
   try {
     await resend.emails.send({
-      from: "Torrolink Contact Form <hello@torrolink.com>",
+      from: "Torrolink Contact Form <orders@torrolink.com>",
       to: OWNER_EMAIL,
       reply_to: email,
       subject: `New message from ${name}${business ? ` — ${business}` : ""}`,
@@ -60,7 +60,7 @@ exports.handler = async (event) => {
 
     // Auto-reply to the sender
     await resend.emails.send({
-      from: "Torrolink <hello@torrolink.com>",
+      from: "Torrolink <orders@torrolink.com>",
       to: email,
       subject: "We got your message — Torrolink",
       html: `
@@ -78,7 +78,7 @@ exports.handler = async (event) => {
     </p>
     <p style="font-size:0.85rem;color:#888;margin-top:24px;">
       — The Torrolink Team<br>
-      <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a>
+      <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a>
     </p>
     <p style="font-size:0.75rem;color:#bbb;margin-top:16px;">A PTorro Holdings Company &bull; torrolink.com</p>
   </div>
@@ -93,7 +93,7 @@ exports.handler = async (event) => {
     console.error("Contact form error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Failed to send message. Please try hello@torrolink.com directly." }),
+      body: JSON.stringify({ error: "Failed to send message. Please try orders@torrolink.com directly." }),
     };
   }
 };

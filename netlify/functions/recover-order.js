@@ -121,7 +121,7 @@ exports.handler = async (event) => {
     // 3a. Branding plan → send design portal link
     if (hasBranding) {
       await resend.emails.send({
-        from:    "Torrolink <hello@torrolink.com>",
+        from:    "Torrolink <orders@torrolink.com>",
         to:      email,
         subject: "Design your branded QR code — Torrolink",
         html:    buildDesignEmail({ customerName, businessName, designUrl, plan, portalUrl }),
@@ -142,7 +142,7 @@ exports.handler = async (event) => {
     const base64Data = qrDataUrl.replace(/^data:image\/png;base64,/, "");
 
     await resend.emails.send({
-      from:        "Torrolink <hello@torrolink.com>",
+      from:        "Torrolink <orders@torrolink.com>",
       to:          email,
       subject:     "Your Torrolink QR code is ready 🎉",
       attachments: [{ filename: "torrolink-qr.png", content: base64Data }],
@@ -185,7 +185,7 @@ function buildQrEmail({ customerName, businessName, profileUrl, qrUrl, plan, por
         Manage My Profile →
       </a>
     </div>
-    <p style="font-size:0.85rem;color:#888;margin-top:24px;">Questions? <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+    <p style="font-size:0.85rem;color:#888;margin-top:24px;">Questions? <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
     <p style="font-size:0.75rem;color:#bbb;margin-top:16px;">A PTorro Holdings Company &bull; torrolink.com</p>
   </div>
 </div>`;
@@ -220,7 +220,7 @@ function buildDesignEmail({ customerName, businessName, designUrl, plan, portalU
         <li>Click "Looks good" — your branded QR is generated and emailed instantly</li>
       </ol>
     </div>
-    <p style="font-size:0.85rem;color:#888;margin-top:24px;">Questions? <a href="mailto:hello@torrolink.com" style="color:#0f6b6b;">hello@torrolink.com</a></p>
+    <p style="font-size:0.85rem;color:#888;margin-top:24px;">Questions? <a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
     <p style="font-size:0.75rem;color:#bbb;margin-top:16px;">A PTorro Holdings Company &bull; torrolink.com</p>
   </div>
 </div>`;

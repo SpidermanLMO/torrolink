@@ -74,7 +74,7 @@ Create bucket: Storage → New bucket → Name: **qr-assets** → Public: false
 
 ### 4. Resend domain verification
 - Verify torrolink.com at resend.com
-- From address: hello@torrolink.com
+- From address: orders@torrolink.com
 
 ---
 
