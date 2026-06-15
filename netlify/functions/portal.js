@@ -449,6 +449,13 @@ exports.handler = async () => {
             <!-- swatches rendered by JS -->
           </div>
 
+          <div id="bgUploadSection" style="display:none;margin:10px 0 16px;">
+            <label style="font-weight:600;font-size:0.85rem;">Upload background photo</label>
+            <input type="file" id="bgImageInput" accept="image/jpeg,image/png,image/webp" onchange="handleBgImageUpload(event)" style="display:block;margin-top:6px;" />
+            <div id="bgImagePreview"></div>
+            <button type="button" onclick="removeBgImage()" style="margin-top:4px;font-size:0.75rem;color:#888;background:none;border:none;cursor:pointer;padding:0;">✕ Remove photo</button>
+          </div>
+
           <div class="color-row">
             <div class="color-field">
               <label>Primary color</label>
@@ -578,7 +585,9 @@ exports.handler = async () => {
     let _logoBase64   = null;
     let _headshotBase64 = null;
     let _photoLayout  = 'logo';
-    let _profileId    = null;
+    let _profileId      = null;
+    let _bgImageUrl     = null;
+    let _bgImageBase64  = null;
     let _qrCode       = null;
     let _qrDotStyle   = 'square';
     let _qrTargetUrl  = '';
@@ -590,13 +599,13 @@ exports.handler = async () => {
     const PATTERNS = [
       { id: 'solid',    label: 'Solid',      preview: (c1)     => 'background:' + c1 },
       { id: 'gradient', label: 'Gradient',   preview: (c1, c2) => 'background:linear-gradient(135deg,' + c1 + ',' + c2 + ')' },
-      { id: 'camo',     label: 'Camo',       preview: (c1)     => 'background:' + c1 + ';background-image:radial-gradient(ellipse 40px 30px at 20% 40%,rgba(30,60,10,.7) 0%,transparent 70%),radial-gradient(ellipse 30px 40px at 70% 60%,rgba(20,45,8,.7) 0%,transparent 70%)' },
-      { id: 'leopard',  label: 'Leopard',    preview: (c1, c2) => 'background:' + c1 + ';background-image:radial-gradient(ellipse 10px 8px at 20% 25%,' + c2 + ' 60%,transparent 100%),radial-gradient(ellipse 8px 10px at 22% 23%,' + c2 + ' 60%,transparent 100%),radial-gradient(ellipse 10px 8px at 65% 70%,' + c2 + ' 60%,transparent 100%),radial-gradient(ellipse 8px 10px at 67% 68%,' + c2 + ' 60%,transparent 100%)' },
-      { id: 'tropical', label: 'Tropical',   preview: (c1)     => 'background:' + c1 + ';background-image:radial-gradient(ellipse 20px 40px at 15% 55%,rgba(0,128,64,.7) 0%,transparent 70%),radial-gradient(circle 6px at 40% 25%,rgba(255,107,157,.8) 0%,transparent 70%),radial-gradient(circle 5px at 75% 70%,rgba(255,205,60,.8) 0%,transparent 70%)' },
+      { id: 'camo',     label: 'Camo',       preview: (c1)     => { var s='<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><ellipse cx="45" cy="35" rx="55" ry="40" fill="rgba(0,0,0,0.42)" transform="rotate(-20,45,35)"/><ellipse cx="155" cy="80" rx="62" ry="44" fill="rgba(20,40,5,0.66)"/><ellipse cx="25" cy="158" rx="48" ry="64" fill="rgba(0,0,0,0.36)" transform="rotate(12,25,158)"/><ellipse cx="172" cy="168" rx="58" ry="40" fill="rgba(35,25,5,0.58)"/><ellipse cx="118" cy="28" rx="44" ry="58" fill="rgba(10,30,0,0.5)" transform="rotate(25,118,28)"/><ellipse cx="98" cy="118" rx="52" ry="38" fill="rgba(0,0,0,0.38)" transform="rotate(-8,98,118)"/></svg>'; return 'background-color:'+c1+';background-image:url("data:image/svg+xml,'+encodeURIComponent(s)+'");background-size:cover'; } },
+      { id: 'leopard',  label: 'Leopard',    preview: (c1, c2) => { var s='<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130"><ellipse cx="22" cy="20" rx="15" ry="11" fill="'+c2+'" opacity="0.93"/><ellipse cx="22" cy="20" rx="7" ry="5" fill="'+c1+'" opacity="0.97"/><ellipse cx="72" cy="62" rx="11" ry="16" fill="'+c2+'" opacity="0.93" transform="rotate(22,72,62)"/><ellipse cx="72" cy="62" rx="5" ry="8" fill="'+c1+'" opacity="0.97" transform="rotate(22,72,62)"/><ellipse cx="104" cy="18" rx="13" ry="10" fill="'+c2+'" opacity="0.93" transform="rotate(-18,104,18)"/><ellipse cx="104" cy="18" rx="6" ry="4.5" fill="'+c1+'" opacity="0.97" transform="rotate(-18,104,18)"/><ellipse cx="28" cy="85" rx="10" ry="14" fill="'+c2+'" opacity="0.93" transform="rotate(12,28,85)"/><ellipse cx="28" cy="85" rx="4.5" ry="6.5" fill="'+c1+'" opacity="0.97" transform="rotate(12,28,85)"/><ellipse cx="96" cy="88" rx="14" ry="10" fill="'+c2+'" opacity="0.93" transform="rotate(-28,96,88)"/><ellipse cx="96" cy="88" rx="6.5" ry="4.5" fill="'+c1+'" opacity="0.97" transform="rotate(-28,96,88)"/><ellipse cx="52" cy="112" rx="12" ry="9" fill="'+c2+'" opacity="0.93"/><ellipse cx="52" cy="112" rx="5.5" ry="4" fill="'+c1+'" opacity="0.97"/></svg>'; return 'background-color:'+c1+';background-image:url("data:image/svg+xml,'+encodeURIComponent(s)+'");background-size:130px 130px;background-repeat:repeat'; } },
+      { id: 'tropical', label: 'Tropical',   preview: (c1)     => { var s='<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><ellipse cx="-5" cy="110" rx="20" ry="88" fill="rgba(0,145,55,0.88)" transform="rotate(-38,-5,110)"/><ellipse cx="225" cy="85" rx="17" ry="78" fill="rgba(0,165,65,0.82)" transform="rotate(42,225,85)"/><ellipse cx="110" cy="225" rx="16" ry="82" fill="rgba(0,135,52,0.85)" transform="rotate(16,110,225)"/><ellipse cx="35" cy="-5" rx="13" ry="70" fill="rgba(0,155,60,0.78)" transform="rotate(-22,35,-5)"/><circle cx="78" cy="68" r="15" fill="rgba(255,55,100,0.92)"/><circle cx="78" cy="68" r="5.5" fill="rgba(255,210,0,0.97)"/><circle cx="152" cy="152" r="13" fill="rgba(255,140,0,0.9)"/><circle cx="152" cy="152" r="5" fill="rgba(255,235,0,0.97)"/></svg>'; return 'background-color:'+c1+';background-image:url("data:image/svg+xml,'+encodeURIComponent(s)+'");background-size:cover'; } },
       { id: 'marble',   label: 'Marble',     preview: (c1, c2) => 'background:linear-gradient(105deg,' + c1 + ' 0%,' + c2 + ' 20%,rgba(255,255,255,.2) 30%,' + c2 + ' 40%,' + c1 + ' 60%,rgba(255,255,255,.1) 70%,' + c2 + ' 80%,' + c1 + ' 100%)' },
       { id: 'carbon',   label: 'Carbon',     preview: ()       => 'background:#1a1a1a;background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,.05) 2px,rgba(255,255,255,.05) 4px),repeating-linear-gradient(-45deg,transparent,transparent 2px,rgba(255,255,255,.07) 2px,rgba(255,255,255,.07) 4px)' },
       { id: 'wood',     label: 'Wood Grain', preview: ()       => 'background:linear-gradient(170deg,#8B5E3C 0%,#A0714F 15%,#7a4f2d 30%,#9a6540 45%,#b07848 60%,#8a5c38 75%,#a06840 100%)' },
-      { id: 'america',  label: '🇺🇸 250th',  preview: ()       => 'background:linear-gradient(180deg,#B22234 0%,#B22234 15%,#fff 15%,#fff 30%,#B22234 30%,#B22234 45%,#fff 45%,#fff 60%,#B22234 60%,#B22234 75%,#fff 75%,#fff 90%,#B22234 90%,#B22234 100%)' },
+      { id: 'custom',   label: '📷 Your Photo', preview: (c1, c2, bgUrl) => bgUrl ? 'background-image:url('+bgUrl+');background-size:cover;background-position:center' : 'background:linear-gradient(135deg,#667eea,#764ba2);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 1px,transparent 0,transparent 50%);background-size:auto,8px 8px' },
     ];
 
     function buildPatternGrid() {
@@ -604,18 +613,38 @@ exports.handler = async () => {
       const c1 = document.getElementById('themeColor1').value;
       const c2 = document.getElementById('themeColor2').value;
       grid.innerHTML = PATTERNS.map(p => {
-        const style = p.preview(c1, c2);
+        const style = p.id === 'custom' ? p.preview(c1, c2, _bgImageUrl) : p.preview(c1, c2);
         return '<div class="pattern-swatch' + (p.id === _selectedPattern ? ' selected' : '') + '" style="' + style + '" onclick="selectPattern(\\'' + p.id + '\\')" title="' + p.label + '"><span>' + p.label + '</span></div>';
       }).join('');
     }
 
     function selectPattern(id) {
       _selectedPattern = id;
+      var sec = document.getElementById('bgUploadSection');
+      if (sec) sec.style.display = id === 'custom' ? '' : 'none';
       buildPatternGrid();
     }
 
     function refreshSwatchColors() {
-      // update existing swatches without rebuilding (for live color feedback)
+      buildPatternGrid();
+    }
+
+    function handleBgImageUpload(e) {
+      var file = e.target.files[0]; if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        _bgImageBase64 = ev.target.result; _bgImageUrl = ev.target.result;
+        var prev = document.getElementById('bgImagePreview');
+        if (prev) prev.innerHTML = '<img src="' + _bgImageBase64 + '" style="width:100%;max-height:110px;object-fit:cover;border-radius:8px;margin-top:6px;" />';
+        buildPatternGrid();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeBgImage() {
+      _bgImageBase64 = null; _bgImageUrl = null;
+      var prev = document.getElementById('bgImagePreview');
+      if (prev) prev.innerHTML = '';
       buildPatternGrid();
     }
 
@@ -647,6 +676,10 @@ exports.handler = async () => {
     function populateThemeControls(theme) {
       if (!theme) { buildPatternGrid(); return; }
       _selectedPattern   = theme.pattern   || 'solid';
+      _bgImageUrl = p.background_image || null; _bgImageBase64 = null;
+      var bgSec = document.getElementById('bgUploadSection');
+      if (bgSec) bgSec.style.display = _selectedPattern === 'custom' ? '' : 'none';
+      if (_bgImageUrl) { var pv = document.getElementById('bgImagePreview'); if (pv) pv.innerHTML = '<img src="' + _bgImageUrl + '" style="width:100%;max-height:110px;object-fit:cover;border-radius:8px;margin-top:6px;" />'; }
       _selectedCardStyle = theme.cardStyle || 'rounded';
       if (theme.color1) document.getElementById('themeColor1').value = theme.color1;
       if (theme.color2) document.getElementById('themeColor2').value = theme.color2;
@@ -1143,6 +1176,7 @@ exports.handler = async () => {
         videoUrl:     document.getElementById('fieldVideo').value.trim(),
         ownerName:    document.getElementById('fieldOwnerName').value.trim(),
         contentBlocks: getContentBlocks(),
+        bgImageBase64: (_selectedPattern === 'custom' && _bgImageBase64) ? _bgImageBase64 : null,
         socials: {
           instagram: document.getElementById('socInstagram').value.trim(),
           facebook:  document.getElementById('socFacebook').value.trim(),

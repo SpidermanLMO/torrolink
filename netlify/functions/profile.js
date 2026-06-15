@@ -71,38 +71,18 @@ function getThemeCSS(theme = {}) {
   const patterns = {
     solid: `background: ${color1};`,
     gradient: `background: linear-gradient(135deg, ${color1} 0%, ${color2} 100%);`,
-    camo: `background-color: ${color1};
-      background-image:
-        radial-gradient(ellipse 60px 40px at 20% 30%, ${adjustAlpha(color2, 0.8)} 0%, transparent 70%),
-        radial-gradient(ellipse 40px 60px at 70% 60%, ${adjustAlpha(color2, 0.7)} 0%, transparent 70%),
-        radial-gradient(ellipse 50px 35px at 50% 10%, #2d4a1e80 0%, transparent 70%),
-        radial-gradient(ellipse 35px 50px at 10% 70%, #1a3a1280 0%, transparent 70%),
-        radial-gradient(ellipse 45px 30px at 80% 20%, #4a6a2880 0%, transparent 70%),
-        radial-gradient(ellipse 30px 45px at 40% 80%, #2a4a1a80 0%, transparent 70%);`,
-    leopard: `background-color: ${color1};
-      background-image:
-        radial-gradient(ellipse 12px 10px at 15% 20%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 8px 12px at 17% 18%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 10px 8px at 13% 23%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 12px 10px at 45% 55%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 8px 12px at 47% 53%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 10px 8px at 43% 58%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 12px 10px at 75% 25%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 8px 12px at 77% 23%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 12px 10px at 25% 75%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 8px 12px at 27% 73%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 12px 10px at 60% 85%, ${color2} 60%, transparent 100%),
-        radial-gradient(ellipse 8px 12px at 62% 83%, ${color2} 60%, transparent 100%);`,
-    tropical: `background-color: ${color1};
-      background-image:
-        radial-gradient(ellipse 30px 60px at 10% 50%, #00805080 0%, transparent 70%),
-        radial-gradient(ellipse 20px 50px at 90% 30%, #00804080 0%, transparent 70%),
-        radial-gradient(ellipse 25px 55px at 50% 90%, #00806080 0%, transparent 70%),
-        radial-gradient(circle 8px at 30% 20%, #ff6b9d90 0%, transparent 70%),
-        radial-gradient(circle 6px at 70% 70%, #ff9f4390 0%, transparent 70%),
-        radial-gradient(circle 7px at 20% 80%, #ffcd3c90 0%, transparent 70%),
-        radial-gradient(circle 5px at 80% 10%, #ff6b6b90 0%, transparent 70%),
-        radial-gradient(circle 9px at 55% 40%, #c44dff80 0%, transparent 70%);`,
+    camo: (() => {
+      const camoSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><ellipse cx="45" cy="35" rx="55" ry="40" fill="rgba(0,0,0,0.42)" transform="rotate(-20,45,35)"/><ellipse cx="155" cy="80" rx="62" ry="44" fill="rgba(20,40,5,0.66)"/><ellipse cx="25" cy="158" rx="48" ry="64" fill="rgba(0,0,0,0.36)" transform="rotate(12,25,158)"/><ellipse cx="172" cy="168" rx="58" ry="40" fill="rgba(35,25,5,0.58)"/><ellipse cx="118" cy="28" rx="44" ry="58" fill="rgba(10,30,0,0.5)" transform="rotate(25,118,28)"/><ellipse cx="98" cy="118" rx="52" ry="38" fill="rgba(0,0,0,0.38)" transform="rotate(-8,98,118)"/><ellipse cx="162" cy="132" rx="36" ry="48" fill="rgba(45,32,5,0.52)" transform="rotate(18,162,132)"/></svg>`;
+      return `background-color: ${color1}; background-image: url("data:image/svg+xml,${encodeURIComponent(camoSvg)}"); background-size: cover;`;
+    })(),
+    leopard: (() => {
+      const lSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130"><ellipse cx="22" cy="20" rx="15" ry="11" fill="${color2}" opacity="0.93"/><ellipse cx="22" cy="20" rx="7" ry="5" fill="${color1}" opacity="0.97"/><ellipse cx="72" cy="62" rx="11" ry="16" fill="${color2}" opacity="0.93" transform="rotate(22,72,62)"/><ellipse cx="72" cy="62" rx="5" ry="8" fill="${color1}" opacity="0.97" transform="rotate(22,72,62)"/><ellipse cx="104" cy="18" rx="13" ry="10" fill="${color2}" opacity="0.93" transform="rotate(-18,104,18)"/><ellipse cx="104" cy="18" rx="6" ry="4.5" fill="${color1}" opacity="0.97" transform="rotate(-18,104,18)"/><ellipse cx="28" cy="85" rx="10" ry="14" fill="${color2}" opacity="0.93" transform="rotate(12,28,85)"/><ellipse cx="28" cy="85" rx="4.5" ry="6.5" fill="${color1}" opacity="0.97" transform="rotate(12,28,85)"/><ellipse cx="96" cy="88" rx="14" ry="10" fill="${color2}" opacity="0.93" transform="rotate(-28,96,88)"/><ellipse cx="96" cy="88" rx="6.5" ry="4.5" fill="${color1}" opacity="0.97" transform="rotate(-28,96,88)"/><ellipse cx="52" cy="112" rx="12" ry="9" fill="${color2}" opacity="0.93"/><ellipse cx="52" cy="112" rx="5.5" ry="4" fill="${color1}" opacity="0.97"/><ellipse cx="118" cy="108" rx="9" ry="13" fill="${color2}" opacity="0.93" transform="rotate(15,118,108)"/><ellipse cx="118" cy="108" rx="4" ry="6" fill="${color1}" opacity="0.97" transform="rotate(15,118,108)"/></svg>`;
+      return `background-color: ${color1}; background-image: url("data:image/svg+xml,${encodeURIComponent(lSvg)}"); background-size: 130px 130px; background-repeat: repeat;`;
+    })(),
+    tropical: (() => {
+      const tSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><ellipse cx="-5" cy="110" rx="20" ry="88" fill="rgba(0,145,55,0.88)" transform="rotate(-38,-5,110)"/><ellipse cx="225" cy="85" rx="17" ry="78" fill="rgba(0,165,65,0.82)" transform="rotate(42,225,85)"/><ellipse cx="110" cy="225" rx="16" ry="82" fill="rgba(0,135,52,0.85)" transform="rotate(16,110,225)"/><ellipse cx="35" cy="-5" rx="13" ry="70" fill="rgba(0,155,60,0.78)" transform="rotate(-22,35,-5)"/><ellipse cx="185" cy="220" rx="18" ry="80" fill="rgba(0,150,58,0.83)" transform="rotate(32,185,220)"/><ellipse cx="155" cy="45" rx="14" ry="68" fill="rgba(0,140,50,0.76)" transform="rotate(-12,155,45)"/><circle cx="78" cy="68" r="15" fill="rgba(255,55,100,0.92)"/><circle cx="78" cy="68" r="5.5" fill="rgba(255,210,0,0.97)"/><circle cx="152" cy="152" r="13" fill="rgba(255,140,0,0.9)"/><circle cx="152" cy="152" r="5" fill="rgba(255,235,0,0.97)"/><circle cx="118" cy="28" r="8" fill="rgba(255,75,155,0.85)"/><circle cx="118" cy="28" r="3" fill="rgba(255,230,0,0.95)"/><circle cx="42" cy="168" r="7" fill="rgba(255,185,0,0.88)"/><circle cx="42" cy="168" r="2.5" fill="rgba(255,245,0,0.97)"/></svg>`;
+      return `background-color: ${color1}; background-image: url("data:image/svg+xml,${encodeURIComponent(tSvg)}"); background-size: cover;`;
+    })(),
     marble: `background: linear-gradient(
         105deg,
         ${color1} 0%,
@@ -146,41 +126,16 @@ function getThemeCSS(theme = {}) {
         #a06840 88%,
         #7a4e2c 100%
       );`,
-    america: `background: linear-gradient(
-        180deg,
-        #B22234 0%, #B22234 8%,
-        #FFFFFF 8%, #FFFFFF 16%,
-        #B22234 16%, #B22234 24%,
-        #FFFFFF 24%, #FFFFFF 32%,
-        #B22234 32%, #B22234 40%,
-        #FFFFFF 40%, #FFFFFF 48%,
-        #B22234 48%, #B22234 56%,
-        #FFFFFF 56%, #FFFFFF 64%,
-        #B22234 64%, #B22234 72%,
-        #FFFFFF 72%, #FFFFFF 80%,
-        #B22234 80%, #B22234 88%,
-        #FFFFFF 88%, #FFFFFF 100%
-      );
-      position: relative;`,
+
   };
 
-  const headerBg = patterns[pattern] || patterns.solid;
+  const headerBg = p.background_image
+    ? `background-image: url('${escHtml(p.background_image)}'); background-size: cover; background-position: center; background-repeat: no-repeat;`
+    : (patterns[pattern] || patterns.solid);
 
-  // America's 250th — star canton overlay handled in HTML
-  // Proper US flag star canton: 9 rows alternating 6 and 5 stars = 50 total
-  const americaOverlay = pattern === "america"
-    ? (() => {
-        const xs6 = [5.3, 15.9, 26.5, 37.1, 47.7, 58.3];
-        const xs5 = [10.6, 21.2, 31.8, 42.4, 53.0];
-        const ys  = [5.5, 11, 16.5, 22, 27.5, 33, 38.5, 44, 49.5];
-        const stars = [xs6,xs5,xs6,xs5,xs6,xs5,xs6,xs5,xs6].map((xs,i) =>
-          xs.map(x => `<circle cx="${x}" cy="${ys[i]}" r="2.1" fill="white"/>`).join("")
-        ).join("");
-        return `<div class="star-canton"><svg viewBox="0 0 64 55" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">${stars}</svg></div>`;
-      })()
-    : "";
 
-  return { headerBg, cardBg, cardBorder, textPri, textSec, pageBg, linkBg, linkBorder, linkColor, socBg, socBorder, socColor, cardRadius, darkMode, americaOverlay, pattern };
+
+  return { headerBg, cardBg, cardBorder, textPri, textSec, pageBg, linkBg, linkBorder, linkColor, socBg, socBorder, socColor, cardRadius, darkMode, pattern };
 }
 
 function adjustAlpha(hex, alpha) {
@@ -192,6 +147,25 @@ function adjustAlpha(hex, alpha) {
 }
 
 // ── SOCIAL ICONS (SVG, no emojis) ────────────────────────────────────────────
+function normalizeSocialUrl(platform, val) {
+  if (!val) return '';
+  val = String(val).trim();
+  if (!val) return '';
+  if (/^https?:\/\//i.test(val)) return val;
+  const handle = val.replace(/^@/, '');
+  const bases = {
+    instagram: 'https://www.instagram.com/',
+    tiktok:    'https://www.tiktok.com/@',
+    twitter:   'https://x.com/',
+    facebook:  'https://www.facebook.com/',
+    youtube:   'https://www.youtube.com/',
+    linkedin:  'https://www.linkedin.com/in/',
+    yelp:      'https://www.yelp.com/biz/',
+    google:    'https://www.google.com/maps/search/?q=',
+  };
+  return (bases[platform] || 'https://') + handle;
+}
+
 function getSocialIcon(platform) {
   const i = {
     instagram: ['#E1306C','<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>'],
@@ -276,7 +250,8 @@ function renderProfile(p, reviews = []) {
     .filter(([, url]) => url)
     .map(([platform, url]) => {
       const label = socialLabels[platform] || platform;
-      return `<a href="${escHtml(url)}" target="_blank" rel="noopener" class="social-btn">
+      const href = normalizeSocialUrl(platform, url);
+      return `<a href="${escHtml(href)}" target="_blank" rel="noopener" class="social-btn">
         ${getSocialIcon(platform)}
         <span class="soc-name">${label}</span>
       </a>`;
@@ -675,8 +650,7 @@ function renderProfile(p, reviews = []) {
 <body>
 
   <div class="hero-band${(t.pattern === "carbon" || t.pattern === "wood") ? " dark-header" : ""}">
-    ${t.pattern === "america" ? `<div class="star-canton">${Array(50).fill('<span>★</span>').join("")}</div>` : ""}
-    ${t.pattern === "america" ? `<div class="holiday-badge">🇺🇸 America's 250th</div><br>` : ""}
+
 
     ${heroPhotos}
 

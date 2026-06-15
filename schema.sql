@@ -176,3 +176,6 @@ GRANT SELECT, INSERT ON reviews TO authenticated;
 
 -- ── Content blocks column on profiles ───────────────────────────
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS content_blocks JSONB DEFAULT '[]';
+
+-- Background image for custom theme
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS background_image text;

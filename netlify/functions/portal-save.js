@@ -64,6 +64,7 @@ exports.handler = async (event) => {
     leadFormCheckboxes,
     logoBase64,
     headshotBase64,
+    bgImageBase64,
   } = body;
 
   if (!profileId) return respond(400, { error: "profileId required" });
@@ -121,8 +122,11 @@ exports.handler = async (event) => {
   let logoUrl     = profile.logo_url  || null;
   let photoUrl    = profile.photo_url || null;
 
-  if (logoBase64)     { const url = await uploadImage(logoBase64,     `logos/${profileId}`);     if (url) logoUrl  = url; }
+  if (logoBase64)     { const url = await uploadImage(logoBase64,     `logos/${profileId}`);       if (url) logoUrl  = url; }
   if (headshotBase64) { const url = await uploadImage(headshotBase64, `headshots/${profileId}`); if (url) photoUrl = url; }
+
+  let backgroundImageUrl = profile.background_image || null;
+  if (bgImageBase64) { const url = await uploadImage(bgImageBase64, `backgrounds/${profileId}`); if (url) backgroundImageUrl = url; }
 
   // ── 5. Update profile ────────────────────────────
   const updates = {
@@ -148,6 +152,7 @@ exports.handler = async (event) => {
     lead_form_checkboxes: Array.isArray(leadFormCheckboxes) ? leadFormCheckboxes : [],
     logo_url:             logoUrl,
     photo_url:            photoUrl,
+    background_image:     (body.theme && body.theme.pattern === 'custom') ? backgroundImageUrl : null,
     updated_at:    new Date().toISOString(),
   };
 
