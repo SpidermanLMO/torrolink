@@ -18,6 +18,7 @@ exports.handler = async () => {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.min.js"></script>
   <style>
     .links-list { list-style: none; padding: 0; margin: 0 0 12px; }
     .links-list li {
@@ -73,6 +74,12 @@ exports.handler = async () => {
       color: #666; cursor: pointer; transition: all 0.15s;
     }
     .tab-btn.active { background: #0f6b6b; color: #fff; border-color: #0f6b6b; }
+    .qr-dot-btn {
+      padding: 7px 14px; border-radius: 8px; border: 1.5px solid #e2e6ea;
+      background: none; font-family: inherit; font-size: 0.85rem; font-weight: 600;
+      color: #666; cursor: pointer; transition: all 0.15s;
+    }
+    .qr-dot-btn.active { background: #0f6b6b; color: #fff; border-color: #0f6b6b; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
@@ -425,12 +432,28 @@ exports.handler = async () => {
 
       <!-- QR TAB -->
       <div id="tab-qr" class="tab-panel">
-        <div class="tl-card" style="text-align:center;">
-          <h2 style="text-align:left;">Your QR code</h2>
-          <p style="font-size:0.9rem;color:#666;margin-bottom:20px;text-align:left;">This is your permanent QR code. Right-click → Save image to download.</p>
-          <div id="qrPlaceholder" style="background:#f4f6f8;border-radius:12px;padding:40px;margin-bottom:20px;">
-            <p style="color:#888;">Loading your QR code…</p>
+        <div class="tl-card">
+          <h2>Your QR code</h2>
+          <p style="font-size:0.9rem;color:#666;margin-bottom:20px;">Scan this to go to your profile page. Download and print it, share it digitally, or use it anywhere.</p>
+
+          <div style="margin-bottom:20px;">
+            <p style="font-size:0.8rem;font-weight:700;color:#444;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">Dot style</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="setQRDotStyle('square')"        id="qrDotSquare"       class="qr-dot-btn active">&#9632; Square</button>
+              <button onclick="setQRDotStyle('rounded')"       id="qrDotRounded"      class="qr-dot-btn">&#9673; Rounded</button>
+              <button onclick="setQRDotStyle('dots')"          id="qrDotDots"         class="qr-dot-btn">&#9679; Dots</button>
+              <button onclick="setQRDotStyle('extra-rounded')" id="qrDotExtraRounded" class="qr-dot-btn">&#9830; Smooth</button>
+            </div>
           </div>
+
+          <div style="display:flex;justify-content:center;margin-bottom:16px;">
+            <div id="qrCanvas" style="border-radius:12px;overflow:hidden;line-height:0;"></div>
+          </div>
+
+          <div style="text-align:center;margin-bottom:20px;">
+            <button onclick="downloadQR()" class="tl-btn" style="background:none;border:1.5px solid #0f6b6b;color:#0f6b6b;padding:8px 24px;">&#8675; Download QR</button>
+          </div>
+
           <div id="profileUrlRow" style="text-align:left;background:#edf8f8;border-radius:8px;padding:14px 16px;">
             <p style="font-size:0.8rem;color:#888;margin-bottom:4px;">Your profile page URL</p>
             <a id="profileUrlLink" href="#" style="color:#0f6b6b;font-weight:700;word-break:break-all;"></a>
@@ -462,6 +485,10 @@ exports.handler = async () => {
     let _customer     = null;
     let _logoBase64   = null;
     let _headshotBase64 = null;
+    let _qrCode       = null;
+    let _qrDotStyle   = 'square';
+    let _qrTargetUrl  = '';
+    let _qrLogoUrl    = null;
     let _selectedPattern = 'solid';
     let _selectedCardStyle = 'rounded';
 
@@ -789,10 +816,9 @@ exports.handler = async () => {
       populateThemeControls(p.theme || null);
 
       // QR tab
-      const qrUrl = window.location.origin + '/q/' + p.code;
-      document.getElementById('qrPlaceholder').innerHTML =
-        '<img src="https://api.qrserver.com/v1/create-qr-code/?data=' + encodeURIComponent(qrUrl) +
-        '&size=300x300&color=0a4d4d&margin=2" style="border-radius:8px;max-width:240px;" alt="Your QR code" />';
+      _qrTargetUrl = window.location.origin + '/q/' + p.code;
+      _qrLogoUrl   = p.logo_url || null;
+      renderQRCode();
       const profileUrl = window.location.origin + '/p/' + p.handle;
       const link = document.getElementById('profileUrlLink');
       link.href = profileUrl; link.textContent = profileUrl;
@@ -843,31 +869,82 @@ exports.handler = async () => {
     function handleImageUpload(input, type) {
       const file = input.files[0];
       if (!file) return;
-      if (file.size > 4 * 1024 * 1024) { alert('Image must be under 4 MB.'); return; }
+      if (file.size > 8 * 1024 * 1024) { alert('Image must be under 8 MB.'); return; }
       const reader = new FileReader();
       reader.onload = (e) => {
-        const b64 = e.target.result;
-        if (type === 'headshot') {
-          _headshotBase64 = b64;
-          const el = document.getElementById('headshotPreview');
-          if (el.tagName === 'IMG') { el.src = b64; }
-          else {
-            const img = document.createElement('img');
-            img.src = b64; img.className = 'tl-avatar'; img.id = 'headshotPreview';
-            el.replaceWith(img);
+        // Compress: resize to max 900px, JPEG 0.85 — keeps base64 payload small
+        const imgEl = new Image();
+        imgEl.onload = () => {
+          const MAX = 900;
+          let w = imgEl.width, h = imgEl.height;
+          if (w > MAX || h > MAX) {
+            if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+            else       { w = Math.round(w * MAX / h); h = MAX; }
           }
-        } else {
-          _logoBase64 = b64;
-          const el = document.getElementById('avatarPreview');
-          if (el.tagName === 'IMG') { el.src = b64; }
-          else {
-            const img = document.createElement('img');
-            img.src = b64; img.className = 'tl-avatar'; img.id = 'avatarPreview';
-            el.replaceWith(img);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(imgEl, 0, 0, w, h);
+          const b64 = canvas.toDataURL('image/jpeg', 0.85);
+          if (type === 'headshot') {
+            _headshotBase64 = b64;
+            const el = document.getElementById('headshotPreview');
+            if (el.tagName === 'IMG') { el.src = b64; }
+            else {
+              const img = document.createElement('img');
+              img.src = b64; img.className = 'tl-avatar'; img.id = 'headshotPreview';
+              el.replaceWith(img);
+            }
+          } else {
+            _logoBase64 = b64;
+            _qrLogoUrl  = b64;  // update QR logo preview live
+            const el = document.getElementById('avatarPreview');
+            if (el.tagName === 'IMG') { el.src = b64; }
+            else {
+              const img = document.createElement('img');
+              img.src = b64; img.className = 'tl-avatar'; img.id = 'avatarPreview';
+              el.replaceWith(img);
+            }
+            renderQRCode();
           }
-        }
+        };
+        imgEl.src = e.target.result;
       };
       reader.readAsDataURL(file);
+    }
+
+    // ── QR code rendering ────────────────────────────────────
+    function renderQRCode() {
+      const container = document.getElementById('qrCanvas');
+      if (!container || !_qrTargetUrl) return;
+      container.innerHTML = '';
+      const opts = {
+        width: 260, height: 260,
+        data: _qrTargetUrl,
+        dotsOptions:          { color: '#0a4d4d', type: _qrDotStyle },
+        cornersSquareOptions: { color: '#0a4d4d', type: 'extra-rounded' },
+        cornersDotOptions:    { color: '#0a4d4d' },
+        backgroundOptions:    { color: '#ffffff' },
+        qrOptions:            { errorCorrectionLevel: 'H' },
+      };
+      if (_qrLogoUrl) {
+        opts.image = _qrLogoUrl;
+        opts.imageOptions = { hideBackgroundDots: true, imageSize: 0.33, margin: 4 };
+      }
+      _qrCode = new QRCodeStyling(opts);
+      _qrCode.append(container);
+    }
+
+    function setQRDotStyle(style) {
+      _qrDotStyle = style;
+      document.querySelectorAll('.qr-dot-btn').forEach(b => b.classList.remove('active'));
+      const idMap = { 'square': 'qrDotSquare', 'rounded': 'qrDotRounded', 'dots': 'qrDotDots', 'extra-rounded': 'qrDotExtraRounded' };
+      const btn = document.getElementById(idMap[style]);
+      if (btn) btn.classList.add('active');
+      renderQRCode();
+    }
+
+    function downloadQR() {
+      if (_qrCode) _qrCode.download({ name: 'torrolink-qr', extension: 'png' });
     }
 
     // ── Save profile ───────────────────────────────────────────────

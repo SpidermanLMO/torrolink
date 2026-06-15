@@ -113,6 +113,9 @@ alter table profiles add column if not exists theme      jsonb default '{}';   -
 alter table profiles add column if not exists owner_name text;                 -- rep/owner name shown under headshot
 -- Note: photo_url already exists in the main table definition above
 
+-- Added qr_url for branded QR storage (stripe-webhook generates & stores QR PNG)
+alter table profiles add column if not exists qr_url text;
+
 -- ── INDEXES ───────────────────────────────────────────────────────────────────
 create index if not exists idx_profiles_handle     on profiles(handle);
 create index if not exists idx_profiles_code       on profiles(code);
@@ -143,38 +146,4 @@ create policy "Anon can submit leads"
   on leads for insert
   with check (true);
 
--- ── SUPABASE AUTH — PORTAL MAGIC LINK ────────────────────────────────────────
--- In Supabase Dashboard → Authentication → URL Configuration, add:
---   Site URL:          https://torrolink.com
---   Redirect URLs:     https://torrolink.com/portal
---                      https://torrolink.com/metrics/*
-
--- ── UPDATED_AT TRIGGER ────────────────────────────────────────────────────────
-create or replace function update_updated_at()
-returns trigger as $$
-begin
-  new.updated_at = now();
-  return new;
-end;
-$$ language plpgsql;
-
-create trigger profiles_updated_at
-  before update on profiles
-  for each row execute function update_updated_at();
-
--- ================================================
--- DONE. After running this, also do:
---
--- 1. Add env vars to Netlify:
---      SUPABASE_URL         → your project URL
---      SUPABASE_ANON_KEY    → your anon/public key
---      SUPABASE_SERVICE_KEY → your service_role key
---      STRIPE_SECRET_KEY    → from Stripe dashboard
---      STRIPE_WEBHOOK_SECRET → from Stripe webhook endpoint
---      RESEND_API_KEY       → from resend.com
---      DEPLOY_URL           → https://torrolink.com
---
--- 2. Create a Supabase Storage bucket named "qr-assets":
---      Go to Storage → New bucket → Name: qr-assets → Public: false
---      This is where branded QR PNGs are stored after approval.
--- ================================================
+-- Customers: authenticated users can read their own record (needed f
