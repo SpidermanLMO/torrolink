@@ -1232,9 +1232,9 @@ exports.handler = async () => {
         '</div>' +
         (r.review_text?'<p style="font-size:0.88rem;color:#444;margin:4px 0 12px;line-height:1.55;font-style:italic;">&ldquo;'+escAttr(r.review_text)+'&rdquo;</p>':'') +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
-          '<button onclick="reviewAction(''+r.id+'',''+hideAction+'')" class="rev-action-btn" style="background:'+(r.is_visible?'#fee2e2':'#d1fae5')+';color:'+(r.is_visible?'#991b1b':'#065f46')+';cursor:pointer;">'+hideLabel+'</button>' +
-          '<button onclick="reviewAction(''+r.id+'',''+featAction+'')" class="rev-action-btn" style="background:#fef3c7;color:#92400e;cursor:pointer;">'+featLabel+'</button>' +
-          '<button onclick="reviewAction(''+r.id+'','delete')" class="rev-action-btn" style="background:#fee2e2;color:#991b1b;cursor:pointer;">Delete</button>' +
+          '<button data-rid="'+r.id+'" data-action="'+hideAction+'" onclick="reviewAction(this.dataset.rid,this.dataset.action)" class="rev-action-btn" style="background:'+(r.is_visible?'#fee2e2':'#d1fae5')+';color:'+(r.is_visible?'#991b1b':'#065f46')+';cursor:pointer;">'+hideLabel+'</button>' +
+          '<button data-rid="'+r.id+'" data-action="'+featAction+'" onclick="reviewAction(this.dataset.rid,this.dataset.action)" class="rev-action-btn" style="background:#fef3c7;color:#92400e;cursor:pointer;">'+featLabel+'</button>' +
+          '<button data-rid="'+r.id+'" data-action="delete" onclick="reviewAction(this.dataset.rid,this.dataset.action)" class="rev-action-btn" style="background:#fee2e2;color:#991b1b;cursor:pointer;">Delete</button>' +
         '</div></div>'
       );
     }
