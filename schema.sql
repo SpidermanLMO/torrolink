@@ -147,3 +147,32 @@ create policy "Anon can submit leads"
   with check (true);
 
 -- Customers: authenticated users can read their own record (needed f
+
+-- ── Reviews table ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS reviews (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id    uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  reviewer_name text NOT NULL,
+  rating        int  NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  review_text   text,
+  is_visible    bool NOT NULL DEFAULT true,
+  is_featured   bool NOT NULL DEFAULT false,
+  submitted_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS reviews_profile_id_idx ON reviews(profile_id, is_visible);
+
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+
+-- Public can read visible reviews (anon client used in profile.js)
+CREATE POLICY IF NOT EXISTS "public read visible reviews"
+  ON reviews FOR SELECT USING (is_visible = true);
+
+-- Anyone can submit a review
+CREATE POLICY IF NOT EXISTS "public insert reviews"
+  ON reviews FOR INSERT WITH CHECK (true);
+
+GRANT SELECT, INSERT ON reviews TO anon;
+GRANT SELECT, INSERT ON reviews TO authenticated;
+
+-- ── Content blocks column on profiles ───────────────────────────
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS content_blocks JSONB DEFAULT '[]';

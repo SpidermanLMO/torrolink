@@ -31,7 +31,27 @@ exports.handler = async () => {
       transition: color 0.15s, border-color 0.15s;
     }
     .links-list .rm-btn:hover { color: #c0392b; border-color: #c0392b; }
-    .add-link-btn {
+        .content-type-btn {
+      padding: 7px 13px; border-radius: 20px; border: 1.5px solid #e0e0e8;
+      background: #fff; cursor: pointer; font-size: 0.82rem; font-weight: 600;
+      color: #555; transition: all 0.15s; font-family: inherit;
+    }
+    .content-type-btn.active { background: #0f6b6b; color: #fff; border-color: #0f6b6b; }
+    .tl-inline-input {
+      padding: 10px 12px; border: 1.5px solid #e0e0e8; border-radius: 10px;
+      font-size: 0.9rem; font-family: inherit; outline: none;
+      transition: border-color 0.2s; background: #fafafa; box-sizing: border-box;
+    }
+    .tl-inline-input:focus { border-color: #0f6b6b; }
+    .rev-action-btn {
+      padding: 5px 12px; border-radius: 20px; border: none;
+      font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+    .content-type-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 20px; margin-right: 6px;
+    }
+.add-link-btn {
       background: none; border: 1.5px dashed #c0d8d8; border-radius: 8px;
       color: #0f6b6b; font-weight: 600; font-size: 0.9rem; cursor: pointer;
       padding: 9px 16px; width: 100%; font-family: inherit;
@@ -74,6 +94,12 @@ exports.handler = async () => {
       color: #666; cursor: pointer; transition: all 0.15s;
     }
     .tab-btn.active { background: #0f6b6b; color: #fff; border-color: #0f6b6b; }
+    .pl-btn {
+      flex: 1; padding: 10px 8px; border-radius: 10px; border: 1.5px solid #e2e6ea;
+      background: none; font-family: inherit; color: #666; cursor: pointer;
+      text-align: center; transition: all 0.15s; line-height: 1.4;
+    }
+    .pl-btn.active { background: #0f6b6b; color: #fff; border-color: #0f6b6b; }
     .qr-dot-btn {
       padding: 7px 14px; border-radius: 8px; border: 1.5px solid #e2e6ea;
       background: none; font-family: inherit; font-size: 0.85rem; font-weight: 600;
@@ -250,7 +276,8 @@ exports.handler = async () => {
         <button class="tab-btn" onclick="switchTab('links')">Links &amp; Socials</button>
         <button class="tab-btn" onclick="switchTab('themes')">🎨 Themes</button>
         <button class="tab-btn" onclick="switchTab('qr')">My QR Code</button>
-        <button class="tab-btn" onclick="switchTab('upgrade')" style="color:#f4752b;border-color:#f4752b;">⬆ Upgrade</button>
+                <button class="tab-btn" onclick="switchTab('reviews')">⭐ Reviews</button>
+<button class="tab-btn" onclick="switchTab('upgrade')" style="color:#f4752b;border-color:#f4752b;">⬆ Upgrade</button>
       </div>
 
       <!-- PROFILE TAB -->
@@ -264,7 +291,7 @@ exports.handler = async () => {
             <div>
               <label class="file-btn" for="fileInput">Upload logo</label>
               <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(this,'logo')" />
-              <p style="font-size:0.78rem;color:#999;margin-top:6px;">Your business logo. Shown as first carousel photo.</p>
+              <p style="font-size:0.78rem;color:#999;margin-top:6px;">Your business logo. Used in Logo and Both display styles.</p>
             </div>
           </div>
 
@@ -274,9 +301,26 @@ exports.handler = async () => {
             <div>
               <label class="file-btn" for="headshotInput">Upload headshot</label>
               <input type="file" id="headshotInput" accept="image/*" onchange="handleImageUpload(this,'headshot')" />
-              <p style="font-size:0.78rem;color:#999;margin-top:6px;">Your face or portrait — puts a face to the name.</p>
+              <p style="font-size:0.78rem;color:#999;margin-top:6px;">Your photo or portrait. Used in Photo and Both display styles.</p>
             </div>
           </div>
+          <!-- Photo layout selector -->
+          <div style="margin:4px 0 20px;">
+            <label class="tl-label" style="margin-bottom:10px;display:block;">Display style</label>
+            <div style="display:flex;gap:8px;">
+              <button onclick="setPhotoLayout('logo')"     id="plLogo"     class="pl-btn active" title="Show logo only">
+                <span style="font-size:1.1rem;">🏷</span><br><span style="font-size:0.72rem;">Logo</span>
+              </button>
+              <button onclick="setPhotoLayout('headshot')" id="plHeadshot" class="pl-btn" title="Show your photo only">
+                <span style="font-size:1.1rem;">🙂</span><br><span style="font-size:0.72rem;">Photo</span>
+              </button>
+              <button onclick="setPhotoLayout('both')"     id="plBoth"     class="pl-btn" title="Show logo and photo side by side">
+                <span style="font-size:1.1rem;">⊞</span><br><span style="font-size:0.72rem;">Both</span>
+              </button>
+            </div>
+            <p style="font-size:0.78rem;color:#888;margin-top:8px;">Controls what visitors see first on your profile page.</p>
+          </div>
+
           <div class="tl-field">
             <label>Owner / rep name <span style="color:#999;font-weight:400;">(shown under headshot)</span></label>
             <input type="text" id="fieldOwnerName" placeholder="e.g. Mike Torrence" />
@@ -340,10 +384,44 @@ exports.handler = async () => {
       <!-- LINKS & SOCIALS TAB -->
       <div id="tab-links" class="tab-panel">
         <div class="tl-card">
-          <h2>Custom links</h2>
-          <p style="font-size:0.88rem;color:#666;margin-bottom:16px;">Add any links you want on your profile — booking page, menu, portfolio, etc.</p>
-          <ul id="linksList" class="links-list"></ul>
-          <button class="add-link-btn" onclick="addLink()">+ Add a link</button>
+          <h2>Content</h2>
+          <p style="font-size:0.88rem;color:#666;margin-bottom:14px;">Add links, specials, a menu, or services to your profile page.</p>
+          <ul id="contentList" class="links-list" style="margin-bottom:14px;"></ul>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+            <button class="content-type-btn active" id="ctBtn-link"    onclick="selectContentType('link')">🔗 Link</button>
+            <button class="content-type-btn"         id="ctBtn-update"  onclick="selectContentType('update')">📢 Update</button>
+            <button class="content-type-btn"         id="ctBtn-menu"    onclick="selectContentType('menu')">🍽️ Menu</button>
+            <button class="content-type-btn"         id="ctBtn-service" onclick="selectContentType('service')">⚙️ Service</button>
+          </div>
+          <div id="addForm-link">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;">
+              <input type="text" id="newLinkLabel" placeholder="Label (e.g. Book Now)" class="tl-inline-input" style="flex:1;min-width:120px;" />
+              <input type="url"  id="newLinkUrl"   placeholder="https://..."           class="tl-inline-input" style="flex:2;min-width:160px;" />
+              <button class="add-link-btn" style="white-space:nowrap;flex-shrink:0;" onclick="addContentItem('link')">+ Add</button>
+            </div>
+          </div>
+          <div id="addForm-update" style="display:none;">
+            <input type="text" id="newUpdateTitle" placeholder="Title (e.g. Weekend Special!)" class="tl-inline-input" style="width:100%;margin-bottom:8px;" />
+            <textarea id="newUpdateText" rows="3" placeholder="Describe your update or special offer..." class="tl-inline-input" style="width:100%;resize:vertical;margin-bottom:8px;"></textarea>
+            <button class="add-link-btn" onclick="addContentItem('update')">+ Add Update</button>
+          </div>
+          <div id="addForm-menu" style="display:none;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+              <input type="text" id="newMenuCategory" placeholder="Category (e.g. Appetizers)" class="tl-inline-input" style="flex:1;min-width:130px;" />
+              <input type="text" id="newMenuPrice"    placeholder="Price (e.g. $12.99)"         class="tl-inline-input" style="flex:0 0 120px;" />
+            </div>
+            <input type="text" id="newMenuName" placeholder="Item name (required)" class="tl-inline-input" style="width:100%;margin-bottom:8px;" />
+            <textarea id="newMenuDesc" rows="2" placeholder="Description (optional)" class="tl-inline-input" style="width:100%;resize:vertical;margin-bottom:8px;"></textarea>
+            <button class="add-link-btn" onclick="addContentItem('menu')">+ Add Menu Item</button>
+          </div>
+          <div id="addForm-service" style="display:none;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+              <input type="text" id="newServiceName"  placeholder="Service name (required)" class="tl-inline-input" style="flex:2;min-width:150px;" />
+              <input type="text" id="newServicePrice" placeholder="Price / rate"             class="tl-inline-input" style="flex:1;min-width:110px;" />
+            </div>
+            <textarea id="newServiceDesc" rows="2" placeholder="Description (optional)" class="tl-inline-input" style="width:100%;resize:vertical;margin-bottom:8px;"></textarea>
+            <button class="add-link-btn" onclick="addContentItem('service')">+ Add Service</button>
+          </div>
         </div>
         <div class="tl-card">
           <h2>Social profiles</h2>
@@ -430,6 +508,20 @@ exports.handler = async () => {
         </div>
       </div>
 
+      <!-- REVIEWS TAB -->
+      <div id="tab-reviews" class="tab-panel">
+        <div class="tl-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <h2 style="margin:0;">Customer Reviews</h2>
+            <button onclick="loadReviews()" class="add-link-btn" style="width:auto;padding:8px 14px;margin:0;">↻ Refresh</button>
+          </div>
+          <p style="font-size:0.85rem;color:#666;margin-bottom:18px;">Manage reviews on your profile. Hidden reviews won't appear publicly.</p>
+          <div id="reviewsLoading" style="text-align:center;padding:20px;color:#888;font-size:0.9rem;">Loading reviews…</div>
+          <div id="reviewsList"></div>
+          <p id="reviewsEmpty" style="display:none;text-align:center;color:#888;padding:20px;font-size:0.9rem;">No reviews yet. Share your profile link to collect your first!</p>
+        </div>
+      </div>
+
       <!-- QR TAB -->
       <div id="tab-qr" class="tab-panel">
         <div class="tl-card">
@@ -485,6 +577,8 @@ exports.handler = async () => {
     let _customer     = null;
     let _logoBase64   = null;
     let _headshotBase64 = null;
+    let _photoLayout  = 'logo';
+    let _profileId    = null;
     let _qrCode       = null;
     let _qrDotStyle   = 'square';
     let _qrTargetUrl  = '';
@@ -539,6 +633,7 @@ exports.handler = async () => {
         color2:    document.getElementById('themeColor2').value,
         darkMode:  document.getElementById('darkModeToggle').checked,
         cardStyle: _selectedCardStyle,
+        photoLayout: _photoLayout,
         sections: {
           bio:     document.getElementById('secBio').checked,
           links:   document.getElementById('secLinks').checked,
@@ -566,7 +661,8 @@ exports.handler = async () => {
         if (typeof theme.sections.video   !== 'undefined') document.getElementById('secVideo').checked   = theme.sections.video;
         if (typeof theme.sections.lead    !== 'undefined') document.getElementById('secLead').checked    = theme.sections.lead;
       }
-      buildPatternGrid();
+      if (theme.photoLayout) setPhotoLayout(theme.photoLayout);
+            buildPatternGrid();
     }
 
     // ── Boot ───────────────────────────────────────────────────────
@@ -789,9 +885,13 @@ exports.handler = async () => {
         img.id = 'headshotPreview';
       }
 
-      // Links
-      const links = Array.isArray(p.links) ? p.links : [];
-      links.forEach(l => addLink(l.label, l.url));
+      // Content blocks (new) — falls back to old links array for backward compat
+      var cbArr = (Array.isArray(p.content_blocks) && p.content_blocks.length > 0)
+        ? p.content_blocks
+        : (Array.isArray(p.links) ? p.links : []).map(function(l){
+            return { id: genId(), type: 'link', label: l.label||'', url: l.url||'' };
+          });
+      cbArr.forEach(function(b){ appendContentItem(b); });
 
       // Socials
       const s = p.socials || {};
@@ -816,6 +916,7 @@ exports.handler = async () => {
       populateThemeControls(p.theme || null);
 
       // QR tab
+      _profileId   = p.id || null;
       _qrTargetUrl = window.location.origin + '/q/' + p.code;
       _qrLogoUrl   = p.logo_url || null;
       renderQRCode();
@@ -827,21 +928,92 @@ exports.handler = async () => {
       if (prev) { prev.href = profileUrl; }
     }
 
-    // ── Links management ───────────────────────────────────────────
-    function addLink(label = '', url = '') {
-      const li = document.createElement('li');
+    // ── Content management ────────────────────────────────────────
+    function genId() {
+      return Math.random().toString(36).slice(2,9) + Date.now().toString(36);
+    }
+
+    function selectContentType(type) {
+      ['link','update','menu','service'].forEach(function(t) {
+        var btn  = document.getElementById('ctBtn-'   + t);
+        var form = document.getElementById('addForm-' + t);
+        if (btn)  btn.classList.toggle('active', t === type);
+        if (form) form.style.display = (t === type) ? 'block' : 'none';
+      });
+    }
+
+    function addContentItem(type) {
+      var item;
+      if (type === 'link') {
+        var label = document.getElementById('newLinkLabel').value.trim();
+        var url   = document.getElementById('newLinkUrl').value.trim();
+        if (!label && !url) return;
+        item = { id: genId(), type: 'link', label: label, url: url };
+        document.getElementById('newLinkLabel').value = '';
+        document.getElementById('newLinkUrl').value   = '';
+      } else if (type === 'update') {
+        var title = document.getElementById('newUpdateTitle').value.trim();
+        var text  = document.getElementById('newUpdateText').value.trim();
+        if (!title && !text) return;
+        item = { id: genId(), type: 'update', title: title, text: text };
+        document.getElementById('newUpdateTitle').value = '';
+        document.getElementById('newUpdateText').value  = '';
+      } else if (type === 'menu') {
+        var name = document.getElementById('newMenuName').value.trim();
+        if (!name) { document.getElementById('newMenuName').focus(); return; }
+        item = {
+          id: genId(), type: 'menu',
+          category:    document.getElementById('newMenuCategory').value.trim(),
+          name:        name,
+          price:       document.getElementById('newMenuPrice').value.trim(),
+          description: document.getElementById('newMenuDesc').value.trim(),
+        };
+        ['newMenuName','newMenuCategory','newMenuPrice','newMenuDesc'].forEach(function(id){
+          document.getElementById(id).value = '';
+        });
+      } else if (type === 'service') {
+        var svcName = document.getElementById('newServiceName').value.trim();
+        if (!svcName) { document.getElementById('newServiceName').focus(); return; }
+        item = {
+          id: genId(), type: 'service',
+          name:        svcName,
+          price:       document.getElementById('newServicePrice').value.trim(),
+          description: document.getElementById('newServiceDesc').value.trim(),
+        };
+        ['newServiceName','newServicePrice','newServiceDesc'].forEach(function(id){
+          document.getElementById(id).value = '';
+        });
+      }
+      if (!item) return;
+      appendContentItem(item);
+    }
+
+    function appendContentItem(item) {
+      var colors = { link:'#0f6b6b', update:'#f4752b', menu:'#8b5cf6', service:'#2563eb' };
+      var icons  = { link:'🔗', update:'📢', menu:'🍽️', service:'⚙️' };
+      var summary = '';
+      if (item.type === 'link')    summary = escAttr(item.label||'') + ' → ' + escAttr(item.url||'');
+      if (item.type === 'update')  summary = '<strong>'+escAttr(item.title||'')+'</strong>'+(item.text?' — '+escAttr(item.text).slice(0,55)+'…':'');
+      if (item.type === 'menu')    summary = (item.category?'<em>'+escAttr(item.category)+'</em> · ':'')+'<strong>'+escAttr(item.name||'')+'</strong>'+(item.price?' · '+escAttr(item.price):'');
+      if (item.type === 'service') summary = '<strong>'+escAttr(item.name||'')+'</strong>'+(item.price?' · '+escAttr(item.price):'');
+      var li = document.createElement('li');
+      li.dataset.item = JSON.stringify(item);
       li.innerHTML =
-        '<input type="text"  placeholder="Label (e.g. Book Now)" value="' + escAttr(label) + '" class="link-label" />' +
-        '<input type="url"   placeholder="https://..." value="' + escAttr(url) + '" class="link-url" />' +
+        '<span class="content-type-badge" style="background:'+(colors[item.type]||'#666')+';color:#fff;">'+(icons[item.type]||'')+' '+item.type+'</span>' +
+        '<span style="font-size:0.87rem;color:#444;flex:1;">'+summary+'</span>' +
         '<button class="rm-btn" onclick="this.parentElement.remove()" title="Remove">✕</button>';
-      document.getElementById('linksList').appendChild(li);
+      document.getElementById('contentList').appendChild(li);
+    }
+
+    function getContentBlocks() {
+      return Array.from(document.querySelectorAll('#contentList li'))
+        .map(function(li){ try{ return JSON.parse(li.dataset.item); }catch(e){ return null; } })
+        .filter(Boolean);
     }
 
     function getLinks() {
-      return Array.from(document.querySelectorAll('#linksList li')).map(li => ({
-        label: li.querySelector('.link-label').value.trim(),
-        url:   li.querySelector('.link-url').value.trim(),
-      })).filter(l => l.label || l.url);
+      return getContentBlocks().filter(function(b){ return b.type==='link'; })
+        .map(function(b){ return { label: b.label||'', url: b.url||'' }; });
     }
 
     // ── Lead form config ───────────────────────────────────────────
@@ -934,6 +1106,14 @@ exports.handler = async () => {
       _qrCode.append(container);
     }
 
+    function setPhotoLayout(layout) {
+      _photoLayout = layout;
+      document.querySelectorAll('.pl-btn').forEach(b => b.classList.remove('active'));
+      const map = { logo: 'plLogo', headshot: 'plHeadshot', both: 'plBoth' };
+      const btn = document.getElementById(map[layout]);
+      if (btn) btn.classList.add('active');
+    }
+
     function setQRDotStyle(style) {
       _qrDotStyle = style;
       document.querySelectorAll('.qr-dot-btn').forEach(b => b.classList.remove('active'));
@@ -962,7 +1142,7 @@ exports.handler = async () => {
         phone:        document.getElementById('fieldPhone').value.trim(),
         videoUrl:     document.getElementById('fieldVideo').value.trim(),
         ownerName:    document.getElementById('fieldOwnerName').value.trim(),
-        links:        getLinks(),
+        contentBlocks: getContentBlocks(),
         socials: {
           instagram: document.getElementById('socInstagram').value.trim(),
           facebook:  document.getElementById('socFacebook').value.trim(),
@@ -1005,8 +1185,75 @@ exports.handler = async () => {
     }
 
     // ── Tab switching ──────────────────────────────────────────────
+    // ── Reviews management ─────────────────────────────────────────
+    function loadReviews() {
+      if (!_profileId) return;
+      var loading = document.getElementById('reviewsLoading');
+      var list    = document.getElementById('reviewsList');
+      var empty   = document.getElementById('reviewsEmpty');
+      if (!loading) return;
+      loading.style.display = 'block';
+      loading.textContent = 'Loading reviews…';
+      list.innerHTML = '';
+      if (empty) empty.style.display = 'none';
+      fetch('/.netlify/functions/portal-reviews?profileId=' + encodeURIComponent(_profileId), {
+        headers: { 'Authorization': 'Bearer ' + _session.access_token }
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        loading.style.display = 'none';
+        var reviews = data.reviews || [];
+        if (!reviews.length){ if(empty) empty.style.display='block'; return; }
+        list.innerHTML = reviews.map(function(r){ return renderReviewCard(r); }).join('');
+      })
+      .catch(function(){ loading.textContent = 'Failed to load. Please refresh.'; });
+    }
+
+    function renderReviewCard(r) {
+      var filled  = '★'.repeat(r.rating||5) + '☆'.repeat(5-(r.rating||5));
+      var date    = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString() : '';
+      var visBadge = r.is_visible
+        ? '<span style="background:#d1fae5;color:#065f46;font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;">Visible</span>'
+        : '<span style="background:#fee2e2;color:#991b1b;font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;">Hidden</span>';
+      var featBadge = r.is_featured
+        ? '<span style="background:#fef3c7;color:#92400e;font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;margin-left:4px;">⭐ Featured</span>' : '';
+      var hideAction = r.is_visible ? 'hide' : 'show';
+      var hideLabel  = r.is_visible ? 'Hide' : 'Show';
+      var featAction = r.is_featured ? 'unfeature' : 'feature';
+      var featLabel  = r.is_featured ? 'Unfeature'  : '⭐ Feature';
+      return (
+        '<div style="border:1px solid #e5e5ea;border-radius:12px;padding:14px 16px;margin-bottom:10px;">' +
+        '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;">' +
+          '<div><div style="color:#f4a724;letter-spacing:2px;">'+filled+'</div>' +
+            '<div style="font-weight:600;font-size:0.9rem;">'+escAttr(r.reviewer_name||'Anonymous')+'</div>' +
+            (date?'<div style="font-size:0.77rem;color:#888;">'+date+'</div>':'') +
+          '</div>' +
+          '<div>'+visBadge+featBadge+'</div>' +
+        '</div>' +
+        (r.review_text?'<p style="font-size:0.88rem;color:#444;margin:4px 0 12px;line-height:1.55;font-style:italic;">&ldquo;'+escAttr(r.review_text)+'&rdquo;</p>':'') +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+          '<button onclick="reviewAction(''+r.id+'',''+hideAction+'')" class="rev-action-btn" style="background:'+(r.is_visible?'#fee2e2':'#d1fae5')+';color:'+(r.is_visible?'#991b1b':'#065f46')+';cursor:pointer;">'+hideLabel+'</button>' +
+          '<button onclick="reviewAction(''+r.id+'',''+featAction+'')" class="rev-action-btn" style="background:#fef3c7;color:#92400e;cursor:pointer;">'+featLabel+'</button>' +
+          '<button onclick="reviewAction(''+r.id+'','delete')" class="rev-action-btn" style="background:#fee2e2;color:#991b1b;cursor:pointer;">Delete</button>' +
+        '</div></div>'
+      );
+    }
+
+    async function reviewAction(reviewId, action) {
+      if (action === 'delete' && !confirm('Delete this review permanently?')) return;
+      try {
+        var res = await fetch('/.netlify/functions/portal-reviews', {
+          method: 'PATCH',
+          headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+_session.access_token },
+          body: JSON.stringify({ reviewId: reviewId, action: action })
+        });
+        if (res.ok) loadReviews();
+        else alert('Action failed. Please try again.');
+      } catch(e) { alert('Network error. Please try again.'); }
+    }
+
     function switchTab(name) {
-      const tabs = ['profile', 'links', 'themes', 'qr', 'upgrade'];
+      const tabs = ['profile', 'links', 'themes', 'qr', 'reviews', 'upgrade'];
       document.querySelectorAll('.tab-btn').forEach((b, i) => {
         b.classList.toggle('active', tabs[i] === name);
       });
@@ -1014,6 +1261,7 @@ exports.handler = async () => {
       document.getElementById('tab-' + name).classList.add('active');
       // Hide save button on upgrade tab
       const saveRow = document.getElementById('saveRow');
+      if (name === 'reviews') loadReviews();
       if (saveRow) saveRow.style.display = name === 'upgrade' ? 'none' : 'block';
       // Build upgrade tab content on first open
       if (name === 'upgrade' && _profile) buildUpgradeTab(_profile);

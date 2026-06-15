@@ -56,6 +56,7 @@ exports.handler = async (event) => {
     videoUrl,
     ownerName,
     links,
+    contentBlocks,
     socials,
     theme,
     leadFormEnabled,
@@ -131,7 +132,15 @@ exports.handler = async (event) => {
     phone:         phone        || null,
     video_url:     videoUrl     || null,
     owner_name:    ownerName    || null,
-    links:         Array.isArray(links) ? links : [],
+    content_blocks: Array.isArray(contentBlocks) ? contentBlocks : [],
+    links:         (() => {
+      // extract link-type items from contentBlocks + merge with any old-style links
+      const cbLinks = (Array.isArray(contentBlocks) ? contentBlocks : [])
+        .filter(b => b.type === 'link' && (b.label || b.url))
+        .map(b => ({ label: b.label||'', url: b.url||'' }));
+      if (cbLinks.length) return cbLinks;
+      return Array.isArray(links) ? links : [];
+    })(),
     socials:       socials || {},
     theme:                theme   || {},
     lead_form_enabled:    typeof leadFormEnabled === 'boolean' ? leadFormEnabled : false,

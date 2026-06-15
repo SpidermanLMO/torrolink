@@ -30,10 +30,19 @@ exports.handler = async (event) => {
     };
   }
 
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select("id, reviewer_name, rating, review_text, is_featured, submitted_at")
+    .eq("profile_id", profile.id)
+    .eq("is_visible", true)
+    .order("is_featured", { ascending: false })
+    .order("submitted_at", { ascending: false })
+    .limit(20);
+
   return {
     statusCode: 200,
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
-    body: renderProfile(profile),
+    body: renderProfile(profile, reviews || []),
   };
 };
 
@@ -158,10 +167,17 @@ function getThemeCSS(theme = {}) {
   const headerBg = patterns[pattern] || patterns.solid;
 
   // America's 250th — star canton overlay handled in HTML
+  // Proper US flag star canton: 9 rows alternating 6 and 5 stars = 50 total
   const americaOverlay = pattern === "america"
-    ? `<div style="position:absolute;top:0;left:0;width:40%;height:54%;background:#3C3B6E;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;padding:6px;">
-        ${"★ ".repeat(50).trim().split(" ").map(s => `<span style="color:#fff;font-size:10px;line-height:1.4;">${s}</span>`).join("")}
-       </div>`
+    ? (() => {
+        const xs6 = [5.3, 15.9, 26.5, 37.1, 47.7, 58.3];
+        const xs5 = [10.6, 21.2, 31.8, 42.4, 53.0];
+        const ys  = [5.5, 11, 16.5, 22, 27.5, 33, 38.5, 44, 49.5];
+        const stars = [xs6,xs5,xs6,xs5,xs6,xs5,xs6,xs5,xs6].map((xs,i) =>
+          xs.map(x => `<circle cx="${x}" cy="${ys[i]}" r="2.1" fill="white"/>`).join("")
+        ).join("");
+        return `<div class="star-canton"><svg viewBox="0 0 64 55" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">${stars}</svg></div>`;
+      })()
     : "";
 
   return { headerBg, cardBg, cardBorder, textPri, textSec, pageBg, linkBg, linkBorder, linkColor, socBg, socBorder, socColor, cardRadius, darkMode, americaOverlay, pattern };
@@ -175,12 +191,34 @@ function adjustAlpha(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// ── SOCIAL ICONS (SVG, no emojis) ────────────────────────────────────────────
+function getSocialIcon(platform) {
+  const i = {
+    instagram: ['#E1306C','<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>'],
+    facebook:  ['#1877F2','<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>'],
+    twitter:   ['#000000','<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>'],
+    tiktok:    ['#010101','<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34l.05-8.07a8.16 8.16 0 0 0 4.78 1.55V6.44a4.83 4.83 0 0 1-1.06-.25z"/>'],
+    youtube:   ['#FF0000','<path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>'],
+    linkedin:  ['#0A66C2','<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>'],
+    yelp:      ['#D32323','<path d="M20.16 12.73l-4.703 1.612c-.8.276-1.464-.8-.887-1.494l3.085-3.7a.87.87 0 0 0-.105-1.24 9.204 9.204 0 0 0-2.742-1.566.877.877 0 0 0-1.108.52L12.16 12.9c-.294.832-1.53.832-1.824 0L8.3 6.854a.877.877 0 0 0-1.108-.52 9.204 9.204 0 0 0-2.742 1.566.87.87 0 0 0-.105 1.24l3.085 3.7c.577.694-.087 1.77-.887 1.494L1.84 12.73a.877.877 0 0 0-1.107.72 9.277 9.277 0 0 0 .386 3.163.877.877 0 0 0 1.023.58l4.86-1.07c.826-.182 1.358.886.78 1.504l-3.25 3.455a.877.877 0 0 0 .064 1.249 9.22 9.22 0 0 0 2.913 1.738.877.877 0 0 0 1.085-.47l1.985-4.527c.338-.77 1.462-.77 1.8 0l1.985 4.527a.877.877 0 0 0 1.085.47 9.22 9.22 0 0 0 2.913-1.738.877.877 0 0 0 .064-1.249l-3.25-3.455c-.578-.618-.046-1.686.78-1.504l4.86 1.07a.877.877 0 0 0 1.023-.58 9.277 9.277 0 0 0 .386-3.162.877.877 0 0 0-1.107-.72z"/>'],
+    google:    ['#ffffff','<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>'],
+  };
+  const d = i[platform];
+  if (!d) return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+  const [bg, path] = d;
+  return `<span class="soc-badge" style="background:${bg}"><svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">${path}</svg></span>`;
+}
+
 // ── HTML RENDERER ──────────────────────────────────────────────────────────────
 
-function renderProfile(p) {
+function renderProfile(p, reviews = []) {
   const theme    = (typeof p.theme === "object" && p.theme) ? p.theme : {};
   const t        = getThemeCSS(theme);
   const links    = Array.isArray(p.links)   ? p.links   : [];
+  const contentBlocks  = Array.isArray(p.content_blocks) ? p.content_blocks : [];
+  const updateBlocks   = contentBlocks.filter(b => b.type === 'update');
+  const menuBlocks     = contentBlocks.filter(b => b.type === 'menu');
+  const serviceBlocks  = contentBlocks.filter(b => b.type === 'service');
   const socials  = p.socials || {};
   const sections = theme.sections || {};
 
@@ -191,56 +229,56 @@ function renderProfile(p) {
   const showLead    = sections.lead    !== false;
   const showBio     = sections.bio     !== false;
 
-  // ── CAROUSEL ────────────────────────────────────────────────────────────────
-  // Slides: [logo, headshot, ...extra photos]
-  const photos = [];
-  if (p.logo_url)  photos.push({ src: p.logo_url,  label: p.business_name || "", type: "logo" });
-  if (p.photo_url) photos.push({ src: p.photo_url, label: p.owner_name    || "", type: "person" });
-  if (Array.isArray(p.gallery)) p.gallery.forEach(g => photos.push({ src: g.url, label: g.caption || "", type: "gallery" }));
+  // ── HERO LAYOUT ─────────────────────────────────────────────────────────────
+  // photoLayout: 'logo' | 'headshot' | 'both' | 'auto' (default)
+  const photoLayout = theme.photoLayout || 'auto';
+  let eff = photoLayout;
+  if (eff === 'auto') {
+    eff = (p.logo_url && p.photo_url) ? 'both' : p.photo_url ? 'headshot' : 'logo';
+  }
 
-  const carouselSlides = photos.map((ph, i) =>
-    `<div class="slide${i === 0 ? " active" : ""}" data-index="${i}">
-      <div class="avatar-ring${ph.type === "person" ? " person-ring" : ""}">
-        <img src="${escHtml(ph.src)}" alt="${escHtml(ph.label)}" loading="${i === 0 ? "eager" : "lazy"}" />
+  let heroPhotos = '';
+  if (eff === 'both' && p.logo_url && p.photo_url) {
+    heroPhotos = `<div class="hero-duo">
+      <div class="duo-item">
+        <div class="avatar-lg"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager"/></div>
+        ${p.business_name ? `<p class="duo-caption">${escHtml(p.business_name)}</p>` : ""}
       </div>
-      ${ph.label ? `<p class="slide-label">${escHtml(ph.label)}</p>` : ""}
-    </div>`
-  ).join("");
-
-  const carouselDots = photos.length > 1
-    ? `<div class="carousel-dots">${photos.map((_, i) => `<button class="dot${i === 0 ? " active" : ""}" data-dot="${i}" aria-label="Photo ${i + 1}"></button>`).join("")}</div>`
-    : "";
-
-  const carouselArrows = photos.length > 1
-    ? `<button class="carousel-arrow left" onclick="carouselPrev()" aria-label="Previous">&#8249;</button>
-       <button class="carousel-arrow right" onclick="carouselNext()" aria-label="Next">&#8250;</button>`
-    : "";
+      <div class="duo-item">
+        <div class="avatar-lg person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||"")}" loading="eager"/></div>
+        ${p.owner_name ? `<p class="duo-caption">${escHtml(p.owner_name)}</p>` : ""}
+      </div>
+    </div>`;
+  } else if (eff === 'headshot' && p.photo_url) {
+    heroPhotos = `<div class="hero-solo"><div class="avatar-xl person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||p.business_name||"")}" loading="eager"/></div></div>`;
+  } else if (p.logo_url) {
+    heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager"/></div></div>`;
+  } else {
+    heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><span style="font-size:3rem;">🏢</span></div></div>`;
+  }
 
   // ── LINKS ───────────────────────────────────────────────────────────────────
   const customLinks = showLinks ? links
     .filter(l => l.label && l.url)
     .map(l => `<a href="${escHtml(l.url)}" target="_blank" rel="noopener" class="link-btn">
-      <span class="btn-icon">🔗</span> ${escHtml(l.label)}
+      <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      <span class="link-label-text">${escHtml(l.label)}</span>
     </a>`).join("") : "";
 
   // ── SOCIALS ─────────────────────────────────────────────────────────────────
-  const socialDefs = {
-    instagram: { icon: "📸", label: "Instagram" },
-    facebook:  { icon: "👍", label: "Facebook" },
-    twitter:   { icon: "🐦", label: "Twitter / X" },
-    tiktok:    { icon: "🎵", label: "TikTok" },
-    youtube:   { icon: "▶️", label: "YouTube" },
-    linkedin:  { icon: "💼", label: "LinkedIn" },
-    yelp:      { icon: "⭐", label: "Yelp" },
-    google:    { icon: "🔍", label: "Google" },
+  const socialLabels = {
+    instagram: "Instagram", facebook: "Facebook", twitter: "Twitter / X",
+    tiktok: "TikTok", youtube: "YouTube", linkedin: "LinkedIn",
+    yelp: "Yelp", google: "Google",
   };
 
   const socialLinks = showSocials ? Object.entries(socials)
     .filter(([, url]) => url)
     .map(([platform, url]) => {
-      const info = socialDefs[platform] || { icon: "🔗", label: platform };
+      const label = socialLabels[platform] || platform;
       return `<a href="${escHtml(url)}" target="_blank" rel="noopener" class="social-btn">
-        <span class="btn-icon">${info.icon}</span> ${info.label}
+        ${getSocialIcon(platform)}
+        <span class="soc-name">${label}</span>
       </a>`;
     }).join("") : "";
 
@@ -263,13 +301,64 @@ function renderProfile(p) {
   // ── PHONE ───────────────────────────────────────────────────────────────────
   const phoneSection = p.phone
     ? `<a href="tel:${escHtml(p.phone)}" class="link-btn phone-btn">
-        <span class="btn-icon">📞</span> ${escHtml(p.phone)}
+        <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12.7 19.79 19.79 0 0 1 1.61 4.1 2 2 0 0 1 3.59 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.27-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+        <span class="link-label-text">${escHtml(p.phone)}</span>
        </a>` : "";
 
   // ── LEAD FORM ────────────────────────────────────────────────────────────────
   const leadSection = (showLead && p.lead_form_enabled) ? buildLeadForm(p) : "";
 
   // ── AMERICA CANTON ───────────────────────────────────────────────────────────
+  // ── CONTENT BLOCKS ────────────────────────────────────────────────────────
+  const updatesSection = updateBlocks.length ? `
+  <div class="card">
+    <div class="section-title">Updates &amp; Specials</div>
+    ${updateBlocks.map(b => `
+      <div class="update-card">
+        <div class="update-badge">📢 Update</div>
+        ${b.title ? `<div class="update-title">${escHtml(b.title)}</div>` : ""}
+        ${b.text  ? `<div class="update-text">${escHtml(b.text)}</div>` : ""}
+      </div>
+    `).join("")}
+  </div>` : "";
+
+  const menuByCategory = {};
+  menuBlocks.forEach(b => {
+    const cat = b.category || "Menu";
+    if (!menuByCategory[cat]) menuByCategory[cat] = [];
+    menuByCategory[cat].push(b);
+  });
+  const menuSection = menuBlocks.length ? `
+  <div class="card">
+    <div class="section-title">Menu</div>
+    ${Object.entries(menuByCategory).map(([cat, items]) => `
+      <div class="menu-cat-label">${escHtml(cat)}</div>
+      ${items.map(b => `
+        <div class="menu-row">
+          <div class="menu-item-left">
+            <div class="menu-item-name">${escHtml(b.name || "")}</div>
+            ${b.description ? `<div class="menu-item-desc">${escHtml(b.description)}</div>` : ""}
+          </div>
+          ${b.price ? `<div class="menu-item-price">${escHtml(b.price)}</div>` : ""}
+        </div>
+      `).join("")}
+    `).join("")}
+  </div>` : "";
+
+  const servicesSection = serviceBlocks.length ? `
+  <div class="card">
+    <div class="section-title">Services</div>
+    ${serviceBlocks.map(b => `
+      <div class="service-row">
+        <div class="service-left">
+          <div class="service-name">${escHtml(b.name || "")}</div>
+          ${b.description ? `<div class="service-desc">${escHtml(b.description)}</div>` : ""}
+        </div>
+        ${b.price ? `<div class="service-price">${escHtml(b.price)}</div>` : ""}
+      </div>
+    `).join("")}
+  </div>` : "";
+
   const stars50 = Array(50).fill("★").join(" ");
 
   return `<!DOCTYPE html>
@@ -296,59 +385,50 @@ function renderProfile(p) {
     /* ── HEADER ─────────────────────────────────── */
     .hero-band {
       ${t.headerBg}
-      padding: 48px 24px 80px;
+      padding: 48px 24px 90px;
       text-align: center;
       position: relative;
       overflow: hidden;
+      min-height: 290px;
     }
     /* America canton */
     .star-canton {
       position: absolute; top: 0; left: 0;
-      width: 38%; max-width: 140px;
+      width: 38%; max-width: 155px;
+      height: 54%;
       background: #3C3B6E;
-      padding: 6px 4px;
-      display: flex; flex-wrap: wrap; gap: 1px;
-      align-content: flex-start;
     }
-    .star-canton span { color: #fff; font-size: 9px; line-height: 1.5; }
+    .star-canton svg { display: block; width: 100%; height: 100%; }
 
-    .carousel {
-      position: relative;
-      width: 120px; margin: 0 auto 16px;
-    }
-    .slide { display: none; text-align: center; }
-    .slide.active { display: block; }
-    .avatar-ring {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      margin: 0 auto 8px;
+    /* ── HERO PHOTOS ─────────────────────────────── */
+    .hero-solo { display: flex; justify-content: center; margin: 0 auto 20px; }
+    .avatar-xl {
+      width: 152px; height: 152px; border-radius: 50%;
+      overflow: hidden; flex-shrink: 0;
+      border: 5px solid rgba(255,255,255,0.55);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.15), 0 16px 48px rgba(0,0,0,0.35);
+      background: rgba(255,255,255,0.12);
       display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-      border: 4px solid rgba(255,255,255,0.35);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
     }
-    .avatar-ring.person-ring { border-color: rgba(255,255,255,0.6); }
-    .avatar-ring img { width: 100%; height: 100%; object-fit: cover; }
-    .slide-label {
-      color: rgba(255,255,255,0.85);
-      font-size: 0.75rem; font-weight: 600;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    }
-    .carousel-arrow {
-      position: absolute; top: 38px;
-      background: rgba(255,255,255,0.2);
-      border: none; color: #fff; font-size: 1.6rem;
-      width: 28px; height: 28px;
-      border-radius: 50%; cursor: pointer;
+    .avatar-xl.person { border-color: rgba(255,255,255,0.75); }
+    .avatar-xl img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-duo { display: flex; gap: 28px; justify-content: center; margin: 0 auto 20px; }
+    .duo-item { text-align: center; }
+    .avatar-lg {
+      width: 122px; height: 122px; border-radius: 50%;
+      overflow: hidden; margin: 0 auto;
+      border: 4px solid rgba(255,255,255,0.55);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.12), 0 10px 32px rgba(0,0,0,0.3);
+      background: rgba(255,255,255,0.12);
       display: flex; align-items: center; justify-content: center;
-      line-height: 1; padding: 0;
-      transition: background 0.15s;
     }
-    .carousel-arrow:hover { background: rgba(255,255,255,0.35); }
-    .carousel-arrow.left  { left: -14px; }
-    .carousel-arrow.right { right: -14px; }
-    .carousel-dots { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+    .avatar-lg.person { border-color: rgba(255,255,255,0.75); }
+    .avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+    .duo-caption {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em;
+      color: rgba(255,255,255,0.82); margin-top: 7px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
     .dot {
       width: 7px; height: 7px; border-radius: 50%;
       background: rgba(255,255,255,0.4); border: none; cursor: pointer;
@@ -414,7 +494,22 @@ function renderProfile(p) {
       box-shadow: 0 4px 14px rgba(0,0,0,${t.darkMode ? "0.3" : "0.1"});
     }
     .phone-btn { color: ${t.linkColor}; background: ${t.linkBg}; border-color: ${t.linkBorder}; }
-    .btn-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .link-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      background: rgba(15,107,107,0.12);
+      color: #0f6b6b;
+    }
+    .link-icon svg { width: 18px; height: 18px; }
+    .link-label-text { flex: 1; }
+    .soc-badge {
+      width: 38px; height: 38px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 10px;
+    }
+    .soc-badge svg { width: 20px; height: 20px; }
+    .soc-name { flex: 1; font-weight: 600; }
 
     /* ── BIO ─────────────────────────────────────── */
     .bio-text {
@@ -477,6 +572,88 @@ function renderProfile(p) {
       border: 1px solid rgba(255,255,255,0.3);
     }
 
+    /* ── UPDATES / SPECIALS ──────────────────────── */
+    .update-card {
+      border-left: 4px solid #f4752b;
+      border-radius: 0 12px 12px 0;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .update-badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: #fff; background: #f4752b;
+      border-radius: 20px; padding: 2px 9px; margin-bottom: 6px;
+    }
+    .update-title { font-weight: 700; font-size: 0.96rem; margin-bottom: 4px; }
+    .update-text  { font-size: 0.88rem; line-height: 1.6; }
+
+    /* ── MENU ──────────────────────────────────────────────── */
+    .menu-cat-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: #8b5cf6; margin: 16px 0 8px;
+      padding-bottom: 4px; border-bottom: 1px solid rgba(139,92,246,0.18);
+    }
+    .menu-cat-label:first-child { margin-top: 0; }
+    .menu-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 9px 0; gap: 12px;
+    }
+    .menu-row + .menu-row { border-top: 1px dashed rgba(0,0,0,0.07); }
+    .menu-item-left { flex: 1; }
+    .menu-item-name { font-weight: 600; font-size: 0.93rem; }
+    .menu-item-desc { font-size: 0.8rem; margin-top: 2px; opacity: 0.72; line-height: 1.45; }
+    .menu-item-price { font-weight: 700; font-size: 0.93rem; color: #0f6b6b; white-space: nowrap; }
+
+    /* ── SERVICES ──────────────────────────────────────────── */
+    .service-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 11px 0; gap: 12px;
+    }
+    .service-row + .service-row { border-top: 1px dashed rgba(0,0,0,0.07); }
+    .service-left { flex: 1; }
+    .service-name { font-weight: 700; font-size: 0.93rem; }
+    .service-desc { font-size: 0.8rem; margin-top: 2px; opacity: 0.72; line-height: 1.45; }
+    .service-price { font-weight: 700; color: #0f6b6b; white-space: nowrap; font-size: 0.93rem; }
+
+    /* ── REVIEWS ────────────────────────────────────────────── */
+    .review-card {
+      border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+      background: rgba(15,107,107,0.04);
+    }
+    .review-card.featured { background: rgba(244,167,36,0.06); }
+    .featured-badge {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      color: #92400e; background: #fef3c7; border-radius: 20px;
+      padding: 2px 9px; margin-bottom: 6px;
+    }
+    .review-stars { font-size: 1.05rem; color: #f4a724; letter-spacing: 1px; margin-bottom: 5px; }
+    .review-text { font-size: 0.9rem; line-height: 1.65; margin-bottom: 7px; font-style: italic; opacity: 0.88; }
+    .review-author { font-size: 0.82rem; font-weight: 600; }
+    .review-write-btn {
+      width: 100%; padding: 12px; margin-top: 10px;
+      background: transparent; cursor: pointer;
+      font-size: 0.9rem; font-family: inherit; font-weight: 600;
+      transition: all 0.2s; border-radius: 12px;
+      border: 1.5px dashed rgba(15,107,107,0.3); color: #0f6b6b;
+    }
+    .review-write-btn:hover { border-color: #0f6b6b; background: rgba(15,107,107,0.05); }
+    .star-picker { display: flex; gap: 6px; margin-bottom: 12px; }
+    .star-btn {
+      background: none; border: none; font-size: 1.8rem; cursor: pointer;
+      color: #ddd; padding: 0; transition: color 0.12s; line-height: 1;
+    }
+    .star-btn.on { color: #f4a724; }
+    .review-input {
+      width: 100%; padding: 11px 14px; border-radius: 10px;
+      font-size: 0.92rem; font-family: inherit;
+      margin-bottom: 10px; outline: none; resize: vertical;
+      border: 1.5px solid rgba(0,0,0,0.14);
+      background: transparent; color: inherit;
+      transition: border-color 0.2s;
+    }
+    .review-input:focus { border-color: #0f6b6b; }
+
     /* ── FOOTER ──────────────────────────────────── */
     .powered {
       text-align: center; padding: 16px 24px 40px;
@@ -486,9 +663,12 @@ function renderProfile(p) {
 
     /* ── MOBILE ──────────────────────────────────── */
     @media (max-width: 520px) {
-      .hero-band { padding: 40px 20px 72px; }
-      .card { margin: -36px 16px 16px; }
-      .biz-name { font-size: 1.5rem; }
+      .hero-band { padding: 40px 20px 80px; min-height: 260px; }
+      .card { margin: -40px 16px 16px; }
+      .biz-name { font-size: 1.6rem; }
+      .hero-duo { gap: 18px; }
+      .avatar-xl { width: 132px; height: 132px; }
+      .avatar-lg { width: 108px; height: 108px; }
     }
   </style>
 </head>
@@ -498,11 +678,7 @@ function renderProfile(p) {
     ${t.pattern === "america" ? `<div class="star-canton">${Array(50).fill('<span>★</span>').join("")}</div>` : ""}
     ${t.pattern === "america" ? `<div class="holiday-badge">🇺🇸 America's 250th</div><br>` : ""}
 
-    <div class="carousel">
-      ${carouselArrows}
-      ${carouselSlides || `<div class="slide active"><div class="avatar-ring"><span style="font-size:2.5rem;">🏢</span></div></div>`}
-      ${carouselDots}
-    </div>
+    ${heroPhotos}
 
     <div class="biz-name">${escHtml(p.business_name || "Business Profile")}</div>
     ${p.tagline ? `<div class="tagline">${escHtml(p.tagline)}</div>` : ""}
@@ -524,6 +700,14 @@ function renderProfile(p) {
 
   ${videoEmbed}
 
+  ${updatesSection}
+
+  ${menuSection}
+
+  ${servicesSection}
+
+  ${buildReviews(p, reviews)}
+
   ${leadSection}
 
   <div class="powered">
@@ -531,36 +715,7 @@ function renderProfile(p) {
   </div>
 
   <script>
-    // ── Carousel ────────────────────────────────────────────────────────
-    var _slides = document.querySelectorAll('.slide');
-    var _dots   = document.querySelectorAll('.dot');
-    var _cur    = 0;
-
-    function carouselGo(n) {
-      if (!_slides.length) return;
-      _slides[_cur].classList.remove('active');
-      if (_dots[_cur]) _dots[_cur].classList.remove('active');
-      _cur = (n + _slides.length) % _slides.length;
-      _slides[_cur].classList.add('active');
-      if (_dots[_cur]) _dots[_cur].classList.add('active');
-    }
-    function carouselNext() { carouselGo(_cur + 1); }
-    function carouselPrev() { carouselGo(_cur - 1); }
-
-    _dots.forEach(function(dot) {
-      dot.addEventListener('click', function() { carouselGo(parseInt(this.dataset.dot)); });
-    });
-
-    // Touch swipe
-    var _touchX = 0;
-    var hero = document.querySelector('.hero-band');
-    if (hero) {
-      hero.addEventListener('touchstart', function(e) { _touchX = e.touches[0].clientX; }, { passive: true });
-      hero.addEventListener('touchend', function(e) {
-        var dx = e.changedTouches[0].clientX - _touchX;
-        if (Math.abs(dx) > 40) { dx < 0 ? carouselNext() : carouselPrev(); }
-      }, { passive: true });
-    }
+    // ── No carousel — hero layout is static ──────────────────────────────────
 
     // ── Lead form ────────────────────────────────────────────────────────
     var leadForm = document.getElementById('leadForm');
@@ -592,6 +747,50 @@ function renderProfile(p) {
         }
       });
     }
+
+    // ── Reviews ──────────────────────────────────────────────────────────────
+    var _reviewRating = 5;
+    function pickStar(n) {
+      _reviewRating = n;
+      document.querySelectorAll('.star-btn').forEach(function(btn, i) {
+        btn.classList.toggle('on', i < n);
+      });
+    }
+    pickStar(5);
+    function toggleReviewForm() {
+      var f = document.getElementById('reviewForm');
+      if (!f) return;
+      var open = f.style.display === 'block';
+      f.style.display = open ? 'none' : 'block';
+      var wb = document.querySelector('.review-write-btn');
+      if (wb) wb.textContent = open ? '✏️ Write a Review' : '✕ Cancel';
+    }
+    async function submitReview(e, profileId) {
+      e.preventDefault();
+      var btn  = document.getElementById('reviewSubmitBtn');
+      var name = document.getElementById('reviewerName').value.trim();
+      var text = document.getElementById('reviewerText').value.trim();
+      if (!name || !text) { alert('Please enter your name and review.'); return; }
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        var res = await fetch('/.netlify/functions/review-submit', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profileId: profileId, name: name, rating: _reviewRating, text: text })
+        });
+        if (res.ok) {
+          document.getElementById('reviewSuccess').style.display = 'block';
+          document.getElementById('reviewForm').style.display = 'none';
+          document.querySelector('.review-write-btn').style.display = 'none';
+        } else {
+          var d = await res.json().catch(function(){ return {}; });
+          alert(d.error || 'Failed to submit. Please try again.');
+          btn.disabled = false; btn.textContent = 'Submit Review';
+        }
+      } catch(err) {
+        alert('Network error. Please try again.');
+        btn.disabled = false; btn.textContent = 'Submit Review';
+      }
+    }
   </script>
 </body>
 </html>`;
@@ -619,6 +818,41 @@ function buildLeadForm(p) {
       <button type="submit" class="submit-btn" id="leadSubmitBtn">Send →</button>
     </form>
     <div class="form-success" id="leadSuccess">✅ Got it! We'll be in touch soon.</div>
+  </div>`;
+}
+
+// ── REVIEWS SECTION ───────────────────────────────────────────────────────────
+
+function buildReviews(p, reviews) {
+  const stars = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+  const cards = reviews.map(r => `
+    <div class="review-card${r.is_featured ? ' featured' : ''}">
+      ${r.is_featured ? '<div class="featured-badge">⭐ Featured</div>' : ''}
+      <div class="review-stars">${stars(r.rating || 5)}</div>
+      <div class="review-text">&ldquo;${escHtml(r.review_text || '')}&rdquo;</div>
+      <div class="review-author">— ${escHtml(r.reviewer_name || 'Anonymous')}</div>
+    </div>
+  `).join('');
+
+  const empty = !reviews.length
+    ? '<p style="font-size:0.85rem;opacity:0.55;text-align:center;padding:6px 0 4px;">No reviews yet — be the first!</p>'
+    : '';
+
+  return `<div class="card">
+    <div class="section-title">Reviews</div>
+    ${cards}
+    ${empty}
+    <button class="review-write-btn" onclick="toggleReviewForm()">✏️ Write a Review</button>
+    <form id="reviewForm" style="display:none;margin-top:16px;" onsubmit="submitReview(event,'${escJs(p.id)}')">
+      <div class="star-picker">
+        ${[1,2,3,4,5].map(n => `<button type="button" class="star-btn" onclick="pickStar(${n})">★</button>`).join('')}
+      </div>
+      <input  type="text"  id="reviewerName" placeholder="Your name" required class="review-input" />
+      <textarea id="reviewerText" rows="3" placeholder="Share your experience..." required class="review-input"></textarea>
+      <button type="submit" class="submit-btn" id="reviewSubmitBtn">Submit Review</button>
+    </form>
+    <p id="reviewSuccess" style="display:none;text-align:center;color:#0f6b6b;font-weight:700;padding:16px 0;">✓ Thanks for your review!</p>
   </div>`;
 }
 
