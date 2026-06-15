@@ -36,7 +36,7 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: "Torrolink Contact Form <orders@torrolink.com>",
       to: OWNER_EMAIL,
-      reply_to: email,
+      replyTo: email,
       subject: `New message from ${name}${business ? ` — ${business}` : ""}`,
       html: `
 <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
