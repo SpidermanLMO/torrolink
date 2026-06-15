@@ -75,10 +75,26 @@ create table if not exists leads (
   submitted_at timestamptz default now()
 );
 
--- REQUIRED: grant service_role access (raw SQL tables do not auto-grant like Table Editor does)
--- Run this in Supabase SQL Editor after creating the tables:
+-- ══════════════════════════════════════════════════════════════════════════════
+-- ⚠️  REQUIRED: Run these GRANTs in Supabase SQL Editor
+-- Tables created via raw SQL do NOT auto-grant to service_role like Table Editor does.
+-- Without these, serverless functions using SUPABASE_SERVICE_KEY will get
+-- "permission denied for table" (error 42501) on ALL table operations.
+-- ══════════════════════════════════════════════════════════════════════════════
+grant all on table public.profiles   to service_role;
+grant all on table public.customers  to service_role;
 grant all on table public.leads      to service_role;
 grant all on table public.scan_events to service_role;
+
+-- Also grant to anon and authenticated roles (needed for RLS policies to work):
+grant select         on table public.profiles   to anon, authenticated;
+grant select         on table public.customers  to authenticated;
+grant insert         on table public.scan_events to anon, authenticated;
+grant insert         on table public.leads       to anon, authenticated;
+grant select, update on table public.profiles    to authenticated;
+
+-- Sequences (for auto-generated IDs):
+grant usage, select on all sequences in schema public to service_role, anon, authenticated;
 
 -- ── SCHEMA ADDITIONS (run these after initial setup) ─────────────────────────
 -- Added for branding tiers and webhook processing

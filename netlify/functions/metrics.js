@@ -6,6 +6,7 @@
 
 const { createClient } = require("@supabase/supabase-js");
 
+// supabaseAdmin: service_role — bypasses RLS, for privileged lookups
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
@@ -15,22 +16,34 @@ exports.handler = async (event) => {
   const SUPABASE_URL      = process.env.SUPABASE_URL      || "";
   const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "";
 
+  // supabaseAnon: anon key — used for profile lookup since profiles are publicly readable
+  // (service_role lacks GRANT on profiles — tables created via raw SQL need explicit grants)
+  const supabaseAnon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   const pathParts = event.path.replace(/^\/+/, "").split("/");
   const handle = pathParts[1] || "";
 
   if (!handle) return page404();
 
-  const { data: profile } = await supabaseAdmin
+  // Use anon key for profile lookup — RLS "Public read active profiles" allows this
+  const { data: profile } = await supabaseAnon
     .from("profiles")
-    .select("id, handle, business_name, customer_id, customers(email, metrics_active)")
+    .select("id, handle, business_name, customer_id")
     .eq("handle", handle)
     .maybeSingle();
 
   if (!profile) return page404();
 
-  const ownerEmail   = profile.customers?.email || "";
+  // Use service_role for customer data (privileged). Defaults to false if GRANT not yet applied.
+  const { data: customer } = await supabaseAdmin
+    .from("customers")
+    .select("email, metrics_active")
+    .eq("id", profile.customer_id)
+    .maybeSingle();
+
+  const ownerEmail   = customer?.email || "";
   const businessName = profile.business_name || handle;
-  const hasMetrics   = profile.customers?.metrics_active === true;
+  const hasMetrics   = customer?.metrics_active === true;
 
   const html = buildDashboardHtml({
     handle, businessName, ownerEmail,
