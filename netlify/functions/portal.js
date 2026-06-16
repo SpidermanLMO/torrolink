@@ -676,7 +676,7 @@ exports.handler = async () => {
     function populateThemeControls(theme) {
       if (!theme) { buildPatternGrid(); return; }
       _selectedPattern   = theme.pattern   || 'solid';
-      _bgImageUrl = p.background_image || null; _bgImageBase64 = null;
+      _bgImageBase64 = null;
       var bgSec = document.getElementById('bgUploadSection');
       if (bgSec) bgSec.style.display = _selectedPattern === 'custom' ? '' : 'none';
       if (_bgImageUrl) { var pv = document.getElementById('bgImagePreview'); if (pv) pv.innerHTML = '<img src="' + _bgImageUrl + '" style="width:100%;max-height:110px;object-fit:cover;border-radius:8px;margin-top:6px;" />'; }
@@ -946,6 +946,7 @@ exports.handler = async () => {
       checkboxes.forEach(opt => addCheckbox(opt));
 
       // Theme
+      _bgImageUrl = p.background_image || null;
       populateThemeControls(p.theme || null);
 
       // QR tab
