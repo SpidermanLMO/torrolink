@@ -30,6 +30,15 @@ exports.handler = async (event) => {
     };
   }
 
+  // Suspended profiles — show placeholder rather than blank 404
+  if (profile.suspended) {
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+      body: suspendedPage(profile.business_name || handle),
+    };
+  }
+
   const { data: reviews } = await supabase
     .from("reviews")
     .select("id, reviewer_name, rating, review_text, is_featured, submitted_at")
@@ -54,7 +63,7 @@ exports.handler = async (event) => {
 
   return {
     statusCode: 200,
-    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" },
     body: renderProfile(profile, reviews || [], photos || [], documents || []),
   };
 };
@@ -392,10 +401,23 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${escHtml(p.business_name || "Business Profile")} — Torrolink</title>
-  <meta name="description" content="${escHtml(p.tagline || p.business_name || "")}" />
+  <meta name="description" content="${escHtml(p.tagline || p.bio || p.business_name || "")}" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Torrolink" />
   <meta property="og:title" content="${escHtml(p.business_name || "")}" />
-  <meta property="og:description" content="${escHtml(p.tagline || "")}" />
-  ${p.logo_url ? `<meta property="og:image" content="${escHtml(p.logo_url)}" />` : ""}
+  <meta property="og:description" content="${escHtml(p.tagline || p.bio?.slice(0,160) || "")}" />
+  <meta property="og:url" content="https://torrolink.com/${escHtml(p.handle || "")}" />
+  ${p.logo_url ? `<meta property="og:image" content="${escHtml(p.logo_url)}" />
+  <meta property="og:image:width" content="400" />
+  <meta property="og:image:height" content="400" />` : ""}
+  <meta name="twitter:card" content="${p.logo_url ? "summary_large_image" : "summary"}" />
+  <meta name="twitter:title" content="${escHtml(p.business_name || "")}" />
+  <meta name="twitter:description" content="${escHtml(p.tagline || p.bio?.slice(0,160) || "")}" />
+  ${p.logo_url ? `<meta name="twitter:image" content="${escHtml(p.logo_url)}" />` : ""}
+  <link rel="canonical" href="https://torrolink.com/${escHtml(p.handle || "")}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -680,20 +702,55 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     .review-input:focus { border-color: #0f6b6b; }
 
     /* ── FOOTER ──────────────────────────────────── */
+    /* Entrance animations */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    .card, .section-gallery, .section-documents { animation: fadeUp 0.42s ease both; }
+    .card:nth-child(2) { animation-delay: 0.06s; }
+    .card:nth-child(3) { animation-delay: 0.12s; }
+    .card:nth-child(4) { animation-delay: 0.18s; }
+    .card:nth-child(5) { animation-delay: 0.24s; }
+    .section-gallery   { animation-delay: 0.2s; }
+    .section-documents { animation-delay: 0.26s; }
+
+    /* Share + vCard bar */
+    .profile-action-bar {
+      display: flex; justify-content: center; gap: 10px;
+      padding: 14px 16px 0; flex-wrap: wrap;
+    }
+    .action-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; border-radius: 50px;
+      font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      border: 1.5px solid ${t.cardBorder}; background: ${t.cardBg};
+      color: ${t.textPri}; text-decoration: none; transition: opacity 0.15s, transform 0.12s;
+    }
+    .action-btn:hover { opacity: 0.82; transform: scale(1.03); }
+    .action-btn.share-btn { border-color: #0f6b6b; color: #0f6b6b; }
+
+    /* Powered by */
     .powered {
-      text-align: center; padding: 16px 24px 40px;
+      text-align: center; padding: 20px 24px 44px;
       font-size: 0.8rem; color: ${t.textSec};
     }
     .powered a { color: #0f6b6b; text-decoration: none; font-weight: 600; }
+    .powered .get-yours { display: block; margin-top: 6px; font-size: 0.78rem; }
+    .powered .get-yours a { background: #0f6b6b; color: #fff; padding: 5px 14px; border-radius: 20px; font-weight: 700; }
 
     /* ── MOBILE ──────────────────────────────────── */
     @media (max-width: 520px) {
       .hero-band { padding: 40px 20px 80px; min-height: 260px; }
-      .card { margin: -40px 16px 16px; }
-      .biz-name { font-size: 1.6rem; }
+      .card { margin: -40px 16px 16px; padding: 18px; }
+      .biz-name { font-size: 1.55rem; }
+      .tagline { font-size: 0.88rem; }
       .hero-duo { gap: 18px; }
-      .avatar-xl { width: 132px; height: 132px; }
-      .avatar-lg { width: 108px; height: 108px; }
+      .avatar-xl { width: 120px; height: 120px; }
+      .avatar-lg { width: 100px; height: 100px; }
+      .section-title { font-size: 0.78rem; }
+      .link-row { padding: 11px 14px; font-size: 0.9rem; }
+      .social-grid { grid-template-columns: repeat(4, 1fr); }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+      .profile-action-bar { gap: 8px; }
+      .action-btn { font-size: 0.78rem; padding: 7px 14px; }
     }
     /* ── Gallery & Documents ───────────────────────────────── */
     .section-gallery { padding: 20px 16px 8px; }
@@ -726,6 +783,15 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     <div class="biz-name">${escHtml(p.business_name || "Business Profile")}</div>
     ${p.tagline ? `<div class="tagline">${escHtml(p.tagline)}</div>` : ""}
   </div>
+
+  ${(p.business_name || p.phone) ? `
+  <div class="profile-action-bar">
+    <button class="action-btn share-btn" onclick="shareProfile()" id="shareBtn" aria-label="Share this profile">
+      &#128279; Share
+    </button>
+    ${p.phone ? `<a class="action-btn" href="tel:${escHtml(p.phone)}" aria-label="Call ${escHtml(p.business_name||'')}">&#128222; Call</a>` : ""}
+    <a class="action-btn" href="/.netlify/functions/vcard?handle=${escHtml(p.handle||"")}" target="_blank" rel="noopener" aria-label="Save contact">&#128101; Save Contact</a>
+  </div>` : ""}
 
   ${bioSection}
 
@@ -766,6 +832,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
 
   <div class="powered">
     Powered by <a href="https://torrolink.com" target="_blank" rel="noopener">Torrolink</a>
+    <span class="get-yours"><a href="https://torrolink.com/#pricing" target="_blank" rel="noopener">✨ Get your own smart QR profile</a></span>
   </div>
 
   <script>
@@ -867,6 +934,22 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
       document.body.style.overflow = '';
     }
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+
+    // ── Share button ──────────────────────────────────────────────────
+    function shareProfile() {
+      var url  = window.location.href;
+      var name = document.title.split(' — ')[0] || 'Check out this profile';
+      if (navigator.share) {
+        navigator.share({ title: name, url: url }).catch(function(){});
+      } else {
+        navigator.clipboard.writeText(url).then(function() {
+          var btn = document.getElementById('shareBtn');
+          if (btn) { btn.textContent = '\u2713 Copied!'; setTimeout(function(){ btn.innerHTML = '&#128279; Share'; }, 2000); }
+        }).catch(function() {
+          prompt('Copy this link:', url);
+        });
+      }
+    }
   </script>
 </body>
 </html>`;
@@ -938,14 +1021,67 @@ function notFoundPage(handle) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile Not Found — Torrolink</title>
-  <style>body{font-family:sans-serif;text-align:center;padding:80px 24px;background:#f5f7fa;color:#333;}h1{font-size:2rem;color:#0f6b6b;margin-bottom:12px;}p{color:#666;margin-bottom:32px;}a{color:#0f6b6b;font-weight:700;text-decoration:none;}</style>
+  <meta name="robots" content="noindex" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f6b6b 0%,#1a2e4a 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{background:#fff;border-radius:24px;padding:48px 36px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+    .qr-icon{font-size:4rem;margin-bottom:16px;}
+    h1{font-size:1.6rem;font-weight:800;color:#1a1a2e;margin-bottom:10px;}
+    p{color:#666;font-size:0.95rem;line-height:1.5;margin-bottom:28px;}
+    .handle{color:#0f6b6b;font-weight:700;}
+    .btn{display:inline-block;background:#0f6b6b;color:#fff;font-weight:700;font-size:0.95rem;padding:13px 28px;border-radius:50px;text-decoration:none;transition:opacity 0.15s;}
+    .btn:hover{opacity:0.88;}
+    .btn-ghost{background:none;color:#0f6b6b;border:2px solid #0f6b6b;margin-top:10px;}
+    .actions{display:flex;flex-direction:column;gap:10px;align-items:center;}
+    .tagline{font-size:0.8rem;color:#aaa;margin-top:24px;}
+  </style>
 </head>
 <body>
-  <h1>Profile not found</h1>
-  <p>The profile <strong>/${escHtml(handle)}</strong> doesn't exist or has been removed.</p>
-  <a href="https://torrolink.com">Get your own Torrolink →</a>
+  <div class="card">
+    <div class="qr-icon">&#128247;</div>
+    <h1>This profile doesn't exist</h1>
+    <p>We couldn't find a Torrolink profile at <span class="handle">/${escHtml(handle)}</span>. It may have been moved or the QR code may have a typo.</p>
+    <div class="actions">
+      <a href="https://torrolink.com" class="btn">Visit Torrolink</a>
+      <a href="https://torrolink.com/#pricing" class="btn btn-ghost">Get your own QR profile</a>
+    </div>
+    <p class="tagline">Torrolink — Your Business. One Scan Away.</p>
+  </div>
+</body>
+</html>`;
+}
+
+function suspendedPage(businessName) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile Temporarily Unavailable — Torrolink</title>
+  <meta name="robots" content="noindex" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#555 0%,#1a1a2e 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{background:#fff;border-radius:24px;padding:48px 36px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+    .icon{font-size:3.5rem;margin-bottom:16px;}
+    h1{font-size:1.5rem;font-weight:800;color:#1a1a2e;margin-bottom:10px;}
+    p{color:#666;font-size:0.95rem;line-height:1.5;margin-bottom:24px;}
+    a{color:#0f6b6b;font-weight:700;text-decoration:none;}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">&#9200;</div>
+    <h1>Temporarily Unavailable</h1>
+    <p><strong>${escHtml(businessName)}</strong>'s profile is temporarily unavailable. Please check back soon or contact them directly.</p>
+    <p><a href="https://torrolink.com">Powered by Torrolink</a></p>
+  </div>
 </body>
 </html>`;
 }

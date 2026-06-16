@@ -87,11 +87,17 @@ exports.handler = async () => {
       transition: color 0.15s, border-color 0.15s;
     }
     .checkbox-list .rm-btn:hover { color: #c0392b; border-color: #c0392b; }
-    .section-tabs { display: flex; gap: 4px; margin-bottom: 24px; flex-wrap: wrap; }
+    .section-tabs {
+      display: flex; gap: 4px; margin-bottom: 24px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; padding-bottom: 4px;
+    }
+    .section-tabs::-webkit-scrollbar { display: none; }
     .tab-btn {
-      padding: 8px 18px; border-radius: 8px; border: 1.5px solid #e2e6ea;
-      background: none; font-family: inherit; font-size: 0.88rem; font-weight: 600;
+      padding: 8px 16px; border-radius: 8px; border: 1.5px solid #e2e6ea;
+      background: none; font-family: inherit; font-size: 0.85rem; font-weight: 600;
       color: #666; cursor: pointer; transition: all 0.15s;
+      flex-shrink: 0; white-space: nowrap;
     }
     .tab-btn.active { background: #0f6b6b; color: #fff; border-color: #0f6b6b; }
     .pl-btn {
@@ -185,13 +191,31 @@ exports.handler = async () => {
       .section-toggles { grid-template-columns: 1fr; }
     }
   </style>
+  <style>
+    /* ── Gallery tab ──────────────────────────────────────────── */
+    .gallery-grid-p { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+    .gallery-item-p { position:relative; }
+    .gallery-item-p img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px; display:block; }
+    .gallery-badge-p { position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.62); color:#fff; font-size:0.6rem; padding:2px 5px; border-radius:10px; pointer-events:none; }
+    .gallery-cap-p { width:100%; font-size:0.72rem; border:1px solid #ddd; border-radius:5px; padding:3px 6px; margin-top:3px; box-sizing:border-box; }
+    .gallery-del-p { font-size:0.68rem; color:#c00; background:none; border:none; cursor:pointer; padding:0; margin-top:2px; display:block; }
+    .gallery-empty { color:#aaa; font-size:0.85rem; text-align:center; padding:22px 0; grid-column:1/-1; }
+    .doc-item-p { display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid #eee; border-radius:8px; margin-bottom:6px; background:#fafafa; }
+    .doc-icon-p { font-size:1.5rem; flex-shrink:0; }
+    .doc-body-p { flex:1; min-width:0; }
+    .doc-title-p { width:100%; font-size:0.85rem; border:1px solid #ddd; border-radius:5px; padding:4px 8px; box-sizing:border-box; }
+    .doc-view-p { font-size:0.7rem; color:#0f6b6b; display:block; margin-top:2px; }
+    .doc-del-p { color:#c00; background:none; border:none; cursor:pointer; font-size:0.9rem; flex-shrink:0; }
+    .media-msg { font-size:0.8rem; color:#0f6b6b; margin-top:6px; min-height:18px; }
+  </style>
 </head>
 <body class="tl-page">
 
   <div class="tl-topbar">
     <a href="/" class="logo">Torrolink</a>
     <span id="topbarHandle" style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin-left:auto;"></span>
-    <button onclick="signOut()" id="signOutBtn" style="display:none;background:rgba(255,255,255,0.15);border:none;color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:8px;">Sign out</button>
+    <a id="viewProfileBtn" href="#" target="_blank" rel="noopener" style="display:none;background:rgba(255,255,255,0.18);border:none;color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:8px;text-decoration:none;">&#128279; My Profile</a>
+    <button onclick="signOut()" id="signOutBtn" style="display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:6px;">Sign out</button>
   </div>
 
   <div class="tl-content">
@@ -274,10 +298,11 @@ exports.handler = async () => {
       <div class="section-tabs">
         <button class="tab-btn active" onclick="switchTab('profile')">Profile</button>
         <button class="tab-btn" onclick="switchTab('links')">Links &amp; Socials</button>
-        <button class="tab-btn" onclick="switchTab('themes')">🎨 Themes</button>
+        <button class="tab-btn" onclick="switchTab('themes')">&#127912; Themes</button>
         <button class="tab-btn" onclick="switchTab('qr')">My QR Code</button>
-                <button class="tab-btn" onclick="switchTab('reviews')">⭐ Reviews</button>
-<button class="tab-btn" onclick="switchTab('upgrade')" style="color:#f4752b;border-color:#f4752b;">⬆ Upgrade</button>
+        <button class="tab-btn" onclick="switchTab('reviews')">&#11088; Reviews</button>
+        <button class="tab-btn" onclick="switchTab('gallery')">&#128247; Gallery</button>
+        <button class="tab-btn" onclick="switchTab('upgrade')" style="color:#f4752b;border-color:#f4752b;">&#8679; Upgrade</button>
       </div>
 
       <!-- PROFILE TAB -->
@@ -567,6 +592,38 @@ exports.handler = async () => {
           <div class="tl-card" style="text-align:center;color:#888;padding:40px;">Loading…</div>
         </div>
       </div>
+
+      <!-- GALLERY TAB -->
+      <div id="tab-gallery" class="tab-panel">
+        <!-- Photo Gallery -->
+        <div class="tl-card">
+          <h2>Photo Gallery</h2>
+          <p style="font-size:0.85rem;color:#666;margin-bottom:14px;">Photos appear as a clickable grid on your profile. The <strong>&#128065; view count</strong> shows which ones visitors enlarge &mdash; perfect for chefs, bakers, trainers, and models.</p>
+          <div id="galleryGrid" class="gallery-grid-p">
+            <p class="gallery-empty">No photos yet. Add some below!</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;">
+            <label class="file-btn" for="galleryInput" style="cursor:pointer;">+ Add Photo</label>
+            <input type="file" id="galleryInput" accept="image/*" multiple style="display:none;" onchange="handleGalleryUpload(this)" />
+            <span style="font-size:0.75rem;color:#aaa;">JPG / PNG / WebP &bull; max 8 MB each</span>
+          </div>
+          <p id="galleryMsg" class="media-msg"></p>
+        </div>
+        <!-- Documents & Flyers -->
+        <div class="tl-card">
+          <h2>Documents &amp; Flyers</h2>
+          <p style="font-size:0.85rem;color:#666;margin-bottom:14px;">Upload PDF menus, event flyers, promo sheets, or Word docs. Visitors can open and download them from your profile.</p>
+          <div id="documentsList">
+            <p style="color:#aaa;font-size:0.85rem;text-align:center;padding:12px 0;">No documents yet.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;">
+            <label class="file-btn" for="docInput" style="cursor:pointer;">+ Add Document</label>
+            <input type="file" id="docInput" accept=".pdf,.doc,.docx" style="display:none;" onchange="handleDocUpload(this)" />
+            <span style="font-size:0.75rem;color:#aaa;">PDF, DOC, DOCX &bull; max 20 MB</span>
+          </div>
+          <p id="docMsg" class="media-msg"></p>
+        </div>
+      </div> <!-- /tab-gallery -->
 
       <!-- SAVE BUTTON (always visible, hidden on upgrade tab) -->
       <div id="saveRow" style="text-align:right;margin-top:8px;">
@@ -1010,6 +1067,8 @@ exports.handler = async () => {
       // Preview link in themes tab
       const prev = document.getElementById('previewProfileLink');
       if (prev) { prev.href = profileUrl; }
+      const vpBtn = document.getElementById('viewProfileBtn');
+      if (vpBtn) { vpBtn.href = profileUrl; vpBtn.style.display = 'inline-block'; }
     }
 
     // ── Content management ────────────────────────────────────────
@@ -1216,7 +1275,7 @@ exports.handler = async () => {
       if (!_session || !_profile) return;
       showMsg('', '');
       const btn = document.querySelector('[onclick="saveProfile()"]');
-      btn.textContent = 'Saving…'; btn.disabled = true;
+      btn.textContent = '⏳ Saving…'; btn.disabled = true; btn.style.background = '#888';
 
       const payload = {
         profileId:    _profile.id,
@@ -1258,7 +1317,10 @@ exports.handler = async () => {
         const data = await res.json();
         if (res.ok) {
           _logoBase64 = null; _headshotBase64 = null; // clear after successful save
+          btn.textContent = '✓ Saved!'; btn.style.background = '#16a34a';
+          setTimeout(function(){ btn.textContent = 'Save Changes'; btn.style.background = ''; btn.disabled = false; }, 2200);
           showMsg('success', '✓ Profile saved! Changes are live on your profile page.');
+          return; // skip the finally reset
         } else {
           showMsg('error', data.error || 'Save failed. Please try again.');
         }
@@ -1266,7 +1328,7 @@ exports.handler = async () => {
         showMsg('error', 'Network error. Please try again.');
       }
 
-      btn.textContent = 'Save Changes'; btn.disabled = false;
+      btn.textContent = 'Save Changes'; btn.disabled = false; btn.style.background = '';
     }
 
     // ── Tab switching ──────────────────────────────────────────────
@@ -1338,7 +1400,7 @@ exports.handler = async () => {
     }
 
     function switchTab(name) {
-      const tabs = ['profile', 'links', 'themes', 'qr', 'reviews', 'upgrade'];
+      const tabs = ['profile', 'links', 'themes', 'qr', 'reviews', 'gallery', 'upgrade'];
       document.querySelectorAll('.tab-btn').forEach((b, i) => {
         b.classList.toggle('active', tabs[i] === name);
       });
