@@ -7,20 +7,19 @@ if exist .git\index.lock del /f .git\index.lock
 echo Restoring accidentally-staged deletions...
 git restore --staged . 2>nul
 
+echo Restoring any corrupted working-tree files from HEAD...
+git restore index.html netlify.toml 2>nul
+
 echo Staging all changes...
 git add -A
 
 echo Committing...
-git commit -m "Fix: profile.js crash; Admin: full dashboard with suspend/activate/metrics/free-month/email"
+git commit -m "Fix: portal-save bg_image SELECT; admin HMAC token; qr country header"
 
 echo Pushing...
 git push origin main
 
 echo.
 echo Done. Netlify deploying (2-3 min).
-echo.
-echo NEXT: Run in Supabase SQL Editor:
-echo   ALTER TABLE customers ADD COLUMN IF NOT EXISTS free_until timestamptz;
-echo   ALTER TABLE profiles  ADD COLUMN IF NOT EXISTS suspended boolean default false;
 echo.
 pause

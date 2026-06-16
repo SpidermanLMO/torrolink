@@ -74,7 +74,7 @@ exports.handler = async (event) => {
   // (service_role lacks GRANT on profiles until GRANTs are applied in Supabase SQL Editor)
   const { data: profile, error: profErr } = await supabaseAnon
     .from("profiles")
-    .select("id, customer_id, logo_url, photo_url")
+    .select("id, customer_id, logo_url, photo_url, background_image")
     .eq("id", profileId)
     .maybeSingle();
 

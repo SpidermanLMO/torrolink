@@ -36,6 +36,9 @@ exports.handler = async (event) => {
     || headers["client-ip"]
     || null;
 
+  // Netlify CDN injects x-country (ISO 3166-1 alpha-2) at the edge
+  const country = headers["x-country"] || headers["x-nf-country"] || null;
+
   const deviceType = /mobile|android|iphone|ipad/i.test(ua)
     ? "mobile"
     : /tablet|ipad/i.test(ua)
@@ -52,6 +55,7 @@ exports.handler = async (event) => {
   supabase.from("scan_events").insert({
     profile_id: profile.id,
     ip_address: ip,
+    country,
     device_type: deviceType,
     os,
     referrer: headers["referer"] || null,

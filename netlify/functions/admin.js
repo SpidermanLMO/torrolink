@@ -7,6 +7,7 @@
 
 const { createClient } = require("@supabase/supabase-js");
 const { Resend }       = require("resend");
+const crypto           = require("crypto");
 
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL,
@@ -16,13 +17,34 @@ const resend      = new Resend(process.env.RESEND_API_KEY);
 const SITE        = process.env.DEPLOY_URL || "https://torrolink.com";
 const ADMIN_PASS  = process.env.ADMIN_PASSWORD || "changeme";
 
+// Generate a short-lived HMAC token (5-min windows) — embedded in HTML instead of raw password
+function makeToken() {
+  const ts = Math.floor(Date.now() / 300000);
+  return crypto.createHmac("sha256", ADMIN_PASS).update(String(ts)).digest("hex").slice(0, 32);
+}
+function checkToken(tok) {
+  const ts = Math.floor(Date.now() / 300000);
+  for (const t of [ts, ts - 1, ts - 2]) { // 10-min grace window
+    if (tok === crypto.createHmac("sha256", ADMIN_PASS).update(String(t)).digest("hex").slice(0, 32)) return true;
+  }
+  return false;
+}
+
 function isAuthed(event) {
-  const h = (event.headers["authorization"] || "").replace(/^Basic\s+/i, "");
-  if (!h) return false;
-  try {
-    const [, pass] = Buffer.from(h, "base64").toString("utf-8").split(":");
-    return pass === ADMIN_PASS;
-  } catch { return false; }
+  const authHdr = event.headers["authorization"] || "";
+  // Basic Auth (initial page load via browser dialog)
+  if (/^Basic\s+/i.test(authHdr)) {
+    const h = authHdr.replace(/^Basic\s+/i, "");
+    try {
+      const [, pass] = Buffer.from(h, "base64").toString("utf-8").split(":");
+      return pass === ADMIN_PASS;
+    } catch { return false; }
+  }
+  // Bearer token (AJAX actions — token is HMAC, not the raw password)
+  if (/^Bearer\s+/i.test(authHdr)) {
+    return checkToken(authHdr.replace(/^Bearer\s+/i, ""));
+  }
+  return false;
 }
 function unauthed() {
   return { statusCode: 401, headers: { "WWW-Authenticate": 'Basic realm="Torrolink Admin"', "Content-Type": "text/plain" }, body: "Unauthorized" };
@@ -236,14 +258,14 @@ tr:hover td{background:#1c2128}
 <div id="toast"></div>
 <script>
 const AU='/.netlify/functions/admin';
-const AP='${ADMIN_PASS}';
+const AT='${makeToken()}';
 function toast(m,e){const t=document.getElementById('toast');t.textContent=m;t.className=e?'err':'';t.style.display='block';setTimeout(()=>t.style.display='none',3200)}
 async function doAction(a,btn){
   const row=btn.closest('tr');
   const pid=row.dataset.profileId,cid=row.dataset.customerId;
   btn.disabled=true;const orig=btn.textContent;btn.textContent='…';
   try{
-    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Basic '+btoa(':'+AP)},body:JSON.stringify({action:a,profileId:pid,customerId:cid})});
+    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:a,profileId:pid,customerId:cid})});
     const d=await r.json();
     if(d.ok){toast(d.msg||'Done');setTimeout(()=>location.reload(),1200)}
     else{toast(d.error||'Error',true);btn.disabled=false;btn.textContent=orig}
@@ -257,7 +279,7 @@ async function sendEm(){
   if(!msg){toast('Write a message first',true);return}
   btn.disabled=true;btn.textContent='Sending…';
   try{
-    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Basic '+btoa(':'+AP)},body:JSON.stringify({action:'send_email',email:document.getElementById('eTo').value,name:document.getElementById('eName').value,subject:document.getElementById('eSub').value,message:msg})});
+    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'send_email',email:document.getElementById('eTo').value,name:document.getElementById('eName').value,subject:document.getElementById('eSub').value,message:msg})});
     const d=await r.json();
     if(d.ok){toast('Email sent ✓');closeEm()}else{toast(d.error||'Failed',true)}
   }catch(e){toast('Network error',true)}
