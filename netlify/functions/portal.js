@@ -681,6 +681,7 @@ exports.handler = async () => {
     let _qrTargetUrl  = '';
     let _qrLogoUrl    = null;
     let _selectedPattern = 'solid';
+    let _expandedGroup    = null;
     let _dirty = false; // true when profile has unsaved changes
     let _selectedCardStyle = 'rounded';
 
@@ -708,6 +709,18 @@ exports.handler = async () => {
       { id: 'wood',     label: 'Wood Grain', preview: ()       => 'background:linear-gradient(170deg,#8B5E3C 0%,#A0714F 15%,#7a4f2d 30%,#9a6540 45%,#b07848 60%,#8a5c38 75%,#a06840 100%)' },
       { id: 'custom',   label: '📷 Your Photo', preview: (c1, c2, bgUrl) => bgUrl ? 'background-image:url('+bgUrl+');background-size:cover;background-position:center' : 'background:linear-gradient(135deg,#667eea,#764ba2);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 1px,transparent 0,transparent 50%);background-size:auto,8px 8px' },
     ];
+
+    const VARIANT_TO_GROUP = {
+      'camo': 'camo', 'camo-desert': 'camo', 'camo-pink': 'camo', 'camo-blue': 'camo', 'camo-rwb': 'camo',
+      'leopard': 'leopard', 'cheetah': 'leopard', 'leopard-pink': 'leopard', 'leopard-snow': 'leopard', 'leopard-rwb': 'leopard',
+      'tropical': 'tropical', 'tropical-neon': 'tropical', 'tropical-pink': 'tropical', 'tropical-sunset': 'tropical', 'tropical-dark': 'tropical'
+    };
+    const PATTERN_GROUPS = {
+      'camo':     { label: 'Camo',         emoji: '🌿', variants: ['camo','camo-desert','camo-pink','camo-blue','camo-rwb'] },
+      'leopard':  { label: 'Animal Print', emoji: '🐆', variants: ['leopard','cheetah','leopard-pink','leopard-snow','leopard-rwb'] },
+      'tropical': { label: 'Tropical',     emoji: '🌴', variants: ['tropical','tropical-neon','tropical-pink','tropical-sunset','tropical-dark'] }
+    };
+    const GROUP_VARIANT_IDS = new Set(Object.keys(VARIANT_TO_GROUP));
 
     function buildPatternGrid() {
       const grid = document.getElementById('patternGrid');
@@ -1122,7 +1135,7 @@ exports.handler = async () => {
           var _notice = document.createElement('div');
           _notice.className = 'lead-metrics-notice';
           _notice.style.cssText = 'margin-top:14px;padding:12px 14px;background:#fff8f0;border:1px solid rgba(244,117,43,0.25);border-radius:8px;font-size:0.85rem;color:#7c4000;';
-          _notice.innerHTML = '🔒 Lead capture requires <strong>Metrics &amp; Leads</strong> ($10.28/mo). <a href="#" onclick="switchTab('upgrade');return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Upgrade &rarr;</a>';
+          _notice.innerHTML = '🔒 Lead capture requires <strong>Metrics &amp; Leads</strong> ($10.28/mo). <a href="#" onclick="switchTab(\'upgrade\');return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Upgrade &rarr;</a>';
           leadCard.appendChild(_notice);
         } else {
           leadEl.disabled = false;
