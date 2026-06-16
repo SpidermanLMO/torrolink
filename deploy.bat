@@ -1,13 +1,30 @@
 @echo off
 cd /d C:\Users\Laign\TorroLink
+
+echo Removing git lock if present...
 if exist .git\index.lock del /f .git\index.lock
-git add netlify/functions/portal.js netlify/functions/portal-save.js netlify/functions/profile.js index.html terms.html schema.sql
-git commit -m "Fix: social URLs, improved patterns (camo/leopard/tropical), custom bg photo, remove US250th, ToS page"
-git push
+
+echo Restoring accidentally-staged deletions...
+git restore --staged terms.html success.html supabase-email-templates\ 2>nul
+
+echo Staging all changes...
+git add -A
+
+echo Committing...
+git commit -m "Launch prep: stripe webhook events, privacy policy, netlify redirects, footer links"
+
+echo Pushing...
+git push origin main
+
 echo.
-echo === DONE — Netlify is deploying ===
+echo =========================================================
+echo  DONE. Netlify is deploying now (2-3 minutes).
 echo.
-echo IMPORTANT: Run this SQL in Supabase SQL Editor:
-echo ALTER TABLE profiles ADD COLUMN IF NOT EXISTS background_image text;
+echo  MANUAL STEPS REMAINING (see LAUNCH_CHECKLIST.md):
+echo  1. Supabase SQL - run background_image migration
+echo  2. Stripe Dashboard - add webhook endpoint + get secret
+echo  3. Netlify env vars - add STRIPE_WEBHOOK_SECRET
+echo  4. When ready to go live: swap Stripe test keys to live
+echo =========================================================
 echo.
 pause

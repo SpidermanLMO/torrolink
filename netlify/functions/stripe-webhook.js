@@ -16,7 +16,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
-const SITE   = process.env.DEPLOY_URL || "https://torrolink.com";
+const SITE        = process.env.DEPLOY_URL || "https://torrolink.com";
+const OWNER_EMAIL = process.env.OWNER_EMAIL  || "laigno@gmail.com";
 
 // ── HELPERS ───────────────────────────────────────
 
@@ -90,6 +91,19 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: `Webhook Error: ${err.message}` };
   }
 
+  // Route to appropriate handler
+  if (stripeEvent.type === "customer.subscription.deleted") {
+    return await handleSubscriptionDeleted(stripeEvent.data.object);
+  }
+  if (stripeEvent.type === "invoice.payment_failed") {
+    return await handlePaymentFailed(stripeEvent.data.object);
+  }
+  if (stripeEvent.type === "invoice.payment_succeeded") {
+    return await handlePaymentSucceeded(stripeEvent.data.object);
+  }
+  if (stripeEvent.type === "customer.subscription.created") {
+    return await handleSubscriptionCreated(stripeEvent.data.object);
+  }
   if (stripeEvent.type !== "checkout.session.completed") {
     return { statusCode: 200, body: "Ignored" };
   }
@@ -103,10 +117,10 @@ exports.handler = async (event) => {
   const stripeCustomerId = session.customer || null;
 
   // Classify the purchase type
-  const isNewQR         = plan.includes("qr-code");   // new purchase with a QR code
-  const isMetricsUpgrade  = plan === "metrics";          // standalone metrics upgrade
-  const isBrandingUpgrade = plan === "branding" || plan === "custom-branding"; // branding-only upgrade
-  const hasBranding     = plan.includes("branding");
+  const isNewQR           = plan.includes("qr-code");
+  const isMetricsUpgrade  = plan === "metrics";
+  const isBrandingUpgrade = plan === "branding" || plan === "custom-branding";
+  const hasBranding       = plan.includes("branding");
 
   try {
     // ── 1. Upsert customer ───────────────────────
@@ -298,6 +312,14 @@ exports.handler = async (event) => {
       });
     }
 
+    // ── 6. Owner alert ───────────────────────────
+    await resend.emails.send({
+      from:    "Torrolink Alerts <orders@torrolink.com>",
+      to:      OWNER_EMAIL,
+      subject: `💰 New order: ${escHtml(businessName)} (${plan})`,
+      html:    `<p><strong>${escHtml(customerName)}</strong> (${escHtml(customerEmail)}) just purchased <strong>${plan}</strong> for <strong>${escHtml(businessName)}</strong>.</p>`,
+    }).catch(() => {});
+
     return { statusCode: 200, body: JSON.stringify({ received: true }) };
 
   } catch (err) {
@@ -305,6 +327,171 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: err.message };
   }
 };
+
+// ── SUBSCRIPTION EVENT HANDLERS ─────────────────
+
+async function handleSubscriptionDeleted(subscription) {
+  try {
+    const stripeCustomerId = subscription.customer;
+    // Find customer by stripe_customer_id
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, email, name")
+      .eq("stripe_customer_id", stripeCustomerId)
+      .maybeSingle();
+
+    if (customer) {
+      await supabase
+        .from("customers")
+        .update({ metrics_active: false })
+        .eq("id", customer.id);
+      await supabase
+        .from("profiles")
+        .update({ has_metrics: false })
+        .eq("customer_id", customer.id);
+
+      const firstName = (customer.name || "").split(" ")[0] || "there";
+      await resend.emails.send({
+        from:    "Torrolink <orders@torrolink.com>",
+        to:      customer.email,
+        subject: "Your Metrics & Leads subscription has ended — Torrolink",
+        html: `
+<div style="font-family:sans-serif;max-width:580px;margin:0 auto;">
+  <div style="background:linear-gradient(135deg,#0f6b6b,#0a4d4d);padding:28px 32px;border-radius:12px 12px 0 0;text-align:center;">
+    <span style="font-size:1.4rem;font-weight:800;color:#fff;">Torrolink</span>
+  </div>
+  <div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;">
+    <p style="font-size:1rem;color:#333;">Hey ${firstName},</p>
+    <p style="color:#555;line-height:1.7;">Your <strong>Metrics &amp; Leads</strong> subscription has been cancelled. Scan analytics and lead capture are now paused on your profile.</p>
+    <p style="color:#555;line-height:1.7;">Your QR code and profile page remain fully active — no action needed.</p>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${SITE}/portal" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">
+        Reactivate Metrics →
+      </a>
+    </div>
+    <p style="font-size:0.85rem;color:#888;">— The Torrolink Team<br><a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
+  </div>
+</div>`,
+      });
+      // Owner alert
+      await resend.emails.send({
+        from:    "Torrolink Alerts <orders@torrolink.com>",
+        to:      OWNER_EMAIL,
+        subject: `📉 Cancellation: ${customer.email}`,
+        html:    `<p><strong>${customer.email}</strong> cancelled their Metrics &amp; Leads subscription.</p>`,
+      }).catch(() => {});
+    }
+    return { statusCode: 200, body: JSON.stringify({ received: true }) };
+  } catch (err) {
+    console.error("handleSubscriptionDeleted error:", err);
+    return { statusCode: 500, body: err.message };
+  }
+}
+
+async function handlePaymentFailed(invoice) {
+  try {
+    const stripeCustomerId = invoice.customer;
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, email, name")
+      .eq("stripe_customer_id", stripeCustomerId)
+      .maybeSingle();
+
+    if (customer && customer.email) {
+      const firstName = (customer.name || "").split(" ")[0] || "there";
+      const invoiceUrl = invoice.hosted_invoice_url || `${SITE}/portal`;
+      await resend.emails.send({
+        from:    "Torrolink <orders@torrolink.com>",
+        to:      customer.email,
+        subject: "Payment failed — action required to keep Metrics & Leads active",
+        html: `
+<div style="font-family:sans-serif;max-width:580px;margin:0 auto;">
+  <div style="background:#c0392b;padding:28px 32px;border-radius:12px 12px 0 0;text-align:center;">
+    <span style="font-size:1.4rem;font-weight:800;color:#fff;">Torrolink — Payment Issue</span>
+  </div>
+  <div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;">
+    <p style="font-size:1rem;color:#333;">Hey ${firstName},</p>
+    <p style="color:#555;line-height:1.7;">We weren't able to process your <strong>Metrics &amp; Leads</strong> subscription payment. Please update your payment method to keep analytics active.</p>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${invoiceUrl}" style="background:#c0392b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">
+        Update Payment Method →
+      </a>
+    </div>
+    <p style="color:#888;font-size:0.9rem;">If payment isn't updated within a few days, your Metrics &amp; Leads subscription will be cancelled. Your QR code and profile stay active regardless.</p>
+    <p style="font-size:0.85rem;color:#888;margin-top:24px;">— The Torrolink Team<br><a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
+  </div>
+</div>`,
+      });
+    }
+    return { statusCode: 200, body: JSON.stringify({ received: true }) };
+  } catch (err) {
+    console.error("handlePaymentFailed error:", err);
+    return { statusCode: 500, body: err.message };
+  }
+}
+
+async function handlePaymentSucceeded(invoice) {
+  try {
+    const stripeCustomerId = invoice.customer;
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, email, name")
+      .eq("stripe_customer_id", stripeCustomerId)
+      .maybeSingle();
+
+    if (customer && customer.email && invoice.amount_paid > 0) {
+      const firstName  = (customer.name || "").split(" ")[0] || "there";
+      const amountPaid = (invoice.amount_paid / 100).toFixed(2);
+      await resend.emails.send({
+        from:    "Torrolink <orders@torrolink.com>",
+        to:      customer.email,
+        subject: "Your Torrolink payment was received ✅",
+        html: `
+<div style="font-family:sans-serif;max-width:580px;margin:0 auto;">
+  <div style="background:linear-gradient(135deg,#0f6b6b,#0a4d4d);padding:28px 32px;border-radius:12px 12px 0 0;text-align:center;">
+    <span style="font-size:1.4rem;font-weight:800;color:#fff;">Torrolink</span>
+  </div>
+  <div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;">
+    <p style="font-size:1rem;color:#333;">Hey ${firstName},</p>
+    <p style="color:#555;line-height:1.7;">Your payment of <strong>$${amountPaid}</strong> has been received. Your Metrics &amp; Leads subscription continues uninterrupted.</p>
+    <div style="text-align:center;margin:28px 0;">
+      <a href="${SITE}/portal" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">View Dashboard →</a>
+    </div>
+    <p style="font-size:0.85rem;color:#888;">— The Torrolink Team</p>
+  </div>
+</div>`,
+      });
+    }
+    return { statusCode: 200, body: JSON.stringify({ received: true }) };
+  } catch (err) {
+    console.error("handlePaymentSucceeded error:", err);
+    return { statusCode: 500, body: err.message };
+  }
+}
+
+async function handleSubscriptionCreated(subscription) {
+  try {
+    const stripeCustomerId = subscription.customer;
+    const { data: customer } = await supabase
+      .from("customers")
+      .select("id, email, name")
+      .eq("stripe_customer_id", stripeCustomerId)
+      .maybeSingle();
+
+    const email = customer?.email || "unknown";
+    const amount = (subscription.items?.data?.[0]?.price?.unit_amount / 100 || 0).toFixed(2);
+    await resend.emails.send({
+      from:    "Torrolink Alerts <orders@torrolink.com>",
+      to:      OWNER_EMAIL,
+      subject: `💰 New Subscriber: ${email}`,
+      html:    `<p><strong>${email}</strong> just subscribed to Metrics &amp; Leads. Amount: $${amount}/mo</p>`,
+    }).catch(() => {});
+    return { statusCode: 200, body: JSON.stringify({ received: true }) };
+  } catch (err) {
+    console.error("handleSubscriptionCreated error:", err);
+    return { statusCode: 500, body: err.message };
+  }
+}
 
 // ── EMAIL TEMPLATES ──────────────────────────────
 
