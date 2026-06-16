@@ -402,6 +402,29 @@ h2 {
 .plan-featured .plan-addon { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); }
 .plan-btn { width: 100%; text-align: center; }
 
+/* ── Pricing trust row ── */
+.pricing-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 20px 0 28px;
+  padding: 14px 20px;
+  background: #f0fafa;
+  border-radius: 10px;
+  border: 1px solid #d1e8e8;
+}
+.pricing-trust span {
+  font-size: 0.87rem;
+  color: #1a5e5e;
+  font-weight: 500;
+}
+@media (max-width: 640px) {
+  .pricing-trust { gap: 8px 16px; }
+  .pricing-trust span { font-size: 0.82rem; }
+}
+
 /* ── Metrics add-on callout ── */
 .metrics-callout {
   display: flex;

@@ -127,12 +127,18 @@ exports.handler = async (event) => {
     let customerId;
     const { data: existingCustomer } = await supabase
       .from("customers")
-      .select("id")
+      .select("id, stripe_customer_id")
       .eq("email", customerEmail)
       .maybeSingle();
 
     if (existingCustomer) {
       customerId = existingCustomer.id;
+      // Back-fill stripe_customer_id if missing (happens when customer was created before this field)
+      if (stripeCustomerId && !existingCustomer.stripe_customer_id) {
+        await supabase.from("customers").update({ stripe_customer_id: stripeCustomerId }).eq("id", customerId);
+      }
+      // Update plan on re-purchase / upgrade
+      await supabase.from("customers").update({ plan }).eq("id", customerId);
     } else {
       const { data: newCustomer, error: custErr } = await supabase
         .from("customers")
