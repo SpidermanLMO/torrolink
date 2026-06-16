@@ -574,13 +574,17 @@ exports.handler = async () => {
             <div id="qrCanvas" style="border-radius:12px;overflow:hidden;line-height:0;"></div>
           </div>
 
-          <div style="text-align:center;margin-bottom:20px;">
-            <button onclick="downloadQR()" class="tl-btn" style="background:none;border:1.5px solid #0f6b6b;color:#0f6b6b;padding:8px 24px;">&#8675; Download QR</button>
+          <div style="text-align:center;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <button onclick="downloadQR('png')" class="tl-btn" style="background:none;border:1.5px solid #0f6b6b;color:#0f6b6b;padding:8px 20px;">&#8675; Download PNG</button>
+            <button onclick="downloadQR('svg')" class="tl-btn" style="background:none;border:1.5px solid #444;color:#444;padding:8px 20px;" title="Vector — for print shops & vinyl wrap">&#8675; Download SVG</button>
           </div>
 
           <div id="profileUrlRow" style="text-align:left;background:#edf8f8;border-radius:8px;padding:14px 16px;">
-            <p style="font-size:0.8rem;color:#888;margin-bottom:4px;">Your profile page URL</p>
-            <a id="profileUrlLink" href="#" style="color:#0f6b6b;font-weight:700;word-break:break-all;"></a>
+            <p style="font-size:0.8rem;color:#888;margin-bottom:6px;">Your profile page URL</p>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <a id="profileUrlLink" href="#" target="_blank" style="color:#0f6b6b;font-weight:700;word-break:break-all;flex:1;min-width:0;"></a>
+              <button id="copyUrlBtn" onclick="copyProfileUrl()" style="flex-shrink:0;background:#0f6b6b;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;">&#128203; Copy</button>
+            </div>
           </div>
         </div>
       </div>
@@ -602,10 +606,16 @@ exports.handler = async () => {
           <div id="galleryGrid" class="gallery-grid-p">
             <p class="gallery-empty">No photos yet. Add some below!</p>
           </div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;">
-            <label class="file-btn" for="galleryInput" style="cursor:pointer;">+ Add Photo</label>
+          <div id="galleryDropZone"
+            style="margin-top:10px;border:2px dashed #c8d8d8;border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:background 0.15s,border-color 0.15s;"
+            onclick="document.getElementById(\'galleryInput\').click()"
+            ondragover="event.preventDefault();this.style.background=\'#e6f7f7\';this.style.borderColor=\'#0f6b6b\';"
+            ondragleave="this.style.background=\'\';this.style.borderColor=\'#c8d8d8\';"
+            ondrop="event.preventDefault();this.style.background=\'\';this.style.borderColor=\'#c8d8d8\';handleGalleryUpload({files:event.dataTransfer.files});">
+            <div style="font-size:1.3rem;margin-bottom:4px;">&#128247;</div>
+            <div style="font-size:0.88rem;color:#555;font-weight:600;">Drop photos here or <span style="color:#0f6b6b;text-decoration:underline;">browse</span></div>
+            <div style="font-size:0.75rem;color:#aaa;margin-top:3px;">JPG / PNG / WebP &bull; max 8 MB each</div>
             <input type="file" id="galleryInput" accept="image/*" multiple style="display:none;" onchange="handleGalleryUpload(this)" />
-            <span style="font-size:0.75rem;color:#aaa;">JPG / PNG / WebP &bull; max 8 MB each</span>
           </div>
           <p id="galleryMsg" class="media-msg"></p>
         </div>
@@ -1266,8 +1276,19 @@ exports.handler = async () => {
       renderQRCode();
     }
 
-    function downloadQR() {
-      if (_qrCode) _qrCode.download({ name: 'torrolink-qr', extension: 'png' });
+    function downloadQR(ext) {
+      if (_qrCode) _qrCode.download({ name: 'torrolink-qr', extension: ext || 'png' });
+    }
+
+    function copyProfileUrl() {
+      var link = document.getElementById('profileUrlLink');
+      var url  = link ? link.href : window.location.origin;
+      var btn  = document.getElementById('copyUrlBtn');
+      navigator.clipboard.writeText(url).then(function() {
+        btn.textContent = '✓ Copied!';
+        btn.style.background = '#16a34a';
+        setTimeout(function(){ btn.textContent = '\u{1F4CB} Copy'; btn.style.background = '#0f6b6b'; }, 2000);
+      }).catch(function() { prompt('Copy this link:', url); });
     }
 
     // ── Save profile ───────────────────────────────────────────────
@@ -1521,6 +1542,10 @@ exports.handler = async () => {
     async function startUpgrade(plan) {
       const email = _session?.user?.email || '';
       const businessName = _profile?.business_name || '';
+      // Disable buttons while redirecting
+      document.querySelectorAll('#upgradeContent button').forEach(function(b) {
+        b.disabled = true; b.textContent = '⏳ Redirecting…';
+      });
       try {
         const res = await fetch('/.netlify/functions/create-checkout', {
           method: 'POST',
@@ -1528,10 +1553,15 @@ exports.handler = async () => {
           body: JSON.stringify({ plan, businessName, customerEmail: email }),
         });
         const data = await res.json();
-        if (data.url) window.location.href = data.url;
-        else alert('Something went wrong. Please try again or email orders@torrolink.com');
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Something went wrong. Please try again or email orders@torrolink.com');
+          if (_profile) buildUpgradeTab(_profile);
+        }
       } catch {
         alert('Something went wrong. Please try again or email orders@torrolink.com');
+        if (_profile) buildUpgradeTab(_profile);
       }
     }
 

@@ -194,9 +194,23 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.step, .plan, .case').forEach(el => {
+document.querySelectorAll('.step, .plan, .case, .faq-item').forEach(el => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(24px)';
   el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
   observer.observe(el);
 });
+
+// Sticky mobile CTA — hide when pricing section is visible
+(function () {
+  var cta = document.getElementById('stickyCta');
+  var pricing = document.getElementById('pricing');
+  if (!cta || !pricing) return;
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      // Only operate on mobile; CSS keeps it hidden on desktop anyway
+      cta.style.display = entry.isIntersecting ? 'none' : '';
+    });
+  }, { threshold: 0.15 });
+  obs.observe(pricing);
+})();

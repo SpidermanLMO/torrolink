@@ -317,7 +317,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   if (photos && photos.length > 0) {
     var thumbsHtml = photos.map(function(ph) {
       var cap = ph.caption ? '<div class="thumb-caption">' + escHtml(ph.caption) + '</div>' : '';
-      return '<div class="gallery-thumb" onclick="openLightbox(\'' + escJs(ph.id) + '\',\'' + escJs(ph.file_url) + '\',\'' + escJs(ph.caption||'') + '\')">' +
+      return '<div class="gallery-thumb" data-id="' + escHtml(ph.id) + '" data-url="' + escHtml(ph.file_url) + '" data-caption="' + escHtml(ph.caption||'') + '" onclick="openLightbox(\'' + escJs(ph.id) + '\',\'' + escJs(ph.file_url) + '\',\'' + escJs(ph.caption||'') + '\')">' +
         '<img src="' + escHtml(ph.file_url) + '" alt="' + escHtml(ph.caption||'Gallery photo') + '" loading="lazy" />' +
         cap + '</div>';
     }).join('');
@@ -767,6 +767,10 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     .doc-card .doc-label { flex: 1; font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
     .doc-card .doc-arrow { font-size: 1rem; opacity: 0.6; }
     #tl-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.93); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; }
+    #tl-lb-prev, #tl-lb-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 2rem; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; z-index: 2; }
+    #tl-lb-prev { left: 12px; }
+    #tl-lb-next { right: 12px; }
+    #tl-lb-prev:hover, #tl-lb-next:hover { background: rgba(255,255,255,0.3); }
     #tl-lightbox.open { display: flex; }
     #tl-lb-img { max-width: 92vw; max-height: 82vh; border-radius: 10px; object-fit: contain; }
     #tl-lb-caption { color: rgba(255,255,255,0.75); font-size: 0.85rem; margin-top: 10px; text-align: center; max-width: 80vw; }
@@ -826,7 +830,9 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   <!-- Lightbox -->
   <div id="tl-lightbox" onclick="if(event.target===this)closeLightbox()">
     <button id="tl-lb-close" onclick="closeLightbox()">&times;</button>
+    <button id="tl-lb-prev" onclick="lbNav(-1)" aria-label="Previous photo">&#8249;</button>
     <img id="tl-lb-img" src="" alt="" />
+    <button id="tl-lb-next" onclick="lbNav(1)" aria-label="Next photo">&#8250;</button>
     <p id="tl-lb-caption"></p>
   </div>
 
@@ -913,13 +919,34 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
       }
     }
 
-    // ── Gallery lightbox ──────────────────────────────────────────
+    // ── Gallery lightbox (with swipe + arrow navigation) ─────────────
+    var _lbPhotos = [];
+    var _lbIdx    = 0;
+    var _lbTouchX = null;
+
+    // Called from gallery thumbs — builds photo array for navigation
     function openLightbox(photoId, url, caption) {
-      var lb = document.getElementById('tl-lightbox');
+      // Build ordered photo list from rendered thumbs for prev/next
+      _lbPhotos = Array.from(document.querySelectorAll('.gallery-thumb')).map(function(el) {
+        return { id: el.getAttribute('data-id'), url: el.getAttribute('data-url'), caption: el.getAttribute('data-caption') };
+      });
+      _lbIdx = _lbPhotos.findIndex(function(p) { return p.id === photoId; });
+      if (_lbIdx < 0) _lbIdx = 0;
+      _lbShow(photoId, url, caption);
+    }
+
+    function _lbShow(photoId, url, caption) {
       document.getElementById('tl-lb-img').src = url;
       document.getElementById('tl-lb-caption').textContent = caption || '';
+      var lb = document.getElementById('tl-lightbox');
       lb.classList.add('open');
       document.body.style.overflow = 'hidden';
+      // Show/hide arrows
+      var prev = document.getElementById('tl-lb-prev');
+      var next = document.getElementById('tl-lb-next');
+      if (prev) prev.style.display = _lbPhotos.length > 1 ? '' : 'none';
+      if (next) next.style.display = _lbPhotos.length > 1 ? '' : 'none';
+      // Track view (fire-and-forget)
       if (photoId) {
         fetch('/.netlify/functions/track-photo', {
           method: 'POST',
@@ -928,12 +955,38 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
         }).catch(function(){});
       }
     }
+
+    function lbNav(dir) {
+      if (!_lbPhotos.length) return;
+      _lbIdx = (_lbIdx + dir + _lbPhotos.length) % _lbPhotos.length;
+      var p = _lbPhotos[_lbIdx];
+      _lbShow(p.id, p.url, p.caption);
+    }
+
     function closeLightbox() {
       var lb = document.getElementById('tl-lightbox');
       if (lb) { lb.classList.remove('open'); document.getElementById('tl-lb-img').src = ''; }
       document.body.style.overflow = '';
     }
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+
+    // Touch swipe for mobile
+    (function() {
+      var lb = document.getElementById('tl-lightbox');
+      if (!lb) return;
+      lb.addEventListener('touchstart', function(e) { _lbTouchX = e.touches[0].clientX; }, { passive: true });
+      lb.addEventListener('touchend', function(e) {
+        if (_lbTouchX === null) return;
+        var dx = e.changedTouches[0].clientX - _lbTouchX;
+        _lbTouchX = null;
+        if (Math.abs(dx) > 40) lbNav(dx < 0 ? 1 : -1);
+      });
+    })();
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') lbNav(1);
+      if (e.key === 'ArrowLeft') lbNav(-1);
+    });
 
     // ── Share button ──────────────────────────────────────────────────
     function shareProfile() {

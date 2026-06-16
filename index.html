@@ -18,14 +18,80 @@
   <meta property="og:url" content="https://torrolink.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Torrolink" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&h=630&fit=crop&auto=format&q=80" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Torrolink — Your Business. One Scan Away." />
+  <meta name="twitter:description" content="One QR code. A free profile page with your links, logo, and contact info. Buy once, own forever. No monthly fee." />
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&h=630&fit=crop&auto=format&q=80" />
 
   <!-- Sitemap reference -->
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Barlow:wght@800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Structured data (WebSite + FAQPage) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "Torrolink",
+        "url": "https://torrolink.com",
+        "description": "Permanent QR codes with free customizable profile pages for small business owners and solo professionals."
+      },
+      {
+        "@type": "Organization",
+        "name": "Torrolink",
+        "url": "https://torrolink.com",
+        "email": "orders@torrolink.com"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does my Torrolink QR code ever expire?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Your QR code is permanent. It never expires and never shuts off even if you never pay another cent after your one-time purchase. You own it." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I edit my profile page after I buy?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes, anytime. Log into your portal and update your logo, bio, links, phone number, or anything else. Changes go live immediately." }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens if I cancel the Metrics plan?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Your QR code and profile page stay active always. Canceling the $10.28/mo plan just removes scan analytics and the lead capture form. Your one-time purchase is permanent." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I download my QR code for printing?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Download it as PDF, JPEG, or SVG from your portal. All formats are print-ready for truck wraps, yard signs, business cards, and flyers." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need technical skills to set this up?",
+            "acceptedAnswer": { "@type": "Answer", "text": "None at all. After purchase you receive a login link by email. Setting up your profile takes about 10 minutes. If you get stuck, email orders@torrolink.com." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I put the QR code on my truck, signs, and business cards?",
+            "acceptedAnswer": { "@type": "Answer", "text": "That is exactly what it is built for. Download the print-ready SVG and hand it to any sign shop or wrap company. It scans perfectly at any size." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
+  <a href="#main-content" class="skip-nav">Skip to main content</a>
 
   <!-- NAV -->
   <nav class="nav">
@@ -60,7 +126,7 @@
   </nav>
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="main-content">
     <div class="container hero-inner">
       <div class="hero-badge">Own it forever &bull; No monthly fee required</div>
       <h1>Your Business.<br>One Scan Away.</h1>
@@ -76,6 +142,19 @@
       </div>
     </div>
   </section>
+
+  <!-- SOCIAL PROOF BAR -->
+  <div class="proof-bar">
+    <div class="container proof-bar-inner">
+      <div class="proof-item"><span class="proof-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span> "Worth every penny" &mdash; PTorro Roofing LLC</div>
+      <div class="proof-divider" aria-hidden="true">&middot;</div>
+      <div class="proof-item">&#127482;&#127480; Built &amp; supported in the USA</div>
+      <div class="proof-divider" aria-hidden="true">&middot;</div>
+      <div class="proof-item">&#9889; Same-day response &mdash; <a href="mailto:orders@torrolink.com">orders@torrolink.com</a></div>
+      <div class="proof-divider" aria-hidden="true">&middot;</div>
+      <div class="proof-item">&#128274; No auto-renew trap &mdash; own it forever</div>
+    </div>
+  </div>
 
   <!-- COMPETITOR COMPARISON -->
   <section class="compare">
@@ -376,6 +455,50 @@
     </div>
   </section>
 
+  <!-- FAQ -->
+  <section class="section faq" id="faq">
+    <div class="container">
+      <div class="section-label">Questions answered</div>
+      <h2>Frequently asked questions</h2>
+      <div class="faq-list">
+
+        <details class="faq-item">
+          <summary class="faq-question">Does my QR code ever expire?</summary>
+          <div class="faq-answer">No. Your Torrolink QR code is permanent. It never expires and never gets shut off &mdash; even if you never pay another cent after your one-time purchase. You own it, period.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">Can I edit my profile page after I buy?</summary>
+          <div class="faq-answer">Yes, anytime. Log into your portal and update your logo, bio, links, phone number, or anything else. Changes go live immediately &mdash; no waiting, no approval process.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">What happens if I cancel the Metrics plan?</summary>
+          <div class="faq-answer">Your QR code and profile page stay active &mdash; always. Canceling the $10.28/mo Metrics plan just removes scan analytics and the lead capture form. Your one-time purchase is permanent and nothing breaks.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">Can I download my QR code for printing?</summary>
+          <div class="faq-answer">Yes. Download it as a PDF, JPEG, or SVG from your portal. All formats are print-ready and sized for truck wraps, yard signs, business cards, and flyers. Hand the SVG to any sign shop or wrap company and you are done.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">Do I need technical skills to set this up?</summary>
+          <div class="faq-answer">None at all. After purchase you receive a login link by email. Setting up your profile &mdash; uploading a logo, adding your phone number and links &mdash; takes about 10 minutes. If you get stuck, email us at orders@torrolink.com and we respond same day.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">Can I put the QR on my truck, yard signs, and business cards?</summary>
+          <div class="faq-answer">That is exactly what it is built for. Download the print-ready SVG and hand it to any sign shop or print house. The code scans perfectly whether it is 1 inch on a business card or 3 feet on a truck door.</div>
+        </details>
+
+      </div>
+      <div class="faq-cta">
+        More questions? <a href="mailto:orders@torrolink.com">Email us</a> &mdash; we respond same day.
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT / GET STARTED -->
   <section class="section contact" id="contact">
     <div class="container contact-inner">
@@ -472,6 +595,11 @@
       <button id="modalSubmitBtn" class="btn btn-primary btn-full" onclick="submitCheckoutModal()">Continue to Payment →</button>
       <p class="modal-secure">🔒 Secure checkout powered by Stripe</p>
     </div>
+  </div>
+
+  <!-- MOBILE STICKY CTA (hidden when pricing section is visible) -->
+  <div class="sticky-cta-mobile" id="stickyCta">
+    <a href="#pricing" class="btn btn-primary">Get Your QR Code &#8594;</a>
   </div>
 
   <script src="script.js"></script>
