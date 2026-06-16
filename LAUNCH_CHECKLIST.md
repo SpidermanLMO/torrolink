@@ -31,6 +31,49 @@ This fixes:
 
 ---
 
+## Step 2b — Photo Gallery + Documents (new feature)
+
+Run this **after** Step 2. In the same SQL Editor:
+
+```sql
+-- profile_photos table (gallery grid + view tracking)
+CREATE TABLE IF NOT EXISTS profile_photos (
+  id          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  profile_id  UUID        NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  caption     TEXT        DEFAULT '',
+  file_url    TEXT        NOT NULL,
+  file_path   TEXT        NOT NULL,
+  sort_order  INTEGER     DEFAULT 0,
+  view_count  INTEGER     DEFAULT 0,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+GRANT ALL ON profile_photos TO service_role;
+GRANT SELECT ON profile_photos TO anon;
+ALTER TABLE profile_photos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read photos" ON profile_photos FOR SELECT USING (true);
+
+-- profile_documents table (PDFs, flyers, Word docs)
+CREATE TABLE IF NOT EXISTS profile_documents (
+  id          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  profile_id  UUID        NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title       TEXT        NOT NULL DEFAULT 'Document',
+  file_url    TEXT        NOT NULL,
+  file_path   TEXT        NOT NULL,
+  file_type   TEXT        NOT NULL DEFAULT 'pdf',
+  sort_order  INTEGER     DEFAULT 0,
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+GRANT ALL ON profile_documents TO service_role;
+GRANT SELECT ON profile_documents TO anon;
+ALTER TABLE profile_documents ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read documents" ON profile_documents FOR SELECT USING (true);
+```
+
+Also ensure the `qr-assets` Supabase Storage bucket exists and is **public**.
+Go to Storage → `qr-assets` → Settings → make Public (if not already).
+
+---
+
 ## Step 3 — Netlify: Add ADMIN_PASSWORD env var
 
 Go to https://app.netlify.com → your site → **Site configuration → Environment variables** → Add:

@@ -624,19 +624,57 @@ exports.handler = async () => {
       const grid = document.getElementById('patternGrid');
       const c1 = document.getElementById('themeColor1').value;
       const c2 = document.getElementById('themeColor2').value;
-      grid.innerHTML = PATTERNS.map(p => {
-        const style = p.id === 'custom' ? p.preview(c1, c2, _bgImageUrl) : p.preview(c1, c2);
-        return '<div class="pattern-swatch' + (p.id === _selectedPattern ? ' selected' : '') + '" style="' + style + '" onclick="selectPattern(\\'' + p.id + '\\')" title="' + p.label + '"><span>' + p.label + '</span></div>';
-      }).join('');
+      const patMap = {};
+      PATTERNS.forEach(function(p) { patMap[p.id] = p; });
+      const topLevel = ['solid','gradient','camo','leopard','tropical','marble','carbon','wood','custom'];
+      var html = '';
+      topLevel.forEach(function(id) {
+        const groupKey = (VARIANT_TO_GROUP[id] && PATTERN_GROUPS[VARIANT_TO_GROUP[id]].variants[0] === id) ? VARIANT_TO_GROUP[id] : null;
+        if (groupKey) {
+          const group = PATTERN_GROUPS[groupKey];
+          const activeId = group.variants.includes(_selectedPattern) ? _selectedPattern : group.variants[0];
+          const pat = patMap[activeId];
+          const style = pat.preview(c1, c2);
+          const isExp = _expandedGroup === groupKey;
+          const hasSel = group.variants.includes(_selectedPattern);
+          html += '<div class="pattern-swatch group-swatch' + (hasSel ? ' selected' : '') + (isExp ? ' expanded' : '') + '" style="' + style + '" onclick="togglePatternGroup(\'' + groupKey + '\')" title="' + group.label + '">';
+          html += '<span>' + group.emoji + ' ' + group.label + (isExp ? ' &#9652;' : ' &#9662;') + '</span>';
+          html += '</div>';
+          if (isExp) {
+            html += '<div class="pattern-subrow">';
+            group.variants.forEach(function(vid) {
+              const vp = patMap[vid];
+              const vs = vp.preview(c1, c2);
+              html += '<div class="pattern-sub-swatch' + (vid === _selectedPattern ? ' selected' : '') + '" style="' + vs + '" onclick="selectPatternVariant(\'' + vid + '\')" title="' + vp.label + '"><span>' + vp.label + '</span></div>';
+            });
+            html += '</div>';
+          }
+        } else {
+          const p = patMap[id];
+          if (!p) return;
+          const style = p.id === 'custom' ? p.preview(c1, c2, _bgImageUrl) : p.preview(c1, c2);
+          html += '<div class="pattern-swatch' + (p.id === _selectedPattern ? ' selected' : '') + '" style="' + style + '" onclick="selectPattern(\'' + p.id + '\')" title="' + p.label + '"><span>' + p.label + '</span></div>';
+        }
+      });
+      grid.innerHTML = html;
     }
 
+    function togglePatternGroup(groupKey) {
+      _expandedGroup = (_expandedGroup === groupKey) ? null : groupKey;
+      buildPatternGrid();
+    }
+
+    function selectPatternVariant(id) {
+      _expandedGroup = null;
+      selectPattern(id);
+    }
     function selectPattern(id) {
       _selectedPattern = id;
+      if (!GROUP_VARIANT_IDS.has(id)) _expandedGroup = null;
       var sec = document.getElementById('bgUploadSection');
       if (sec) sec.style.display = id === 'custom' ? '' : 'none';
       buildPatternGrid();
     }
-
     function refreshSwatchColors() {
       buildPatternGrid();
     }
@@ -1448,6 +1486,174 @@ exports.handler = async () => {
     function escAttr(s) {
       return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
+
+    // ══════════════════════════════════════════════════════════
+    // GALLERY & DOCUMENTS
+    // ══════════════════════════════════════════════════════════
+
+    var _photos    = [];
+    var _documents = [];
+
+    async function loadGallery() {
+      if (!_profile) return;
+      var pid = _profile.id;
+      var results = await Promise.all([
+        _supabase.from('profile_photos').select('id,file_url,caption,view_count,sort_order').eq('profile_id', pid).order('sort_order'),
+        _supabase.from('profile_documents').select('id,file_url,title,file_type,sort_order').eq('profile_id', pid).order('sort_order'),
+      ]);
+      _photos    = results[0].data || [];
+      _documents = results[1].data || [];
+      renderGalleryGrid();
+      renderDocumentsList();
+    }
+
+    function renderGalleryGrid() {
+      var grid = document.getElementById('galleryGrid');
+      if (!grid) return;
+      if (!_photos.length) {
+        grid.innerHTML = '<p class=\'gallery-empty\'>No photos yet. Add some below!</p>';
+        return;
+      }
+      grid.innerHTML = _photos.map(function(ph) {
+        return '<div class=\'gallery-item-p\'>' +
+          '<div style=\'position:relative;\'>' +
+            '<img src=\''+escHtml(ph.file_url)+'\' alt=\''+escHtml(ph.caption||'')+'\'  loading=\'lazy\' />' +
+            '<span class=\'gallery-badge-p\'>&#128065; '+(ph.view_count||0)+'</span>' +
+          '</div>' +
+          '<input class=\'gallery-cap-p\' type=\'text\' value=\''+escHtml(ph.caption||'')+'\'  placeholder=\'Caption...\' onblur=\'saveCaption(\"'+escJs(ph.id)+'\",this.value)\' />' +
+          '<button class=\'gallery-del-p\' onclick=\'deletePhoto(\"'+escJs(ph.id)+'\")\'  >&#10005; Remove</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderDocumentsList() {
+      var list = document.getElementById('documentsList');
+      if (!list) return;
+      if (!_documents.length) {
+        list.innerHTML = '<p style=\'color:#aaa;font-size:0.85rem;text-align:center;padding:12px 0;\'>No documents yet.</p>';
+        return;
+      }
+      list.innerHTML = _documents.map(function(d) {
+        var icon = d.file_type === 'pdf' ? '&#128196;' : '&#128221;';
+        return '<div class=\'doc-item-p\' id=\'doc-'+escHtml(d.id)+'\' >' +
+          '<span class=\'doc-icon-p\'>'+icon+'</span>' +
+          '<div class=\'doc-body-p\'>' +
+            '<input class=\'doc-title-p\' type=\'text\' value=\''+escHtml(d.title||'Document')+'\'  placeholder=\'Document title\' onblur=\'saveDocTitle(\"'+escJs(d.id)+'\",this.value)\' />' +
+            '<a class=\'doc-view-p\' href=\''+escHtml(d.file_url)+'\' target=\'_blank\' rel=\'noopener\'>View document &#8599;</a>' +
+          '</div>' +
+          '<button class=\'doc-del-p\' onclick=\'deleteDocument(\"'+escJs(d.id)+'\")\'  >&#10005;</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function compressImageFile(file) {
+      return new Promise(function(resolve) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onload = function() {
+            var MAX = 1200;
+            var w = img.width, h = img.height;
+            if (w > MAX || h > MAX) {
+              if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+              else { w = Math.round(w * MAX / h); h = MAX; }
+            }
+            var canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function fileToBase64(file) {
+      return new Promise(function(resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function(e) { resolve(e.target.result); };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function mediaPost(fn, data) {
+      if (!_session) return { error: 'Not signed in' };
+      var token = _session.access_token;
+      try {
+        var res = await fetch('/.netlify/functions/'+fn, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.assign({ token: token }, data))
+        });
+        return await res.json();
+      } catch(e) { return { error: e.message }; }
+    }
+
+    async function handleGalleryUpload(input) {
+      var files = Array.from(input.files || []);
+      if (!files.length) return;
+      var msg = document.getElementById('galleryMsg');
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        if (file.size > 8 * 1024 * 1024) { msg.textContent = file.name+' is too large (max 8 MB). Skipped.'; continue; }
+        msg.textContent = 'Uploading '+(i+1)+' of '+files.length+'...';
+        try {
+          var b64 = await compressImageFile(file);
+          var res = await mediaPost('upload-media', { type: 'photo', base64: b64, filename: file.name, caption: '' });
+          if (res.ok && res.item) { _photos.push(res.item); renderGalleryGrid(); }
+          else { msg.textContent = res.error || 'Upload failed'; }
+        } catch(e) { msg.textContent = 'Error: '+e.message; }
+      }
+      msg.textContent = 'Done!';
+      input.value = '';
+      setTimeout(function(){ msg.textContent = ''; }, 2000);
+    }
+
+    async function handleDocUpload(input) {
+      var file = input.files && input.files[0];
+      if (!file) return;
+      var msg = document.getElementById('docMsg');
+      if (file.size > 20 * 1024 * 1024) { msg.textContent = 'File too large (max 20 MB).'; return; }
+      msg.textContent = 'Uploading...';
+      try {
+        var b64 = await fileToBase64(file);
+        var title = file.name.replace(/\.[^.]+$/, '');
+        var res = await mediaPost('upload-media', { type: 'document', base64: b64, filename: file.name, title: title });
+        if (res.ok && res.item) { _documents.push(res.item); renderDocumentsList(); msg.textContent = 'Uploaded!'; }
+        else { msg.textContent = res.error || 'Upload failed'; }
+      } catch(e) { msg.textContent = 'Error: '+e.message; }
+      input.value = '';
+      setTimeout(function(){ msg.textContent = ''; }, 2000);
+    }
+
+    async function deletePhoto(id) {
+      if (!confirm('Remove this photo?')) return;
+      var res = await mediaPost('delete-media', { type: 'photo', itemId: id });
+      if (res.ok) { _photos = _photos.filter(function(p){ return p.id !== id; }); renderGalleryGrid(); }
+    }
+
+    async function deleteDocument(id) {
+      if (!confirm('Remove this document?')) return;
+      var res = await mediaPost('delete-media', { type: 'document', itemId: id });
+      if (res.ok) { _documents = _documents.filter(function(d){ return d.id !== id; }); renderDocumentsList(); }
+    }
+
+    async function saveCaption(id, caption) {
+      var ph = _photos.find(function(p){ return p.id === id; });
+      if (ph && ph.caption === caption) return;
+      await mediaPost('update-media', { type: 'photo', itemId: id, caption: caption });
+      if (ph) ph.caption = caption;
+    }
+
+    async function saveDocTitle(id, title) {
+      var d = _documents.find(function(x){ return x.id === id; });
+      if (d && d.title === title) return;
+      await mediaPost('update-media', { type: 'document', itemId: id, title: title });
+      if (d) d.title = title;
+    }
+
   </script>
 </body>
 </html>`;

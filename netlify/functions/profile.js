@@ -39,10 +39,23 @@ exports.handler = async (event) => {
     .order("submitted_at", { ascending: false })
     .limit(20);
 
+  const [{ data: photos }, { data: documents }] = await Promise.all([
+    supabase
+      .from("profile_photos")
+      .select("id, file_url, caption, view_count, sort_order")
+      .eq("profile_id", profile.id)
+      .order("sort_order"),
+    supabase
+      .from("profile_documents")
+      .select("id, file_url, title, file_type, sort_order")
+      .eq("profile_id", profile.id)
+      .order("sort_order"),
+  ]);
+
   return {
     statusCode: 200,
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
-    body: renderProfile(profile, reviews || []),
+    body: renderProfile(profile, reviews || [], photos || [], documents || []),
   };
 };
 
@@ -192,7 +205,7 @@ function getSocialIcon(platform) {
 
 // ── HTML RENDERER ──────────────────────────────────────────────────────────────
 
-function renderProfile(p, reviews = []) {
+function renderProfile(p, reviews = [], photos = [], documents = []) {
   const theme    = (typeof p.theme === "object" && p.theme) ? p.theme : {};
   const t        = getThemeCSS(theme, p.background_image || null);
   const links    = Array.isArray(p.links)   ? p.links   : [];
@@ -289,6 +302,36 @@ function renderProfile(p, reviews = []) {
 
   // ── LEAD FORM ────────────────────────────────────────────────────────────────
   const leadSection = (showLead && p.lead_form_enabled) ? buildLeadForm(p) : "";
+
+  // ── Photo gallery ─────────────────────────────────────────────────
+  var gallerySection = '';
+  if (photos && photos.length > 0) {
+    var thumbsHtml = photos.map(function(ph) {
+      var cap = ph.caption ? '<div class="thumb-caption">' + escHtml(ph.caption) + '</div>' : '';
+      return '<div class="gallery-thumb" onclick="openLightbox(\'' + escJs(ph.id) + '\',\'' + escJs(ph.file_url) + '\',\'' + escJs(ph.caption||'') + '\')">' +
+        '<img src="' + escHtml(ph.file_url) + '" alt="' + escHtml(ph.caption||'Gallery photo') + '" loading="lazy" />' +
+        cap + '</div>';
+    }).join('');
+    gallerySection = '<section class="section-gallery">' +
+      '<p class="section-media-heading" style="color:' + t.textPri + ';">Gallery</p>' +
+      '<div class="gallery-grid">' + thumbsHtml + '</div></section>';
+  }
+
+  // ── Documents ─────────────────────────────────────────────────────
+  var documentsSection = '';
+  if (documents && documents.length > 0) {
+    var docCards = documents.map(function(d) {
+      var icon = d.file_type === 'pdf' ? '\u{1F4C4}' : '\u{1F4DD}';
+      return '<a href="' + escHtml(d.file_url) + '" target="_blank" rel="noopener" class="doc-card" style="background:' + t.cardBg + ';border:1px solid ' + t.cardBorder + ';">' +
+        '<span class="doc-icon-wrap">' + (d.file_type === 'pdf' ? '📄' : '📝') + '</span>' +
+        '<span class="doc-label" style="color:' + t.textPri + ';">' + escHtml(d.title) + '</span>' +
+        '<span class="doc-arrow" style="color:' + t.textSec + ';">&#8599;</span>' +
+        '</a>';
+    }).join('');
+    documentsSection = '<section class="section-documents">' +
+      '<p class="section-media-heading" style="color:' + t.textPri + ';">Documents &amp; Flyers</p>' +
+      docCards + '</section>';
+  }
 
   // ── AMERICA CANTON ───────────────────────────────────────────────────────────
   // ── CONTENT BLOCKS ────────────────────────────────────────────────────────
@@ -652,6 +695,25 @@ function renderProfile(p, reviews = []) {
       .avatar-xl { width: 132px; height: 132px; }
       .avatar-lg { width: 108px; height: 108px; }
     }
+    /* ── Gallery & Documents ───────────────────────────────── */
+    .section-gallery { padding: 20px 16px 8px; }
+    .section-documents { padding: 8px 16px 20px; }
+    .section-media-heading { font-size: 1rem; font-weight: 700; margin: 0 0 12px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .gallery-thumb { position: relative; cursor: pointer; border-radius: 8px; overflow: hidden; aspect-ratio: 1; background: #f0f0f0; }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s; }
+    .gallery-thumb:hover img { transform: scale(1.04); }
+    .gallery-thumb .thumb-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.6)); color: #fff; font-size: 0.7rem; padding: 16px 6px 5px; line-height: 1.2; }
+    .doc-card { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; text-decoration: none; margin-bottom: 8px; transition: opacity 0.15s; }
+    .doc-card:hover { opacity: 0.82; }
+    .doc-card .doc-icon-wrap { font-size: 1.6rem; flex-shrink: 0; width: 36px; text-align: center; }
+    .doc-card .doc-label { flex: 1; font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
+    .doc-card .doc-arrow { font-size: 1rem; opacity: 0.6; }
+    #tl-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.93); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; }
+    #tl-lightbox.open { display: flex; }
+    #tl-lb-img { max-width: 92vw; max-height: 82vh; border-radius: 10px; object-fit: contain; }
+    #tl-lb-caption { color: rgba(255,255,255,0.75); font-size: 0.85rem; margin-top: 10px; text-align: center; max-width: 80vw; }
+    #tl-lb-close { position: absolute; top: 16px; right: 20px; color: #fff; font-size: 1.8rem; cursor: pointer; background: none; border: none; line-height: 1; }
   </style>
 </head>
 <body>
@@ -687,9 +749,20 @@ function renderProfile(p, reviews = []) {
 
   ${servicesSection}
 
+  ${gallerySection}
+
+  ${documentsSection}
+
   ${buildReviews(p, reviews)}
 
   ${leadSection}
+
+  <!-- Lightbox -->
+  <div id="tl-lightbox" onclick="if(event.target===this)closeLightbox()">
+    <button id="tl-lb-close" onclick="closeLightbox()">&times;</button>
+    <img id="tl-lb-img" src="" alt="" />
+    <p id="tl-lb-caption"></p>
+  </div>
 
   <div class="powered">
     Powered by <a href="https://torrolink.com" target="_blank" rel="noopener">Torrolink</a>
@@ -772,6 +845,28 @@ function renderProfile(p, reviews = []) {
         btn.disabled = false; btn.textContent = 'Submit Review';
       }
     }
+
+    // ── Gallery lightbox ──────────────────────────────────────────
+    function openLightbox(photoId, url, caption) {
+      var lb = document.getElementById('tl-lightbox');
+      document.getElementById('tl-lb-img').src = url;
+      document.getElementById('tl-lb-caption').textContent = caption || '';
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (photoId) {
+        fetch('/.netlify/functions/track-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photoId: photoId })
+        }).catch(function(){});
+      }
+    }
+    function closeLightbox() {
+      var lb = document.getElementById('tl-lightbox');
+      if (lb) { lb.classList.remove('open'); document.getElementById('tl-lb-img').src = ''; }
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
   </script>
 </body>
 </html>`;
