@@ -151,7 +151,11 @@ function normalizeSocialUrl(platform, val) {
   if (!val) return '';
   val = String(val).trim();
   if (!val) return '';
+  // Full URL — use as-is
   if (/^https?:\/\//i.test(val)) return val;
+  // Looks like a URL without protocol (e.g. "www.facebook.com/..." or "x.com/...") — prepend https://
+  if (/^www\.|^(instagram|facebook|tiktok|youtube|linkedin|x|twitter|yelp|google)\./i.test(val)) return 'https://' + val;
+  // Handle or username — strip leading @ and append to base
   const handle = val.replace(/^@/, '');
   const bases = {
     instagram: 'https://www.instagram.com/',
