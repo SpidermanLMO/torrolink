@@ -179,3 +179,8 @@ ALTER TABLE profiles ADD COLUMN IF NOT EXISTS content_blocks JSONB DEFAULT '[]';
 
 -- Background image for custom theme
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS background_image text;
+
+-- Admin: grant free months of metrics
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS free_until timestamptz;
+-- Admin: suspend profile
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS suspended boolean default false;

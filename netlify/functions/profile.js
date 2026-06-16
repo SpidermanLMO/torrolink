@@ -48,7 +48,7 @@ exports.handler = async (event) => {
 
 // ── THEME ENGINE ───────────────────────────────────────────────────────────────
 
-function getThemeCSS(theme = {}) {
+function getThemeCSS(theme = {}, backgroundImage = null) {
   const pattern    = theme.pattern    || "solid";
   const color1     = theme.color1     || "#0f6b6b";
   const color2     = theme.color2     || "#0a4d4d";
@@ -129,8 +129,8 @@ function getThemeCSS(theme = {}) {
 
   };
 
-  const headerBg = p.background_image
-    ? `background-image: url('${escHtml(p.background_image)}'); background-size: cover; background-position: center; background-repeat: no-repeat;`
+  const headerBg = backgroundImage
+    ? `background-image: url('${escHtml(backgroundImage)}'); background-size: cover; background-position: center; background-repeat: no-repeat;`
     : (patterns[pattern] || patterns.solid);
 
 
@@ -187,7 +187,7 @@ function getSocialIcon(platform) {
 
 function renderProfile(p, reviews = []) {
   const theme    = (typeof p.theme === "object" && p.theme) ? p.theme : {};
-  const t        = getThemeCSS(theme);
+  const t        = getThemeCSS(theme, p.background_image || null);
   const links    = Array.isArray(p.links)   ? p.links   : [];
   const contentBlocks  = Array.isArray(p.content_blocks) ? p.content_blocks : [];
   const updateBlocks   = contentBlocks.filter(b => b.type === 'update');
