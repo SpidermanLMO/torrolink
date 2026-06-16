@@ -102,6 +102,60 @@ async function handleAction(event) {
         });
         return json(200, { ok: true, msg: "Email sent" });
       }
+      case "reset_password": {
+        const { email: resetEmail, name: resetName } = body;
+        if (!resetEmail) return json(400, { error: "Missing email" });
+        const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+          type: "recovery",
+          email: resetEmail,
+          options: { redirectTo: `${SITE}/portal` },
+        });
+        if (linkErr) return json(500, { error: linkErr.message });
+        const resetLink = linkData?.properties?.action_link || linkData?.action_link;
+        if (!resetLink) return json(500, { error: "Could not generate reset link" });
+        const firstName = (resetName || "").split(" ")[0] || "there";
+        await resend.emails.send({
+          from: "Torrolink <orders@torrolink.com>",
+          to: resetEmail,
+          subject: "Reset your Torrolink password",
+          html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;"><div style="background:linear-gradient(135deg,#0f6b6b,#0a4d4d);padding:28px 32px;border-radius:12px 12px 0 0;text-align:center;"><span style="font-size:1.4rem;font-weight:800;color:#fff;">Torrolink</span></div><div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;"><p style="font-size:1rem;color:#333;">Hey ${firstName},</p><p style="color:#555;line-height:1.7;">A password reset was requested for your Torrolink account. Click the button below to set a new password. This link expires in 1 hour and can only be used once.</p><div style="text-align:center;margin:28px 0;"><a href="${resetLink}" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">Reset My Password \u2192</a></div><p style="color:#888;font-size:0.85rem;">If you didn't request this, you can safely ignore this email.</p><p style="font-size:0.85rem;color:#888;margin-top:16px;">— The Torrolink Team</p></div></div>`,
+        });
+        return json(200, { ok: true, msg: "Password reset link sent to " + resetEmail });
+      }
+      case "delete_profile": {
+        if (!profileId) return json(400, { error: "profileId required" });
+        const { error: delErr } = await supabaseAdmin.from("profiles").delete().eq("id", profileId);
+        if (delErr) return json(500, { error: delErr.message });
+        return json(200, { ok: true, msg: "Profile deleted" });
+      }
+      case "toggle_review": {
+        const { reviewId, visible } = body;
+        if (!reviewId) return json(400, { error: "reviewId required" });
+        await supabaseAdmin.from("reviews").update({ is_visible: !!visible }).eq("id", reviewId);
+        return json(200, { ok: true, msg: visible ? "Review shown" : "Review hidden" });
+      }
+      case "delete_review": {
+        const { reviewId } = body;
+        if (!reviewId) return json(400, { error: "reviewId required" });
+        await supabaseAdmin.from("reviews").delete().eq("id", reviewId);
+        return json(200, { ok: true, msg: "Review deleted" });
+      }
+      case "bulk_email": {
+        const { subject, message } = body;
+        if (!subject || !message) return json(400, { error: "Missing subject or message" });
+        const { data: allCusts } = await supabaseAdmin.from("customers").select("email, name");
+        const list = (allCusts || []).filter(c => c.email);
+        let sent = 0;
+        for (const c of list) {
+          const firstName = (c.name || "").split(" ")[0] || "there";
+          await resend.emails.send({
+            from: "Torrolink <orders@torrolink.com>", to: c.email, subject,
+            html: `<div style="font-family:sans-serif;max-width:560px;margin:0 auto;"><div style="background:linear-gradient(135deg,#0f6b6b,#0a4d4d);padding:28px 32px;border-radius:12px 12px 0 0;"><span style="font-size:1.4rem;font-weight:800;color:#fff;">Torrolink</span></div><div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;"><p style="font-size:1rem;color:#333;">Hey ${firstName},</p><div style="color:#555;line-height:1.7;">${message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>")}</div><p style="font-size:0.85rem;color:#888;margin-top:24px;">— The Torrolink Team<br><a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p></div></div>`,
+          }).catch(() => {});
+          sent++;
+        }
+        return json(200, { ok: true, msg: `Bulk email sent to ${sent} customers` });
+      }
       default: return json(400, { error: "Unknown action" });
     }
   } catch (err) {
@@ -111,16 +165,18 @@ async function handleAction(event) {
 }
 
 async function handleDashboard() {
-  const [custRes, profRes, scanRes, leadRes] = await Promise.all([
+  const [custRes, profRes, scanRes, leadRes, revRes] = await Promise.all([
     supabaseAdmin.from("customers").select("*").order("created_at", { ascending: false }),
     supabaseAdmin.from("profiles").select("id, handle, business_name, is_active, suspended, has_metrics, has_branding, branding_tier, created_at, customer_id, code").order("created_at", { ascending: false }),
     supabaseAdmin.from("scan_events").select("id, scanned_at, profile_id"),
     supabaseAdmin.from("leads").select("id, submitted_at, profile_id"),
+    supabaseAdmin.from("reviews").select("id, profile_id, reviewer_name, rating, review_text, is_visible, submitted_at").order("submitted_at", { ascending: false }),
   ]);
   const customers = custRes.data || [];
   const profiles  = profRes.data  || [];
   const scans     = scanRes.data  || [];
   const leads     = leadRes.data  || [];
+  const reviews   = revRes.data   || [];
 
   const custById = {};
   customers.forEach(c => { custById[c.id] = c; });
@@ -132,6 +188,11 @@ async function handleDashboard() {
     if (new Date(s.scanned_at) > cutoff) recentByProfile[s.profile_id] = (recentByProfile[s.profile_id] || 0) + 1;
   });
   leads.forEach(l => { leadsByProfile[l.profile_id] = (leadsByProfile[l.profile_id] || 0) + 1; });
+  const reviewsByProfile = {};
+  reviews.forEach(r => {
+    if (!reviewsByProfile[r.profile_id]) reviewsByProfile[r.profile_id] = [];
+    reviewsByProfile[r.profile_id].push(r);
+  });
 
   const activeCount  = profiles.filter(p => p.is_active && !p.suspended).length;
   const suspendCount = profiles.filter(p => p.suspended).length;
@@ -148,20 +209,29 @@ async function handleDashboard() {
     const statusBadge = isSusp ? `<span class="badge susp">Suspended</span>` : p.is_active ? `<span class="badge active">Active</span>` : `<span class="badge inactive">Inactive</span>`;
     const metricsBadge = p.has_metrics ? `<span class="badge metrics">Metrics</span>` : `<span class="badge free">—</span>`;
     const freeLabel = cust.free_until ? `<br><small style="color:#3fb950;">Free until ${new Date(cust.free_until).toLocaleDateString()}</small>` : "";
+    const planLabel = cust.plan ? esc(cust.plan) : "—";
+    const revList = reviewsByProfile[p.id] || [];
+    const revCount = revList.length;
     return `<tr data-profile-id="${esc(p.id)}" data-customer-id="${esc(p.customer_id||"")}" data-email="${esc(cust.email||"")}" data-name="${esc(cust.name||"")}">
       <td><strong>${esc(p.business_name||"—")}</strong><br><small style="color:#888;">${esc(cust.email||"—")}</small>${freeLabel}</td>
-      <td><a href="${SITE}/p/${esc(p.handle)}" target="_blank" class="plink">/${esc(p.handle)}</a></td>
+      <td>
+        <a href="${SITE}/p/${esc(p.handle)}" target="_blank" class="plink">/${esc(p.handle)}</a>
+        <a href="${SITE}/p/${esc(p.handle)}" target="_blank" title="View profile" class="ba view" style="margin-left:6px;text-decoration:none;padding:3px 7px;">👁</a>
+      </td>
       <td>${statusBadge}</td>
-      <td>${metricsBadge}</td>
+      <td><small style="color:#8b949e;">${planLabel}</small><br>${metricsBadge}</td>
       <td>${p.has_branding ? `<span class="badge brand">${esc(p.branding_tier||"std")}</span>` : "—"}</td>
       <td class="num">${scans30}<br><small style="color:#555;">${scansAll} all</small></td>
       <td class="num">${lcount}</td>
+      <td class="num" style="cursor:${revCount>0?'pointer':'default'};" ${revCount>0?`onclick="openReviews(this)" data-reviews='${JSON.stringify(revList).replace(/'/g,"&#39;").replace(/\\/g,"\\\\")}'`:""} >${revCount > 0 ? `<span style="color:#e3b341;">${revCount} ★</span>` : "—"}</td>
       <td>${new Date(p.created_at).toLocaleDateString()}</td>
       <td><div class="ag">
         ${isSusp ? `<button class="ba act" onclick="doAction('activate',this)">✅ Activate</button>` : `<button class="ba sus" onclick="doAction('suspend',this)">🚫 Suspend</button>`}
         <button class="ba met" onclick="doAction('toggle_metrics',this)">${p.has_metrics?"📊 Off":"📊 On"}</button>
         <button class="ba fre" onclick="doAction('grant_free_month',this)">🎁 Free Mo</button>
         <button class="ba eml" onclick="openEmail(this)">✉️ Email</button>
+        <button class="ba rst" onclick="doReset(this)">🔑 Reset PW</button>
+        <button class="ba del" onclick="doDelete(this)">🗑 Delete</button>
       </div></td>
     </tr>`;
   }).join("");
@@ -220,6 +290,15 @@ tr:hover td{background:#1c2128}
 .ma{display:flex;gap:8px;margin-top:18px;justify-content:flex-end}
 .bcn{background:#21262d;color:#e6edf3;border:none;padding:9px 18px;border-radius:7px;cursor:pointer;font-weight:600}
 .bsd{background:#0f6b6b;color:#fff;border:none;padding:9px 18px;border-radius:7px;cursor:pointer;font-weight:600}
+.ba.rst{background:#1a2a3a;color:#58a6ff}.ba.del{background:#3a1a1a;color:#f85149}.ba.view{background:#1a2d1a;color:#3fb950}
+.rv-row{display:flex;gap:8px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #21262d}
+.rv-row:last-child{border-bottom:none}
+.rv-stars{color:#e3b341;font-size:1rem;white-space:nowrap}.rv-name{font-weight:700;font-size:.85rem;color:#e6edf3}
+.rv-text{color:#8b949e;font-size:.82rem;margin-top:2px}.rv-meta{font-size:.72rem;color:#555;margin-top:3px}
+.rv-actions{display:flex;gap:5px;margin-left:auto;flex-shrink:0}
+.bulk-bar{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px 20px;margin-bottom:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bulk-bar input{flex:1;min-width:200px;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:8px 12px;border-radius:7px;font-size:.88rem;outline:none}
+.bulk-bar input:focus{border-color:#0f6b6b}
 </style></head><body>
 <div class="topbar"><h1>🛠 Torrolink Admin</h1><span>Loaded ${new Date().toLocaleString()}</span></div>
 <div class="main">
@@ -238,10 +317,12 @@ tr:hover td{background:#1c2128}
   <select id="fs" onchange="ft()"><option value="">All Status</option><option value="active">Active</option><option value="susp">Suspended</option></select>
   <select id="fm" onchange="ft()"><option value="">All Plans</option><option value="yes">Has Metrics</option><option value="no">No Metrics</option></select>
   <span class="cnt" id="cnt">${profiles.length} profiles</span>
+  <button class="rbtn" onclick="openBe()" style="background:#1a2d1a;color:#3fb950;border-color:#238636;">📢 Bulk Email</button>
+  <button class="rbtn" onclick="exportCsv()">⬇ Export CSV</button>
   <button class="rbtn" onclick="location.reload()">↺ Refresh</button>
 </div>
 <div class="tw"><table id="tbl">
-<thead><tr><th>Business / Email</th><th>Profile URL</th><th>Status</th><th>Metrics</th><th>Branding</th><th>Scans 30d</th><th>Leads</th><th>Joined</th><th>Actions</th></tr></thead>
+<thead><tr><th>Business / Email</th><th>Profile URL</th><th>Status</th><th>Plan / Metrics</th><th>Branding</th><th>Scans 30d</th><th>Leads</th><th>Reviews</th><th>Joined</th><th>Actions</th></tr></thead>
 <tbody>${rows||'<tr><td colspan="9" style="text-align:center;color:#555;padding:60px;">No profiles yet</td></tr>'}</tbody>
 </table></div>
 </div>
@@ -253,6 +334,19 @@ tr:hover td{background:#1c2128}
   <label>Message</label><textarea id="eMsg" placeholder="Write your message…"></textarea>
   <input type="hidden" id="eName"/>
   <div class="ma"><button class="bcn" onclick="closeEm()">Cancel</button><button class="bsd" id="sendBtn" onclick="sendEm()">Send →</button></div>
+</div></div>
+
+<div class="mbg" id="rv"><div class="modal" style="width:620px;max-width:95vw;">
+  <h3>⭐ Reviews</h3>
+  <div id="rvList" style="max-height:400px;overflow-y:auto;margin-top:8px;"></div>
+  <div class="ma"><button class="bcn" onclick="closeRv()">Close</button></div>
+</div></div>
+
+<div class="mbg" id="be"><div class="modal" style="width:560px;max-width:95vw;">
+  <h3>📢 Bulk Email — All Customers</h3>
+  <label>Subject</label><input type="text" id="beSubj" value="A message from Torrolink"/>
+  <label>Message</label><textarea id="beMsg" placeholder="Write your message to all customers…" style="min-height:130px;"></textarea>
+  <div class="ma"><button class="bcn" onclick="closeBe()">Cancel</button><button class="bsd" id="beBtn" onclick="sendBulk()">Send to All →</button></div>
 </div></div>
 
 <div id="toast"></div>
@@ -304,6 +398,114 @@ function ft(){
   });
   document.getElementById('cnt').textContent=v+' profiles';
 }
+async function doReset(btn){
+  const row=btn.closest('tr');
+  const email=row.dataset.email, name=row.dataset.name;
+  if(!email){toast('No email found',true);return;}
+  if(!confirm('Send password reset link to '+email+'?'))return;
+  btn.disabled=true;btn.textContent='…';
+  try{
+    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'reset_password',email,name})});
+    const d=await r.json();
+    if(d.ok)toast(d.msg||'Reset sent');
+    else toast(d.error||'Error',true);
+  }catch(e){toast('Network error',true);}
+  btn.disabled=false;btn.textContent='🔑 Reset PW';
+}
+async function doDelete(btn){
+  const row=btn.closest('tr');
+  const biz=row.querySelector('strong')?.textContent||'this profile';
+  if(!confirm('Permanently delete '+biz+'? This cannot be undone.'))return;
+  const pid=row.dataset.profileId;
+  btn.disabled=true;btn.textContent='…';
+  try{
+    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'delete_profile',profileId:pid})});
+    const d=await r.json();
+    if(d.ok){toast(d.msg||'Deleted');row.remove();}
+    else{toast(d.error||'Error',true);btn.disabled=false;btn.textContent='🗑 Delete';}
+  }catch(e){toast('Network error',true);btn.disabled=false;btn.textContent='🗑 Delete';}
+}
+function openReviews(td){
+  let reviews=[];
+  try{reviews=JSON.parse(td.dataset.reviews||'[]');}catch(e){}
+  const list=document.getElementById('rvList');
+  if(!reviews.length){list.innerHTML='<p style="color:#555;text-align:center;padding:24px;">No reviews yet.</p>';}
+  else{
+    list.innerHTML=reviews.map(function(rv){
+      const stars='★'.repeat(rv.rating)+'☆'.repeat(5-rv.rating);
+      const vis=rv.is_visible;
+      return '<div class="rv-row">'+
+        '<div style="flex:1;">'+
+          '<div class="rv-stars">'+stars+'</div>'+
+          '<div class="rv-name">'+escH(rv.reviewer_name)+'</div>'+
+          '<div class="rv-text">'+escH(rv.review_text||'')+'</div>'+
+          '<div class="rv-meta">'+new Date(rv.submitted_at).toLocaleDateString()+' · '+(vis?'<span style="color:#3fb950;">Visible</span>':'<span style="color:#f85149;">Hidden</span>')+'</div>'+
+        '</div>'+
+        '<div class="rv-actions">'+
+          '<button class="ba '+(vis?'sus':'act')+'" onclick="toggleRev(''+rv.id+'','+(String(!vis))+',this)">'+(vis?'Hide':'Show')+'</button>'+
+          '<button class="ba del" onclick="deleteRev(''+rv.id+'',this)">Delete</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+  document.getElementById('rv').classList.add('open');
+}
+function closeRv(){document.getElementById('rv').classList.remove('open');}
+async function toggleRev(id,visible,btn){
+  btn.disabled=true;
+  const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'toggle_review',reviewId:id,visible})});
+  const d=await r.json();
+  if(d.ok){toast(d.msg||'Done');btn.closest('.rv-row').querySelector('.rv-meta span').outerHTML=visible?'<span style="color:#3fb950;">Visible</span>':'<span style="color:#f85149;">Hidden</span>';btn.className='ba '+(visible?'sus':'act');btn.textContent=visible?'Hide':'Show';}
+  else toast(d.error||'Error',true);
+  btn.disabled=false;
+}
+async function deleteRev(id,btn){
+  if(!confirm('Delete this review permanently?'))return;
+  btn.disabled=true;
+  const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'delete_review',reviewId:id})});
+  const d=await r.json();
+  if(d.ok){toast('Review deleted');btn.closest('.rv-row').remove();}
+  else{toast(d.error||'Error',true);btn.disabled=false;}
+}
+function openBe(){document.getElementById('be').classList.add('open');}
+function closeBe(){document.getElementById('be').classList.remove('open');}
+async function sendBulk(){
+  const subj=document.getElementById('beSubj').value.trim();
+  const msg=document.getElementById('beMsg').value.trim();
+  if(!subj||!msg){toast('Subject and message required',true);return;}
+  if(!confirm('Send this email to ALL customers? This cannot be undone.'))return;
+  const btn=document.getElementById('beBtn');
+  btn.disabled=true;btn.textContent='Sending…';
+  try{
+    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'bulk_email',subject:subj,message:msg})});
+    const d=await r.json();
+    if(d.ok){toast(d.msg||'Sent');closeBe();}
+    else toast(d.error||'Error',true);
+  }catch(e){toast('Network error',true);}
+  btn.disabled=false;btn.textContent='Send to All →';
+}
+function exportCsv(){
+  const rows=[['Business','Email','Handle','Status','Plan','Metrics','Scans30d','ScansAll','Leads','Joined']];
+  document.querySelectorAll('#tbl tbody tr').forEach(r=>{
+    const cells=[...r.querySelectorAll('td')];
+    rows.push([
+      r.querySelector('strong')?.textContent||'',
+      r.querySelector('small')?.textContent||'',
+      cells[1]?.querySelector('a')?.textContent?.trim()||'',
+      cells[2]?.querySelector('.badge')?.textContent||'',
+      cells[3]?.querySelector('small')?.textContent||'',
+      cells[3]?.querySelector('.badge.metrics')?.textContent||'no',
+      cells[5]?.childNodes[0]?.textContent?.trim()||'0',
+      cells[5]?.querySelector('small')?.textContent?.replace(' all','')||'0',
+      cells[6]?.textContent?.trim()||'0',
+      cells[8]?.textContent?.trim()||'',
+    ]);
+  });
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='torrolink-customers-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script></body></html>`
   };
 }
