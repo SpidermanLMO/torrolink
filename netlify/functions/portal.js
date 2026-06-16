@@ -266,7 +266,8 @@ exports.handler = async () => {
         </div>
         <div class="tl-field">
           <label for="createPassword">Create a password</label>
-          <input type="password" id="createPassword" placeholder="Min 8 chars, 1 capital, 1 symbol" autocomplete="new-password" />
+          <input type="password" id="createPassword" placeholder="Min 8 chars, 1 capital, 1 symbol" autocomplete="new-password" oninput="checkPasswordHints()" />
+          <div id="pwHints" style="display:flex;gap:6px;flex-wrap:wrap;margin:5px 0 0;min-height:22px;"></div>
         </div>
         <div class="tl-field">
           <label for="createPasswordConfirm">Re-enter password</label>
@@ -854,6 +855,22 @@ exports.handler = async () => {
     })();
 
     // ── Auth ───────────────────────────────────────────────────────
+    function checkPasswordHints() {
+      var pw = document.getElementById('createPassword').value;
+      var h  = document.getElementById('pwHints');
+      if (!h || !pw) { if(h) h.innerHTML=''; return; }
+      var sym = /[!@#$%^&*()\-_=+\[\]{};:\'",.<>?\/\\|~]/.test(pw);
+      var hints = [
+        { label: '8+ chars', ok: pw.length >= 8 },
+        { label: '1 capital', ok: /[A-Z]/.test(pw) },
+        { label: '1 symbol',  ok: sym },
+      ];
+      h.innerHTML = hints.map(function(x){
+        return '<span style="font-size:0.72rem;font-weight:600;padding:3px 10px;border-radius:20px;transition:background 0.15s;background:'
+          + (x.ok ? '#d1fae5' : '#f3f4f6') + ';color:' + (x.ok ? '#065f46' : '#9ca3af') + ';">'
+          + (x.ok ? '✓ ' : '') + x.label + '</span>';
+      }).join('');
+    }
     function switchAuthTab(tab) {
       const isSignIn = tab === 'signin';
       const isCreate = tab === 'create';

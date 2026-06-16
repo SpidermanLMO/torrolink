@@ -272,7 +272,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   const socialLabels = {
     instagram: "Instagram", facebook: "Facebook", twitter: "Twitter / X",
     tiktok: "TikTok", youtube: "YouTube", linkedin: "LinkedIn",
-    yelp: "Yelp", google: "Google",
+    yelp: "Yelp", google: "Google Business",
   };
 
   const socialLinks = showSocials ? Object.entries(socials)
@@ -921,6 +921,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
           document.getElementById('reviewSuccess').style.display = 'block';
           document.getElementById('reviewForm').style.display = 'none';
           document.querySelector('.review-write-btn').style.display = 'none';
+          document.getElementById('reviewSuccess').textContent = '✓ Your review is live! Thank you.';
         } else {
           var d = await res.json().catch(function(){ return {}; });
           alert(d.error || 'Failed to submit. Please try again.');
