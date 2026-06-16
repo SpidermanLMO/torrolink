@@ -244,18 +244,18 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   if (eff === 'both' && p.logo_url && p.photo_url) {
     heroPhotos = `<div class="hero-duo">
       <div class="duo-item">
-        <div class="avatar-lg"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager"/></div>
+        <div class="avatar-lg"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager" onerror="this.style.display='none'"/></div>
         ${p.business_name ? `<p class="duo-caption">${escHtml(p.business_name)}</p>` : ""}
       </div>
       <div class="duo-item">
-        <div class="avatar-lg person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||"")}" loading="eager"/></div>
+        <div class="avatar-lg person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||"")}" loading="eager" onerror="this.style.display='none'"/></div>
         ${p.owner_name ? `<p class="duo-caption">${escHtml(p.owner_name)}</p>` : ""}
       </div>
     </div>`;
   } else if (eff === 'headshot' && p.photo_url) {
-    heroPhotos = `<div class="hero-solo"><div class="avatar-xl person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||p.business_name||"")}" loading="eager"/></div></div>`;
+    heroPhotos = `<div class="hero-solo"><div class="avatar-xl person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||p.business_name||"")}" loading="eager" onerror="this.style.display='none'"/></div></div>`;
   } else if (p.logo_url) {
-    heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager"/></div></div>`;
+    heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager" onerror="this.style.display='none'"/></div></div>`;
   } else {
     heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><span style="font-size:3rem;">🏢</span></div></div>`;
   }
@@ -318,7 +318,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     var thumbsHtml = photos.map(function(ph) {
       var cap = ph.caption ? '<div class="thumb-caption">' + escHtml(ph.caption) + '</div>' : '';
       return '<div class="gallery-thumb" data-id="' + escHtml(ph.id) + '" data-url="' + escHtml(ph.file_url) + '" data-caption="' + escHtml(ph.caption||'') + '" onclick="openLightbox(\'' + escJs(ph.id) + '\',\'' + escJs(ph.file_url) + '\',\'' + escJs(ph.caption||'') + '\')">' +
-        '<img src="' + escHtml(ph.file_url) + '" alt="' + escHtml(ph.caption||'Gallery photo') + '" loading="lazy" />' +
+        '<img src="' + escHtml(ph.file_url) + '" alt="' + escHtml(ph.caption||'Gallery photo') + '" loading="lazy" onerror="this.onerror=null;this.hidden=true" />' +
         cap + '</div>';
     }).join('');
     gallerySection = '<section class="section-gallery">' +
@@ -394,6 +394,18 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   </div>` : "";
 
   const stars50 = Array(50).fill("★").join(" ");
+  // ── LocalBusiness JSON-LD ────────────────────────────────────────────
+  const _socialEntries = Object.entries(p.socials || {}).filter(([, v]) => v);
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": p.business_name || "",
+    "url": "https://torrolink.com/" + (p.handle || ""),
+    ...(p.tagline || p.bio ? { "description": (p.tagline || (p.bio || "").slice(0, 200)) } : {}),
+    ...(p.phone    ? { "telephone": p.phone }   : {}),
+    ...(p.logo_url ? { "image": p.logo_url }    : {}),
+    "sameAs": _socialEntries.map(([k, v]) => normalizeSocialUrl(k, v)).filter(Boolean),
+  });
 
   return `<!DOCTYPE html>
 <html lang="en"${t.darkMode ? ' class="dark"' : ""}>
@@ -416,6 +428,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   <meta name="twitter:description" content="${escHtml(p.tagline || p.bio?.slice(0,160) || "")}" />
   ${p.logo_url ? `<meta name="twitter:image" content="${escHtml(p.logo_url)}" />` : ""}
   <link rel="canonical" href="https://torrolink.com/${escHtml(p.handle || "")}" />
+  <script type="application/ld+json">${jsonLd}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />

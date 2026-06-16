@@ -15,6 +15,8 @@ exports.handler = async () => {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Profile — Torrolink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -843,6 +845,8 @@ exports.handler = async () => {
             '<input type="password" id="newPassword" placeholder="At least 8 characters" /></div>' +
             '<button class="tl-btn tl-btn-full" onclick="updatePassword()">Set New Password</button>';
           document.getElementById('panelReset').style.display = 'block';
+        } else if (event === 'TOKEN_REFRESHED' && session) {
+          _session = session; // keep access_token current after auto-refresh
         } else if (event === 'SIGNED_OUT') {
           location.reload();
         }
@@ -1342,6 +1346,16 @@ exports.handler = async () => {
           setTimeout(function(){ btn.textContent = 'Save Changes'; btn.style.background = ''; btn.disabled = false; }, 2200);
           showMsg('success', '✓ Profile saved! Changes are live on your profile page.');
           return; // skip the finally reset
+        } else if (res.status === 401) {
+          // Session expired — try to refresh silently, then let user re-save
+          const { data: { session: newSess } } = await _supabase.auth.refreshSession();
+          if (newSess) {
+            _session = newSess;
+            showMsg('error', 'Session refreshed. Please click Save again.');
+          } else {
+            showMsg('error', 'Session expired. Please sign in again.');
+            await _supabase.auth.signOut();
+          }
         } else {
           showMsg('error', data.error || 'Save failed. Please try again.');
         }
@@ -1745,6 +1759,17 @@ exports.handler = async () => {
       await mediaPost('update-media', { type: 'document', itemId: id, title: title });
       if (d) d.title = title;
     }
+
+    // ── Ctrl+S / Cmd+S shortcut to save ──────────────────────────
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        var saveRow = document.getElementById('saveRow');
+        if (saveRow && saveRow.style.display !== 'none') {
+          e.preventDefault();
+          saveProfile();
+        }
+      }
+    });
 
   </script>
 </body>
