@@ -362,23 +362,23 @@ exports.handler = async () => {
 
           <div class="tl-field">
             <label>Owner / rep name <span style="color:#999;font-weight:400;">(shown under headshot)</span></label>
-            <input type="text" id="fieldOwnerName" placeholder="e.g. Mike Torrence" />
+            <input type="text" id="fieldOwnerName" placeholder="e.g. Mike Torrence" maxlength="100" />
           </div>
           <div class="tl-field">
             <label>Business name</label>
-            <input type="text" id="fieldBusinessName" placeholder="e.g. Mike's Plumbing LLC" />
+            <input type="text" id="fieldBusinessName" placeholder="e.g. Mike's Plumbing LLC" maxlength="80" />
           </div>
           <div class="tl-field">
             <label>Tagline <span style="color:#999;font-weight:400;">(short — shows under your name)</span></label>
-            <input type="text" id="fieldTagline" placeholder="e.g. Trusted plumbing since 2005" />
+            <input type="text" id="fieldTagline" placeholder="e.g. Trusted plumbing since 2005" maxlength="120" />
           </div>
           <div class="tl-field">
             <label>Bio / About</label>
-            <textarea id="fieldBio" rows="4" placeholder="Tell visitors who you are, what you do, and why they should choose you."></textarea>
+            <textarea id="fieldBio" rows="4" placeholder="Tell visitors who you are, what you do, and why they should choose you." maxlength="1000"></textarea>
           </div>
           <div class="tl-field">
             <label>Phone number</label>
-            <input type="tel" id="fieldPhone" placeholder="(555) 867-5309" />
+            <input type="tel" id="fieldPhone" placeholder="(555) 867-5309" maxlength="30" />
           </div>
           <div class="tl-field">
             <label>Video URL <span style="color:#999;font-weight:400;">(YouTube or Vimeo — optional intro video)</span></label>
@@ -600,6 +600,13 @@ exports.handler = async () => {
               <button id="copyUrlBtn" onclick="copyProfileUrl()" style="flex-shrink:0;background:#0f6b6b;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;">&#128203; Copy</button>
             </div>
           </div>
+          <div id="metricsRow" style="display:none;text-align:left;background:#f0faf5;border-radius:8px;padding:14px 16px;margin-top:10px;border:1px solid rgba(15,107,107,0.2);">
+            <p style="font-size:0.8rem;color:#888;margin-bottom:6px;">&#128202; Scan Analytics</p>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span style="font-size:0.88rem;color:#0f6b6b;font-weight:600;flex:1;">Track scans, devices, and locations in real time.</span>
+              <a id="metricsLink" href="#" target="_blank" style="flex-shrink:0;background:#0f6b6b;color:#fff;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:700;text-decoration:none;">View Analytics &#8599;</a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -674,6 +681,7 @@ exports.handler = async () => {
     let _qrTargetUrl  = '';
     let _qrLogoUrl    = null;
     let _selectedPattern = 'solid';
+    let _dirty = false; // true when profile has unsaved changes
     let _selectedCardStyle = 'rounded';
 
     // ── Pattern definitions (mirrors profile.js) ───────────────────
@@ -754,6 +762,7 @@ exports.handler = async () => {
       if (!GROUP_VARIANT_IDS.has(id)) _expandedGroup = null;
       var sec = document.getElementById('bgUploadSection');
       if (sec) sec.style.display = id === 'custom' ? '' : 'none';
+      markDirty();
       buildPatternGrid();
     }
     function refreshSwatchColors() {
@@ -765,6 +774,7 @@ exports.handler = async () => {
       var reader = new FileReader();
       reader.onload = function(ev) {
         _bgImageBase64 = ev.target.result; _bgImageUrl = ev.target.result;
+        markDirty();
         var prev = document.getElementById('bgImagePreview');
         if (prev) prev.innerHTML = '<img src="' + _bgImageBase64 + '" style="width:100%;max-height:110px;object-fit:cover;border-radius:8px;margin-top:6px;" />';
         buildPatternGrid();
@@ -774,6 +784,7 @@ exports.handler = async () => {
 
     function removeBgImage() {
       _bgImageBase64 = null; _bgImageUrl = null;
+      markDirty();
       var prev = document.getElementById('bgImagePreview');
       if (prev) prev.innerHTML = '';
       buildPatternGrid();
@@ -781,6 +792,7 @@ exports.handler = async () => {
 
     function selectCardStyle(style) {
       _selectedCardStyle = style;
+      markDirty();
       document.querySelectorAll('.card-style-btn').forEach(btn => {
         btn.classList.toggle('selected', btn.dataset.style === style);
       });
@@ -825,7 +837,7 @@ exports.handler = async () => {
         if (typeof theme.sections.video   !== 'undefined') document.getElementById('secVideo').checked   = theme.sections.video;
         if (typeof theme.sections.lead    !== 'undefined') document.getElementById('secLead').checked    = theme.sections.lead;
       }
-      if (theme.photoLayout) setPhotoLayout(theme.photoLayout);
+      if (theme.photoLayout) setPhotoLayout(theme.photoLayout, true);
             buildPatternGrid();
     }
 
@@ -1091,13 +1103,31 @@ exports.handler = async () => {
       document.getElementById('socYelp').value      = s.yelp      || '';
       document.getElementById('socGoogle').value    = s.google    || '';
 
-      // Lead form config
-      const leadEnabled = !!p.lead_form_enabled;
-      document.getElementById('leadFormEnabled').checked = leadEnabled;
+      // Lead form config — gated behind Metrics & Leads plan
+      const _hasMetrics = !!((_customer && _customer.metrics_active) || (_customer && _customer.plan === 'metrics'));
+      const leadEl      = document.getElementById('leadFormEnabled');
+      const leadCard    = leadEl ? leadEl.closest('.tl-card') : null;
+      const leadEnabled = _hasMetrics && !!p.lead_form_enabled;
+      leadEl.checked = leadEnabled;
       document.getElementById('leadHasTextbox').checked  = !!p.lead_form_has_textbox;
       document.getElementById('leadFormConfig').style.display = leadEnabled ? 'block' : 'none';
       const checkboxes = Array.isArray(p.lead_form_checkboxes) ? p.lead_form_checkboxes : [];
       checkboxes.forEach(opt => addCheckbox(opt));
+      // Show upgrade notice or enable toggle based on plan
+      if (leadCard) {
+        var _oldNotice = leadCard.querySelector('.lead-metrics-notice');
+        if (_oldNotice) _oldNotice.remove();
+        if (!_hasMetrics) {
+          leadEl.disabled = true;
+          var _notice = document.createElement('div');
+          _notice.className = 'lead-metrics-notice';
+          _notice.style.cssText = 'margin-top:14px;padding:12px 14px;background:#fff8f0;border:1px solid rgba(244,117,43,0.25);border-radius:8px;font-size:0.85rem;color:#7c4000;';
+          _notice.innerHTML = '🔒 Lead capture requires <strong>Metrics &amp; Leads</strong> ($10.28/mo). <a href="#" onclick="switchTab('upgrade');return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Upgrade &rarr;</a>';
+          leadCard.appendChild(_notice);
+        } else {
+          leadEl.disabled = false;
+        }
+      }
 
       // Theme
       _bgImageUrl = p.background_image || null;
@@ -1116,6 +1146,13 @@ exports.handler = async () => {
       if (prev) { prev.href = profileUrl; }
       const vpBtn = document.getElementById('viewProfileBtn');
       if (vpBtn) { vpBtn.href = profileUrl; vpBtn.style.display = 'inline-block'; }
+      // Show metrics link for Metrics & Leads subscribers
+      const metricsRow  = document.getElementById('metricsRow');
+      const metricsLink = document.getElementById('metricsLink');
+      if (metricsRow && _hasMetrics) {
+        metricsRow.style.display = 'block';
+        if (metricsLink) metricsLink.href = window.location.origin + '/metrics/' + p.handle;
+      }
     }
 
     // ── Content management ────────────────────────────────────────
@@ -1137,6 +1174,7 @@ exports.handler = async () => {
       if (type === 'link') {
         var label = document.getElementById('newLinkLabel').value.trim();
         var url   = document.getElementById('newLinkUrl').value.trim();
+        if (url && !/^https?:\/\//i.test(url) && !/^mailto:/i.test(url) && !/^tel:/i.test(url)) url = 'https://' + url;
         if (!label && !url) return;
         item = { id: genId(), type: 'link', label: label, url: url };
         document.getElementById('newLinkLabel').value = '';
@@ -1176,24 +1214,54 @@ exports.handler = async () => {
       }
       if (!item) return;
       appendContentItem(item);
+      markDirty();
     }
 
     function appendContentItem(item) {
       var colors = { link:'#0f6b6b', update:'#f4752b', menu:'#8b5cf6', service:'#2563eb' };
       var icons  = { link:'🔗', update:'📢', menu:'🍽️', service:'⚙️' };
       var summary = '';
-      if (item.type === 'link')    summary = escAttr(item.label||'') + ' → ' + escAttr(item.url||'');
-      if (item.type === 'update')  summary = '<strong>'+escAttr(item.title||'')+'</strong>'+(item.text?' — '+escAttr(item.text).slice(0,55)+'…':'');
-      if (item.type === 'menu')    summary = (item.category?'<em>'+escAttr(item.category)+'</em> · ':'')+'<strong>'+escAttr(item.name||'')+'</strong>'+(item.price?' · '+escAttr(item.price):'');
-      if (item.type === 'service') summary = '<strong>'+escAttr(item.name||'')+'</strong>'+(item.price?' · '+escAttr(item.price):'');
+      if (item.type === 'link')    summary = escHtml(item.label||'') + ' → ' + escHtml(item.url||'');
+      if (item.type === 'update')  summary = '<strong>'+escHtml(item.title||'')+'</strong>'+(item.text?' — '+escHtml(item.text).slice(0,55)+'…':'');
+      if (item.type === 'menu')    summary = (item.category?'<em>'+escHtml(item.category)+'</em> · ':'')+'<strong>'+escHtml(item.name||'')+'</strong>'+(item.price?' · '+escHtml(item.price):'');
+      if (item.type === 'service') summary = '<strong>'+escHtml(item.name||'')+'</strong>'+(item.price?' · '+escHtml(item.price):'');
       var li = document.createElement('li');
+      li.draggable = true;
       li.dataset.item = JSON.stringify(item);
       li.innerHTML =
+        '<span class="drag-handle" title="Drag to reorder" style="cursor:grab;color:#bbb;font-size:1.2rem;padding:0 6px 0 0;user-select:none;">⠿</span>' +
         '<span class="content-type-badge" style="background:'+(colors[item.type]||'#666')+';color:#fff;">'+(icons[item.type]||'')+' '+item.type+'</span>' +
         '<span style="font-size:0.87rem;color:#444;flex:1;">'+summary+'</span>' +
-        '<button class="rm-btn" onclick="this.parentElement.remove()" title="Remove">✕</button>';
+        '<button class="rm-btn" onclick="this.parentElement.remove();markDirty();" title="Remove">✕</button>';
       document.getElementById('contentList').appendChild(li);
     }
+
+    // ── Drag-to-reorder content items ─────────────────────────────
+    (function() {
+      var list = document.getElementById('contentList');
+      if (!list) return;
+      var _dragging = null;
+      list.addEventListener('dragstart', function(e) {
+        _dragging = e.target.closest('li');
+        if (_dragging) { e.dataTransfer.effectAllowed = 'move'; setTimeout(function(){ if (_dragging) _dragging.style.opacity = '0.4'; }, 0); }
+      });
+      list.addEventListener('dragend', function() {
+        if (_dragging) { _dragging.style.opacity = ''; _dragging = null; markDirty(); }
+      });
+      list.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        if (!_dragging) return;
+        var over = e.target.closest('li');
+        if (over && over !== _dragging) {
+          var rect = over.getBoundingClientRect();
+          if (e.clientY < rect.top + rect.height / 2) {
+            list.insertBefore(_dragging, over);
+          } else {
+            list.insertBefore(_dragging, over.nextSibling);
+          }
+        }
+      });
+    })();
 
     function getContentBlocks() {
       return Array.from(document.querySelectorAll('#contentList li'))
@@ -1217,8 +1285,9 @@ exports.handler = async () => {
       li.className = 'checkbox-list-item';
       li.innerHTML =
         '<input type="text" placeholder="e.g. Free estimate, Emergency service, New installation" value="' + escAttr(value) + '" class="checkbox-option" />' +
-        '<button class="rm-btn" onclick="this.parentElement.remove()" title="Remove">✕</button>';
+        '<button class="rm-btn" onclick="this.parentElement.remove();markDirty();" title="Remove">✕</button>';
       document.getElementById('checkboxList').appendChild(li);
+      if (value === '') markDirty(); // only mark dirty on user-initiated adds, not initial population
     }
 
     function getCheckboxOptions() {
@@ -1249,6 +1318,7 @@ exports.handler = async () => {
           const b64 = canvas.toDataURL('image/jpeg', 0.85);
           if (type === 'headshot') {
             _headshotBase64 = b64;
+            markDirty();
             const el = document.getElementById('headshotPreview');
             if (el.tagName === 'IMG') { el.src = b64; }
             else {
@@ -1258,6 +1328,7 @@ exports.handler = async () => {
             }
           } else {
             _logoBase64 = b64;
+            markDirty();
             _qrLogoUrl  = b64;  // update QR logo preview live
             const el = document.getElementById('avatarPreview');
             if (el.tagName === 'IMG') { el.src = b64; }
@@ -1296,8 +1367,9 @@ exports.handler = async () => {
       _qrCode.append(container);
     }
 
-    function setPhotoLayout(layout) {
+    function setPhotoLayout(layout, silent) {
       _photoLayout = layout;
+      if (!silent) markDirty();
       document.querySelectorAll('.pl-btn').forEach(b => b.classList.remove('active'));
       const map = { logo: 'plLogo', headshot: 'plHeadshot', both: 'plBoth' };
       const btn = document.getElementById(map[layout]);
@@ -1306,6 +1378,7 @@ exports.handler = async () => {
 
     function setQRDotStyle(style) {
       _qrDotStyle = style;
+      markDirty();
       document.querySelectorAll('.qr-dot-btn').forEach(b => b.classList.remove('active'));
       const idMap = { 'square': 'qrDotSquare', 'rounded': 'qrDotRounded', 'dots': 'qrDotDots', 'extra-rounded': 'qrDotExtraRounded' };
       const btn = document.getElementById(idMap[style]);
@@ -1374,10 +1447,13 @@ exports.handler = async () => {
         });
         const data = await res.json();
         if (res.ok) {
-          _logoBase64 = null; _headshotBase64 = null; // clear after successful save
+          _logoBase64 = null; _headshotBase64 = null; _dirty = false; // clear after successful save
+          var _sb = document.querySelector('[onclick="saveProfile()"]');
+          if (_sb) { _sb.style.outline = ''; _sb.style.outlineOffset = ''; _sb.title = ''; }
           btn.textContent = '✓ Saved!'; btn.style.background = '#16a34a';
           setTimeout(function(){ btn.textContent = 'Save Changes'; btn.style.background = ''; btn.disabled = false; }, 2200);
-          showMsg('success', '✓ Profile saved! Changes are live on your profile page.');
+          const _pUrl = window.location.origin + '/p/' + (_profile ? _profile.handle : '');
+          showMsg('success', '✓ Profile saved! <a href="' + _pUrl + '" target="_blank" rel="noopener" style="color:#0f6b6b;font-weight:700;">View live profile →</a>');
           return; // skip the finally reset
         } else if (res.status === 401) {
           // Session expired — try to refresh silently, then let user re-save
@@ -1440,12 +1516,12 @@ exports.handler = async () => {
         '<div style="border:1px solid #e5e5ea;border-radius:12px;padding:14px 16px;margin-bottom:10px;">' +
         '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;">' +
           '<div><div style="color:#f4a724;letter-spacing:2px;">'+filled+'</div>' +
-            '<div style="font-weight:600;font-size:0.9rem;">'+escAttr(r.reviewer_name||'Anonymous')+'</div>' +
+            '<div style="font-weight:600;font-size:0.9rem;">'+escHtml(r.reviewer_name||'Anonymous')+'</div>' +
             (date?'<div style="font-size:0.77rem;color:#888;">'+date+'</div>':'') +
           '</div>' +
           '<div>'+visBadge+featBadge+'</div>' +
         '</div>' +
-        (r.review_text?'<p style="font-size:0.88rem;color:#444;margin:4px 0 12px;line-height:1.55;font-style:italic;">&ldquo;'+escAttr(r.review_text)+'&rdquo;</p>':'') +
+        (r.review_text?'<p style="font-size:0.88rem;color:#444;margin:4px 0 12px;line-height:1.55;font-style:italic;">&ldquo;'+escHtml(r.review_text)+'&rdquo;</p>':'') +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
           '<button data-rid="'+r.id+'" data-action="'+hideAction+'" onclick="reviewAction(this.dataset.rid,this.dataset.action)" class="rev-action-btn" style="background:'+(r.is_visible?'#fee2e2':'#d1fae5')+';color:'+(r.is_visible?'#991b1b':'#065f46')+';cursor:pointer;">'+hideLabel+'</button>' +
           '<button data-rid="'+r.id+'" data-action="'+featAction+'" onclick="reviewAction(this.dataset.rid,this.dataset.action)" class="rev-action-btn" style="background:#fef3c7;color:#92400e;cursor:pointer;">'+featLabel+'</button>' +
@@ -1730,12 +1806,15 @@ exports.handler = async () => {
       } catch(e) { return { error: e.message }; }
     }
 
+    var _allowedPhotoExts = new Set(['jpg','jpeg','png','webp','gif']);
     async function handleGalleryUpload(input) {
       var files = Array.from(input.files || []);
       if (!files.length) return;
       var msg = document.getElementById('galleryMsg');
       for (var i = 0; i < files.length; i++) {
         var file = files[i];
+        var _ext = file.name.split('.').pop().toLowerCase();
+        if (!_allowedPhotoExts.has(_ext)) { msg.textContent = file.name+' is not a supported image type. Skipped.'; continue; }
         if (file.size > 8 * 1024 * 1024) { msg.textContent = file.name+' is too large (max 8 MB). Skipped.'; continue; }
         msg.textContent = 'Uploading '+(i+1)+' of '+files.length+'...';
         try {
@@ -1750,10 +1829,13 @@ exports.handler = async () => {
       setTimeout(function(){ msg.textContent = ''; }, 2000);
     }
 
+    var _allowedDocExts = new Set(['pdf','doc','docx']);
     async function handleDocUpload(input) {
       var file = input.files && input.files[0];
       if (!file) return;
       var msg = document.getElementById('docMsg');
+      var _dext = file.name.split('.').pop().toLowerCase();
+      if (!_allowedDocExts.has(_dext)) { msg.textContent = 'Unsupported file type. Please upload PDF, DOC, or DOCX.'; return; }
       if (file.size > 20 * 1024 * 1024) { msg.textContent = 'File too large (max 20 MB).'; return; }
       msg.textContent = 'Uploading...';
       try {
@@ -1802,6 +1884,30 @@ exports.handler = async () => {
           saveProfile();
         }
       }
+    });
+
+    // ── Dirty state: warn on tab close with unsaved changes ──────
+    window.addEventListener('beforeunload', function(e) {
+      if (_dirty && _profile) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+    function markDirty() {
+      if (!_profile) return;
+      _dirty = true;
+      var btn = document.querySelector('[onclick="saveProfile()"]');
+      if (btn && btn.textContent !== '⏳ Saving…') {
+        btn.style.outline = '2px solid #f4752b';
+        btn.style.outlineOffset = '2px';
+        btn.title = 'You have unsaved changes';
+      }
+    }
+    document.addEventListener('input', function(e) {
+      if (e.target.matches('input,textarea,select')) markDirty();
+    });
+    document.addEventListener('change', function(e) {
+      if (e.target.matches('input,textarea,select')) markDirty();
     });
 
   </script>

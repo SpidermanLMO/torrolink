@@ -41,6 +41,18 @@ exports.handler = async (event) => {
     return json(400, { error: "profileId, name, and phone or email are required." });
   }
 
+  // -- Rate limit: same name, same profile, last 15 minutes
+  const cutoff15 = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+  const { data: dupLead } = await supabaseAdmin
+    .from("leads")
+    .select("id")
+    .eq("profile_id", profileId)
+    .ilike("name", name.trim().slice(0, 100))
+    .gte("submitted_at", cutoff15)
+    .limit(1)
+    .maybeSingle();
+  if (dupLead) return json(429, { error: "You've already submitted a request recently. We'll be in touch soon!" });
+
   // -- Insert lead (anon key: RLS "Anon can submit leads" permits this)
   const { error: insertErr } = await supabaseAnon
     .from("leads")

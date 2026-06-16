@@ -160,7 +160,7 @@ function getThemeCSS(theme = {}, backgroundImage = null) {
 
 
 
-  return { headerBg, cardBg, cardBorder, textPri, textSec, pageBg, linkBg, linkBorder, linkColor, socBg, socBorder, socColor, cardRadius, darkMode, pattern };
+  return { headerBg, cardBg, cardBorder, textPri, textSec, pageBg, linkBg, linkBorder, linkColor, socBg, socBorder, socColor, cardRadius, darkMode, pattern, color1 };
 }
 
 function adjustAlpha(hex, alpha) {
@@ -244,18 +244,18 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   if (eff === 'both' && p.logo_url && p.photo_url) {
     heroPhotos = `<div class="hero-duo">
       <div class="duo-item">
-        <div class="avatar-lg"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager" onerror="this.style.display='none'"/></div>
+        <div class="avatar-lg"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager" fetchpriority="high" onerror="this.style.display='none'"/></div>
         ${p.business_name ? `<p class="duo-caption">${escHtml(p.business_name)}</p>` : ""}
       </div>
       <div class="duo-item">
-        <div class="avatar-lg person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||"")}" loading="eager" onerror="this.style.display='none'"/></div>
+        <div class="avatar-lg person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||"")}" loading="eager" fetchpriority="high" onerror="this.style.display='none'"/></div>
         ${p.owner_name ? `<p class="duo-caption">${escHtml(p.owner_name)}</p>` : ""}
       </div>
     </div>`;
   } else if (eff === 'headshot' && p.photo_url) {
-    heroPhotos = `<div class="hero-solo"><div class="avatar-xl person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||p.business_name||"")}" loading="eager" onerror="this.style.display='none'"/></div></div>`;
+    heroPhotos = `<div class="hero-solo"><div class="avatar-xl person"><img src="${escHtml(p.photo_url)}" alt="${escHtml(p.owner_name||p.business_name||"")}" loading="eager" fetchpriority="high" onerror="this.style.display='none'"/></div></div>`;
   } else if (p.logo_url) {
-    heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager" onerror="this.style.display='none'"/></div></div>`;
+    heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><img src="${escHtml(p.logo_url)}" alt="${escHtml(p.business_name||"")}" loading="eager" fetchpriority="high" onerror="this.style.display='none'"/></div></div>`;
   } else {
     heroPhotos = `<div class="hero-solo"><div class="avatar-xl"><span style="font-size:3rem;">🏢</span></div></div>`;
   }
@@ -263,7 +263,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   // ── LINKS ───────────────────────────────────────────────────────────────────
   const customLinks = showLinks ? links
     .filter(l => l.label && l.url)
-    .map(l => `<a href="${escHtml(l.url)}" target="_blank" rel="noopener" class="link-btn">
+    .map(l => `<a href="${escHtml(safeUrl(l.url))}" target="_blank" rel="noopener" class="link-btn">
       <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
       <span class="link-label-text">${escHtml(l.label)}</span>
     </a>`).join("") : "";
@@ -287,10 +287,11 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     }).join("") : "";
 
   // ── VIDEO ───────────────────────────────────────────────────────────────────
-  const videoEmbed = (showVideo && p.video_url)
+  const _embedUrl   = p.video_url ? toEmbedUrl(p.video_url) : "";
+  const videoEmbed = (showVideo && _embedUrl)
     ? `<div class="card"><div class="section-title">Intro</div>
         <div class="video-wrap">
-          <iframe src="${toEmbedUrl(p.video_url)}" frameborder="0" allowfullscreen
+          <iframe src="${escHtml(_embedUrl)}" frameborder="0" allowfullscreen
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             loading="lazy"></iframe>
         </div>
@@ -401,6 +402,17 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   const _ratingAvg     = _ratingCount > 0
     ? (_ratingReviews.reduce((s, r) => s + r.rating, 0) / _ratingCount).toFixed(1)
     : null;
+  // Include up to 5 most-recent visible reviews with text in JSON-LD for rich snippets
+  const _reviewsForLd = (reviews || [])
+    .filter(r => r.reviewer_name && r.review_text)
+    .slice(0, 5)
+    .map(r => ({
+      "@type":        "Review",
+      "author":       { "@type": "Person", "name": r.reviewer_name },
+      "reviewBody":   r.review_text,
+      ...(r.rating ? { "reviewRating": { "@type": "Rating", "ratingValue": r.rating, "bestRating": 5 } } : {}),
+      ...(r.submitted_at ? { "datePublished": r.submitted_at.slice(0, 10) } : {}),
+    }));
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -410,6 +422,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     ...(p.phone    ? { "telephone": p.phone }   : {}),
     ...(p.logo_url ? { "image": p.logo_url }    : {}),
     ...(_ratingAvg ? { "aggregateRating": { "@type": "AggregateRating", "ratingValue": _ratingAvg, "reviewCount": _ratingCount } } : {}),
+    ...(_reviewsForLd.length ? { "review": _reviewsForLd } : {}),
     "sameAs": _socialEntries.map(([k, v]) => normalizeSocialUrl(k, v)).filter(Boolean),
   });
 
@@ -429,12 +442,14 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   ${p.logo_url ? `<meta property="og:image" content="${escHtml(p.logo_url)}" />
   <meta property="og:image:width" content="400" />
   <meta property="og:image:height" content="400" />` : ""}
-  <meta name="twitter:card" content="${p.logo_url ? "summary_large_image" : "summary"}" />
+  <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="${escHtml(p.business_name || "")}" />
   <meta name="twitter:description" content="${escHtml(p.tagline || p.bio?.slice(0,160) || "")}" />
   ${p.logo_url ? `<meta name="twitter:image" content="${escHtml(p.logo_url)}" />` : ""}
   <link rel="canonical" href="https://torrolink.com/p/${escHtml(p.handle || "")}" />
   <script type="application/ld+json">${jsonLd}</script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="theme-color" content="${t.color1 || '#0f6b6b'}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -888,11 +903,12 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
           interests: fd.getAll('interests'),
         };
         try {
-          await fetch('/.netlify/functions/lead-notify', {
+          var res = await fetch('/.netlify/functions/lead-notify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
           });
+          if (!res.ok) throw new Error('Server error ' + res.status);
           document.getElementById('leadSuccess').style.display = 'block';
           leadForm.style.display = 'none';
         } catch {
@@ -1045,14 +1061,14 @@ function buildLeadForm(p) {
     </label>`).join("");
 
   const textbox = p.lead_form_has_textbox
-    ? `<textarea name="lead_comment" rows="3" placeholder="Tell us what you need…"></textarea>` : "";
+    ? `<textarea name="lead_comment" rows="3" placeholder="Tell us what you need…" maxlength="1000"></textarea>` : "";
 
   return `<div class="card">
     <div class="section-title">Get in Touch</div>
     <form class="lead-form" id="leadForm">
-      <input type="text"  name="lead_name"  placeholder="Your name"     required />
-      <input type="tel"   name="lead_phone" placeholder="Phone number" />
-      <input type="email" name="lead_email" placeholder="Email address" />
+      <input type="text"  name="lead_name"  placeholder="Your name"     required maxlength="100" />
+      <input type="tel"   name="lead_phone" placeholder="Phone number" maxlength="30" />
+      <input type="email" name="lead_email" placeholder="Email address" maxlength="200" />
       ${checkboxes ? `<div class="checkboxes">${checkboxes}</div>` : ""}
       ${textbox}
       <button type="submit" class="submit-btn" id="leadSubmitBtn">Send →</button>
@@ -1103,8 +1119,8 @@ function buildReviews(p, reviews) {
       <div class="star-picker">
         ${[1,2,3,4,5].map(n => `<button type="button" class="star-btn" onclick="pickStar(${n})">★</button>`).join('')}
       </div>
-      <input  type="text"  id="reviewerName" placeholder="Your name" required class="review-input" />
-      <textarea id="reviewerText" rows="3" placeholder="Share your experience..." required class="review-input"></textarea>
+      <input  type="text"  id="reviewerName" placeholder="Your name" required class="review-input" maxlength="100" />
+      <textarea id="reviewerText" rows="3" placeholder="Share your experience..." required class="review-input" maxlength="1000"></textarea>
       <button type="submit" class="submit-btn" id="reviewSubmitBtn">Submit Review</button>
     </form>
     <p id="reviewSuccess" style="display:none;text-align:center;color:#0f6b6b;font-weight:700;padding:16px 0;">✓ Thanks for your review!</p>
@@ -1192,13 +1208,19 @@ function escHtml(str) {
 }
 
 function escJs(str) {
-  return String(str || "").replace(/'/g, "\\'").replace(/\\/g, "\\\\");
+  return String(str || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+function safeUrl(s) {
+  const u = String(s || "").trim();
+  if (/^javascript:/i.test(u) || /^data:/i.test(u) || /^vbscript:/i.test(u)) return "#";
+  return u;
 }
 
 function toEmbedUrl(url) {
+  if (!url) return "";
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/);
   if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
   const vm = url.match(/vimeo\.com\/(\d+)/);
   if (vm) return `https://player.vimeo.com/video/${vm[1]}`;
-  return url;
+  return ""; // only allow YouTube and Vimeo embeds
 }

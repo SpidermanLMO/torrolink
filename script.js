@@ -53,18 +53,19 @@ if (form) {
     btn.textContent = 'Sending…';
     btn.disabled = true;
 
+    const safeEmail = payload.email.replace(/[<>&"]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
     fetch('/.netlify/functions/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
-    .then(r => r.json())
+    .then(r => { if (!r.ok) throw new Error('Server error ' + r.status); return r.json(); })
     .then(() => {
       form.innerHTML = `
         <div style="text-align:center;padding:48px 24px;">
           <div style="font-size:3rem;margin-bottom:16px;">✅</div>
           <h3 style="font-size:1.4rem;font-weight:800;margin-bottom:10px;color:#0f6b6b;">Message sent!</h3>
-          <p style="color:#444457;font-size:1rem;">We'll get back to you at <strong>${payload.email}</strong> within one business day.</p>
+          <p style="color:#444457;font-size:1rem;">We'll get back to you at <strong>${safeEmail}</strong> within one business day.</p>
         </div>`;
     })
     .catch(() => {

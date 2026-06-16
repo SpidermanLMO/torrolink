@@ -72,6 +72,20 @@ exports.handler = async (event) => {
 
   // ── Build storage path ────────────────────────────────────────────
   const ext = (filename.split(".").pop() || "").toLowerCase() || (type === "photo" ? "jpg" : "pdf");
+
+  // Allowlist extension to prevent uploading HTML/scripts to public storage
+  const allowedPhoto = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+  const allowedDoc   = new Set(["pdf", "doc", "docx"]);
+  const allowed = type === "photo" ? allowedPhoto : allowedDoc;
+  if (!allowed.has(ext)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ error: type === "photo"
+        ? "Unsupported file type. Please upload JPG, PNG, WEBP, or GIF."
+        : "Unsupported file type. Please upload PDF, DOC, or DOCX." }),
+    };
+  }
+
   const uid = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const folder = type === "photo" ? "gallery" : "documents";
   const storagePath = `${folder}/${profileId}/${uid}.${ext}`;

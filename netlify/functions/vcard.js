@@ -17,7 +17,7 @@ exports.handler = async (event) => {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("business_name, tagline, phone, email, links, socials, logo_url, handle")
+    .select("business_name, tagline, phone, links, socials, logo_url, handle, customers(email)")
     .eq("handle", handle)
     .maybeSingle();
 
@@ -26,9 +26,9 @@ exports.handler = async (event) => {
   // Build vCard 3.0
   const name    = profile.business_name || "";
   const phone   = profile.phone || "";
-  const email   = profile.email || "";
+  const email   = profile.customers?.email || "";
   const tagline = profile.tagline || "";
-  const url     = `https://torrolink.com/${profile.handle || handle}`;
+  const url     = `https://torrolink.com/p/${profile.handle || handle}`;
   const photo   = profile.logo_url || "";
 
   // Try to find website from links

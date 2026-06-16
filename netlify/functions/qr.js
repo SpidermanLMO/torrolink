@@ -39,10 +39,11 @@ exports.handler = async (event) => {
   // Netlify CDN injects x-country (ISO 3166-1 alpha-2) at the edge
   const country = headers["x-country"] || headers["x-nf-country"] || null;
 
-  const deviceType = /mobile|android|iphone|ipad/i.test(ua)
-    ? "mobile"
-    : /tablet|ipad/i.test(ua)
+  // Check tablet first — iPad/Android tablet UAs also contain "mobile"/"android"
+  const deviceType = /ipad/i.test(ua) || (/android/i.test(ua) && !/mobile/i.test(ua))
     ? "tablet"
+    : /mobile|android|iphone/i.test(ua)
+    ? "mobile"
     : "desktop";
 
   const os = /android/i.test(ua) ? "Android"

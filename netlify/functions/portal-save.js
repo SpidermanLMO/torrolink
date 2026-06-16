@@ -21,6 +21,13 @@ const supabaseAnon = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
+// Reject javascript: / data: / vbscript: URLs to prevent stored XSS via link hrefs
+function safeUrl(s) {
+  const u = String(s || "").trim();
+  if (/^javascript:/i.test(u) || /^data:/i.test(u) || /^vbscript:/i.test(u)) return "";
+  return u;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return respond(405, { error: "Method not allowed" });
@@ -117,10 +124,10 @@ exports.handler = async (event) => {
       console.error("Image upload failed:", pathKey, e);
       return null;
     }
-  }
+  };
 
-  let logoUrl     = profile.logo_url  || null;
-  let photoUrl    = profile.photo_url || null;
+  let logoUrl  = profile.logo_url  || null;
+  let photoUrl = profile.photo_url || null;
 
   if (logoBase64)     { const url = await uploadImage(logoBase64,     `logos/${profileId}`);       if (url) logoUrl  = url; }
   if (headshotBase64) { const url = await uploadImage(headshotBase64, `headshots/${profileId}`); if (url) photoUrl = url; }
@@ -130,29 +137,35 @@ exports.handler = async (event) => {
 
   // ── 5. Update profile ────────────────────────────
   const updates = {
-    business_name: businessName || null,
-    tagline:       tagline      || null,
-    bio:           bio          || null,
-    phone:         phone        || null,
-    video_url:     videoUrl     || null,
-    owner_name:    ownerName    || null,
+    business_name: businessName ? String(businessName).trim().slice(0, 80)  : null,
+    tagline:       tagline      ? String(tagline).trim().slice(0, 120)       : null,
+    bio:           bio          ? String(bio).trim().slice(0, 1000)          : null,
+    phone:         phone        ? String(phone).trim().slice(0, 30)          : null,
+    video_url: (() => {
+      // Only allow YouTube and Vimeo embed sources; discard unrecognized URLs
+      if (!videoUrl) return null;
+      if (/youtube\.com\/watch\?v=|youtu\.be\//.test(videoUrl)) return videoUrl;
+      if (/vimeo\.com\/\d+/.test(videoUrl)) return videoUrl;
+      return null;
+    })(),
+    owner_name:    ownerName    ? String(ownerName).trim().slice(0, 100)     : null,
     content_blocks: Array.isArray(contentBlocks) ? contentBlocks : [],
     links:         (() => {
       // extract link-type items from contentBlocks + merge with any old-style links
       const cbLinks = (Array.isArray(contentBlocks) ? contentBlocks : [])
-        .filter(b => b.type === 'link' && (b.label || b.url))
-        .map(b => ({ label: b.label||'', url: b.url||'' }));
+        .filter(b => b.type === "link" && (b.label || b.url))
+        .map(b => ({ label: b.label||"", url: safeUrl(b.url||"") }));
       if (cbLinks.length) return cbLinks;
       return Array.isArray(links) ? links : [];
     })(),
     socials:       socials || {},
     theme:                theme   || {},
-    lead_form_enabled:    typeof leadFormEnabled === 'boolean' ? leadFormEnabled : false,
-    lead_form_has_textbox: typeof leadFormHasTextbox === 'boolean' ? leadFormHasTextbox : false,
+    lead_form_enabled:    typeof leadFormEnabled === "boolean" ? leadFormEnabled : false,
+    lead_form_has_textbox: typeof leadFormHasTextbox === "boolean" ? leadFormHasTextbox : false,
     lead_form_checkboxes: Array.isArray(leadFormCheckboxes) ? leadFormCheckboxes : [],
     logo_url:             logoUrl,
     photo_url:            photoUrl,
-    background_image:     (body.theme && body.theme.pattern === 'custom') ? backgroundImageUrl : null,
+    background_image:     (body.theme && body.theme.pattern === "custom") ? backgroundImageUrl : null,
     updated_at:    new Date().toISOString(),
   };
 

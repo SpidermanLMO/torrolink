@@ -43,9 +43,16 @@ exports.handler = async (event) => {
     const { reviewId, action } = body;
     if (!reviewId || !action) return respond(400, { error: "reviewId and action required" });
 
-    // Verify review belongs to this user's profile
+    // Verify review exists and belongs to this user's profile
     const { data: review } = await supabaseAdmin.from("reviews").select("id,profile_id").eq("id", reviewId).single();
     if (!review) return respond(404, { error: "Review not found" });
+
+    // Ownership check: confirm the review's profile is owned by this user
+    const { data: revProfile } = await supabaseAdmin.from("profiles").select("customer_id").eq("id", review.profile_id).single();
+    if (revProfile) {
+      const { data: revCustomer } = await supabaseAdmin.from("customers").select("email").eq("id", revProfile.customer_id).single();
+      if (revCustomer?.email && revCustomer.email !== user.email) return respond(403, { error: "Forbidden" });
+    }
 
     if (action === "delete") {
       await supabaseAdmin.from("reviews").delete().eq("id", reviewId);
