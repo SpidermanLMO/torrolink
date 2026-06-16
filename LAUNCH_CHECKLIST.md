@@ -1,19 +1,49 @@
 # Torrolink Launch Checklist
 
 ## Step 1 — Deploy code (run deploy.bat)
-Run `deploy.bat` in C:\Users\Laign\TorroLink. Wait 2-3 min for Netlify to finish.
+Double-click `deploy.bat` in C:\Users\Laign\TorroLink. Wait 2-3 min for Netlify to finish.
 
 ---
 
-## Step 2 — Supabase: Run background image migration
-Go to https://app.supabase.com → your project → SQL Editor → paste and run:
+## Step 2 — Supabase: Run all migrations (CRITICAL)
+
+**IMPORTANT — use the correct project.**  
+The live site uses project `cayymmknkjpiybssiltu`. Find it at https://app.supabase.com → look for the project whose URL contains `cayymmknkjpiybssiltu`.
+
+Go to **SQL Editor** and paste + run this entire block:
+
 ```sql
+-- 1. Fix review submission (service_role needs INSERT on reviews)
+GRANT ALL ON reviews TO service_role;
+
+-- 2. New columns for admin features
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS free_until timestamptz;
+ALTER TABLE profiles  ADD COLUMN IF NOT EXISTS suspended boolean DEFAULT false;
+
+-- 3. Background image column (may already exist — IF NOT EXISTS is safe)
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS background_image text;
 ```
 
+This fixes:
+- **Review submissions returning "Failed to submit"** — service_role lacked INSERT on reviews
+- Admin "Grant free month" feature (free_until column)
+- Admin "Suspend profile" feature (suspended column)
+
 ---
 
-## Step 3 — Stripe webhook endpoint
+## Step 3 — Netlify: Add ADMIN_PASSWORD env var
+
+Go to https://app.netlify.com → your site → **Site configuration → Environment variables** → Add:
+
+| Key | Value |
+|-----|-------|
+| `ADMIN_PASSWORD` | (choose a strong password) |
+
+Then trigger a redeploy. This enables the `/admin` dashboard.
+
+---
+
+## Step 4 — Stripe webhook endpoint
 Go to https://dashboard.stripe.com/webhooks → **Add endpoint**
 
 **Endpoint URL:**
@@ -32,7 +62,7 @@ After saving, click the endpoint → copy **Signing Secret** (starts with `whsec
 
 ---
 
-## Step 4 — Netlify: Add STRIPE_WEBHOOK_SECRET
+## Step 5 — Netlify: Add STRIPE_WEBHOOK_SECRET
 Go to https://app.netlify.com → your site → Site configuration → Environment variables → Add:
 
 | Key | Value |
@@ -43,7 +73,7 @@ Click "Deploy" or trigger a redeploy for the env var to take effect.
 
 ---
 
-## Step 5 — Email deliverability (SPF/DKIM via Resend)
+## Step 6 — Email deliverability (SPF/DKIM via Resend)
 Go to https://resend.com/domains → torrolink.com → copy the DNS records shown.
 
 Add them in your DNS provider (wherever torrolink.com DNS is managed):
@@ -55,7 +85,7 @@ After adding, click **Verify** in Resend. Emails from `orders@torrolink.com` won
 
 ---
 
-## Step 6 — Go live with Stripe
+## Step 7 — Go live with Stripe
 When ready to accept real payments, swap keys in Netlify env vars:
 
 | Key | Change to |
@@ -67,14 +97,16 @@ When ready to accept real payments, swap keys in Netlify env vars:
 
 ---
 
-## Step 7 — Final smoke tests
-After deploy:
+## Step 8 — Final smoke tests
+After deploy + Supabase migrations:
 - [ ] https://torrolink.com loads
 - [ ] https://torrolink.com/portal — sign in works
 - [ ] https://torrolink.com/terms — Terms of Service shows
 - [ ] https://torrolink.com/privacy — Privacy Policy shows
 - [ ] Click a Buy button → Stripe checkout opens
 - [ ] (Test mode) Complete a test purchase → check email for QR code
+- [ ] Submit a review on a profile page → no "Failed to submit" error
+- [ ] /admin — dashboard loads after entering password
 
 ---
 

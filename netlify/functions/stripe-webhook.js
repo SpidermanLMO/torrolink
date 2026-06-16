@@ -212,27 +212,48 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: JSON.stringify({ received: true }) };
     }
 
-    // ── 2c. NEW QR PURCHASE: Create profile ──────
-    const handle     = await uniqueHandle(businessName);
-    const code       = await uniqueCode();
+    // ── 2c. NEW QR PURCHASE: Create profile (idempotent — skip if already exists) ──
     const brandingTier = hasBranding
       ? (plan.includes("custom") ? "custom" : "standard")
       : null;
 
-    const { data: profile, error: profErr } = await supabase
+    // Guard against duplicate profiles (e.g. webhook fired twice, or customer re-purchased)
+    const { data: existingQrProfile } = await supabase
       .from("profiles")
-      .insert({
-        customer_id:    customerId,
-        handle,
-        code,
-        business_name:  businessName,
-        is_active:      true,
-        branding_tier:  brandingTier,
-        branding_status: hasBranding ? "pending_upload" : null,
-      })
       .select("id, handle, code")
-      .single();
-    if (profErr) throw profErr;
+      .eq("customer_id", customerId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    let profile;
+    if (existingQrProfile) {
+      // Customer already has a profile — just update branding if applicable, don't create a new one
+      profile = existingQrProfile;
+      if (hasBranding) {
+        await supabase.from("profiles")
+          .update({ branding_tier: brandingTier, branding_status: "pending_upload" })
+          .eq("id", profile.id);
+      }
+    } else {
+      const handle = await uniqueHandle(businessName);
+      const code   = await uniqueCode();
+      const { data: newProfile, error: profErr } = await supabase
+        .from("profiles")
+        .insert({
+          customer_id:    customerId,
+          handle,
+          code,
+          business_name:  businessName,
+          is_active:      true,
+          branding_tier:  brandingTier,
+          branding_status: hasBranding ? "pending_upload" : null,
+        })
+        .select("id, handle, code")
+        .single();
+      if (profErr) throw profErr;
+      profile = newProfile;
+    }
 
     const qrUrl      = `${SITE}/q/${profile.code}`;
     const profileUrl = `${SITE}/p/${profile.handle}`;

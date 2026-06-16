@@ -173,6 +173,7 @@ CREATE POLICY IF NOT EXISTS "public insert reviews"
 
 GRANT SELECT, INSERT ON reviews TO anon;
 GRANT SELECT, INSERT ON reviews TO authenticated;
+GRANT ALL ON reviews TO service_role;
 
 -- ── Content blocks column on profiles ───────────────────────────
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS content_blocks JSONB DEFAULT '[]';
