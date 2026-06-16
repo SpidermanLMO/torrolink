@@ -310,6 +310,17 @@ exports.handler = async () => {
 
       <!-- PROFILE TAB -->
       <div id="tab-profile" class="tab-panel active">
+        <div id="welcomeBanner" style="display:none;background:linear-gradient(135deg,#edfaf9,#e6f5f5);border:1px solid #b8dede;border-radius:12px;padding:20px 24px;margin-bottom:16px;">
+          <h3 style="font-size:1rem;font-weight:700;margin:0 0 10px;color:#0f6b6b;">&#128075; Welcome! Let&#x27;s set up your profile in 5 minutes.</h3>
+          <ol style="font-size:0.87rem;color:#444;line-height:2.1;margin:0 0 12px;padding-left:18px;">
+            <li>Enter your <strong>business name</strong> and phone below</li>
+            <li>Upload your <strong>logo or headshot</strong></li>
+            <li>Go to <strong>Links &amp; Socials</strong> — add your website, booking link, and socials</li>
+            <li>Go to <strong>Themes</strong> — pick a style that matches your brand</li>
+            <li>Hit <strong>Save Changes</strong> at the bottom — you&#x27;re live!</li>
+          </ol>
+          <button onclick="document.getElementById('welcomeBanner').style.display='none'" style="background:none;border:none;color:#0f6b6b;font-size:0.8rem;cursor:pointer;text-decoration:underline;padding:0;">Dismiss</button>
+        </div>
         <div class="tl-card">
           <h2>Profile details</h2>
 
@@ -1033,6 +1044,11 @@ exports.handler = async () => {
     // ── Populate form fields ───────────────────────────────────────
     function populateEditor(p) {
       document.getElementById('topbarHandle').textContent = '@' + p.handle;
+      // Show onboarding banner for new/blank profiles
+      if (!p.business_name) {
+        var wb = document.getElementById('welcomeBanner');
+        if (wb) wb.style.display = 'block';
+      }
       document.getElementById('fieldBusinessName').value = p.business_name || '';
       document.getElementById('fieldTagline').value      = p.tagline       || '';
       document.getElementById('fieldBio').value          = p.bio           || '';

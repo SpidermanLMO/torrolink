@@ -396,14 +396,20 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   const stars50 = Array(50).fill("★").join(" ");
   // ── LocalBusiness JSON-LD ────────────────────────────────────────────
   const _socialEntries = Object.entries(p.socials || {}).filter(([, v]) => v);
+  const _ratingReviews = (reviews || []).filter(r => r.rating);
+  const _ratingCount   = _ratingReviews.length;
+  const _ratingAvg     = _ratingCount > 0
+    ? (_ratingReviews.reduce((s, r) => s + r.rating, 0) / _ratingCount).toFixed(1)
+    : null;
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": p.business_name || "",
-    "url": "https://torrolink.com/" + (p.handle || ""),
+    "url": "https://torrolink.com/p/" + (p.handle || ""),
     ...(p.tagline || p.bio ? { "description": (p.tagline || (p.bio || "").slice(0, 200)) } : {}),
     ...(p.phone    ? { "telephone": p.phone }   : {}),
     ...(p.logo_url ? { "image": p.logo_url }    : {}),
+    ...(_ratingAvg ? { "aggregateRating": { "@type": "AggregateRating", "ratingValue": _ratingAvg, "reviewCount": _ratingCount } } : {}),
     "sameAs": _socialEntries.map(([k, v]) => normalizeSocialUrl(k, v)).filter(Boolean),
   });
 
@@ -419,7 +425,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   <meta property="og:site_name" content="Torrolink" />
   <meta property="og:title" content="${escHtml(p.business_name || "")}" />
   <meta property="og:description" content="${escHtml(p.tagline || p.bio?.slice(0,160) || "")}" />
-  <meta property="og:url" content="https://torrolink.com/${escHtml(p.handle || "")}" />
+  <meta property="og:url" content="https://torrolink.com/p/${escHtml(p.handle || "")}" />
   ${p.logo_url ? `<meta property="og:image" content="${escHtml(p.logo_url)}" />
   <meta property="og:image:width" content="400" />
   <meta property="og:image:height" content="400" />` : ""}
@@ -427,7 +433,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   <meta name="twitter:title" content="${escHtml(p.business_name || "")}" />
   <meta name="twitter:description" content="${escHtml(p.tagline || p.bio?.slice(0,160) || "")}" />
   ${p.logo_url ? `<meta name="twitter:image" content="${escHtml(p.logo_url)}" />` : ""}
-  <link rel="canonical" href="https://torrolink.com/${escHtml(p.handle || "")}" />
+  <link rel="canonical" href="https://torrolink.com/p/${escHtml(p.handle || "")}" />
   <script type="application/ld+json">${jsonLd}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -713,6 +719,14 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
       transition: border-color 0.2s;
     }
     .review-input:focus { border-color: #0f6b6b; }
+    .review-avg-bar {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 14px; border-radius: 12px; margin-bottom: 14px;
+      background: rgba(244,167,36,0.07); border: 1px solid rgba(244,167,36,0.18);
+    }
+    .review-avg-score { font-size: 2rem; font-weight: 800; color: #92400e; line-height: 1; }
+    .review-avg-stars { font-size: 1.1rem; color: #f4a724; letter-spacing: 1px; }
+    .review-avg-label { font-size: 0.78rem; opacity: 0.62; margin-top: 2px; }
 
     /* ── FOOTER ──────────────────────────────────── */
     /* Entrance animations */
@@ -1052,6 +1066,20 @@ function buildLeadForm(p) {
 function buildReviews(p, reviews) {
   const stars = n => '★'.repeat(n) + '☆'.repeat(5 - n);
 
+  const ratedRevs  = reviews.filter(r => r.rating);
+  const ratingCount = ratedRevs.length;
+  const avgRating   = ratingCount > 0
+    ? ratedRevs.reduce((s, r) => s + r.rating, 0) / ratingCount
+    : null;
+  const avgBar = (avgRating && ratingCount >= 2) ? `
+    <div class="review-avg-bar">
+      <span class="review-avg-score">${avgRating.toFixed(1)}</span>
+      <div>
+        <div class="review-avg-stars">${'★'.repeat(Math.round(avgRating))}${'☆'.repeat(5 - Math.round(avgRating))}</div>
+        <div class="review-avg-label">${ratingCount} review${ratingCount !== 1 ? 's' : ''}</div>
+      </div>
+    </div>` : '';
+
   const cards = reviews.map(r => `
     <div class="review-card${r.is_featured ? ' featured' : ''}">
       ${r.is_featured ? '<div class="featured-badge">⭐ Featured</div>' : ''}
@@ -1067,6 +1095,7 @@ function buildReviews(p, reviews) {
 
   return `<div class="card">
     <div class="section-title">Reviews</div>
+    ${avgBar}
     ${cards}
     ${empty}
     <button class="review-write-btn" onclick="toggleReviewForm()">✏️ Write a Review</button>
