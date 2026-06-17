@@ -895,7 +895,7 @@ exports.handler = async () => {
       var pw = document.getElementById('createPassword').value;
       var h  = document.getElementById('pwHints');
       if (!h || !pw) { if(h) h.innerHTML=''; return; }
-      var sym = /[!@#$%^&*()\-_=+\[\]{};:\'",.<>?\/\\|~]/.test(pw);
+      var sym = /[!@#$%^&*()\\-_=+\\[\\]{};:\\'\".,<>?\\/\\\\|~]/.test(pw);
       var hints = [
         { label: '8+ chars', ok: pw.length >= 8 },
         { label: '1 capital', ok: /[A-Z]/.test(pw) },
