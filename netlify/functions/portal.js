@@ -739,7 +739,7 @@ exports.handler = async () => {
           const style = pat.preview(c1, c2);
           const isExp = _expandedGroup === groupKey;
           const hasSel = group.variants.includes(_selectedPattern);
-          html += '<div class="pattern-swatch group-swatch' + (hasSel ? ' selected' : '') + (isExp ? ' expanded' : '') + '" style="' + style + '" onclick="togglePatternGroup(\'' + groupKey + '\')" title="' + group.label + '">';
+          html += '<div class="pattern-swatch group-swatch' + (hasSel ? ' selected' : '') + (isExp ? ' expanded' : '') + '" style="' + style + '" onclick="togglePatternGroup(&apos;' + groupKey + '&apos;)" title="' + group.label + '">';
           html += '<span>' + group.emoji + ' ' + group.label + (isExp ? ' &#9652;' : ' &#9662;') + '</span>';
           html += '</div>';
           if (isExp) {
@@ -747,7 +747,7 @@ exports.handler = async () => {
             group.variants.forEach(function(vid) {
               const vp = patMap[vid];
               const vs = vp.preview(c1, c2);
-              html += '<div class="pattern-sub-swatch' + (vid === _selectedPattern ? ' selected' : '') + '" style="' + vs + '" onclick="selectPatternVariant(\'' + vid + '\')" title="' + vp.label + '"><span>' + vp.label + '</span></div>';
+              html += '<div class="pattern-sub-swatch' + (vid === _selectedPattern ? ' selected' : '') + '" style="' + vs + '" onclick="selectPatternVariant(&apos;' + vid + '&apos;)" title="' + vp.label + '"><span>' + vp.label + '</span></div>';
             });
             html += '</div>';
           }
@@ -755,7 +755,7 @@ exports.handler = async () => {
           const p = patMap[id];
           if (!p) return;
           const style = p.id === 'custom' ? p.preview(c1, c2, _bgImageUrl) : p.preview(c1, c2);
-          html += '<div class="pattern-swatch' + (p.id === _selectedPattern ? ' selected' : '') + '" style="' + style + '" onclick="selectPattern(\'' + p.id + '\')" title="' + p.label + '"><span>' + p.label + '</span></div>';
+          html += '<div class="pattern-swatch' + (p.id === _selectedPattern ? ' selected' : '') + '" style="' + style + '" onclick="selectPattern(&apos;' + p.id + '&apos;)" title="' + p.label + '"><span>' + p.label + '</span></div>';
         }
       });
       grid.innerHTML = html;
