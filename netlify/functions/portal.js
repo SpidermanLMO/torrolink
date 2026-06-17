@@ -1135,7 +1135,7 @@ exports.handler = async () => {
           var _notice = document.createElement('div');
           _notice.className = 'lead-metrics-notice';
           _notice.style.cssText = 'margin-top:14px;padding:12px 14px;background:#fff8f0;border:1px solid rgba(244,117,43,0.25);border-radius:8px;font-size:0.85rem;color:#7c4000;';
-          _notice.innerHTML = '🔒 Lead capture requires <strong>Metrics &amp; Leads</strong> ($10.28/mo). <a href="#" onclick="switchTab(\'upgrade\');return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Upgrade &rarr;</a>';
+          _notice.innerHTML = '🔒 Lead capture requires <strong>Metrics &amp; Leads</strong> ($10.28/mo). <a href="#" onclick="switchTab(&apos;upgrade&apos;);return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Upgrade &rarr;</a>';
           leadCard.appendChild(_notice);
         } else {
           leadEl.disabled = false;
