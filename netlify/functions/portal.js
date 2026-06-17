@@ -1187,7 +1187,7 @@ exports.handler = async () => {
       if (type === 'link') {
         var label = document.getElementById('newLinkLabel').value.trim();
         var url   = document.getElementById('newLinkUrl').value.trim();
-        if (url && !/^https?:\/\//i.test(url) && !/^mailto:/i.test(url) && !/^tel:/i.test(url)) url = 'https://' + url;
+        if (url && !/^https?:\\/\\//i.test(url) && !/^mailto:/i.test(url) && !/^tel:/i.test(url)) url = 'https://' + url;
         if (!label && !url) return;
         item = { id: genId(), type: 'link', label: label, url: url };
         document.getElementById('newLinkLabel').value = '';
@@ -1739,17 +1739,17 @@ exports.handler = async () => {
       var grid = document.getElementById('galleryGrid');
       if (!grid) return;
       if (!_photos.length) {
-        grid.innerHTML = '<p class=\'gallery-empty\'>No photos yet. Add some below!</p>';
+        grid.innerHTML = '<p class=\\'gallery-empty\\'>No photos yet. Add some below!</p>';
         return;
       }
       grid.innerHTML = _photos.map(function(ph) {
-        return '<div class=\'gallery-item-p\'>' +
-          '<div style=\'position:relative;\'>' +
-            '<img src=\''+escHtml(ph.file_url)+'\' alt=\''+escHtml(ph.caption||'')+'\'  loading=\'lazy\' />' +
-            '<span class=\'gallery-badge-p\'>&#128065; '+(ph.view_count||0)+'</span>' +
+        return '<div class=\\'gallery-item-p\\'>' +
+          '<div style=\\'position:relative;\\'>' +
+            '<img src=\\''+escHtml(ph.file_url)+'\\' alt=\\''+escHtml(ph.caption||'')+'\\'  loading=\\'lazy\\' />' +
+            '<span class=\\'gallery-badge-p\\'>&#128065; '+(ph.view_count||0)+'</span>' +
           '</div>' +
-          '<input class=\'gallery-cap-p\' type=\'text\' value=\''+escHtml(ph.caption||'')+'\'  placeholder=\'Caption...\' onblur=\'saveCaption(\"'+escJs(ph.id)+'\",this.value)\' />' +
-          '<button class=\'gallery-del-p\' onclick=\'deletePhoto(\"'+escJs(ph.id)+'\")\'  >&#10005; Remove</button>' +
+          '<input class=\\'gallery-cap-p\\' type=\\'text\\' value=\\''+escHtml(ph.caption||'')+'\\'  placeholder=\\'Caption...\\' onblur=\\'saveCaption(\"'+escJs(ph.id)+'\",this.value)\\' />' +
+          '<button class=\\'gallery-del-p\\' onclick=\\'deletePhoto(\"'+escJs(ph.id)+'\")\\'  >&#10005; Remove</button>' +
         '</div>';
       }).join('');
     }
@@ -1758,18 +1758,18 @@ exports.handler = async () => {
       var list = document.getElementById('documentsList');
       if (!list) return;
       if (!_documents.length) {
-        list.innerHTML = '<p style=\'color:#aaa;font-size:0.85rem;text-align:center;padding:12px 0;\'>No documents yet.</p>';
+        list.innerHTML = '<p style=\\'color:#aaa;font-size:0.85rem;text-align:center;padding:12px 0;\\'>No documents yet.</p>';
         return;
       }
       list.innerHTML = _documents.map(function(d) {
         var icon = d.file_type === 'pdf' ? '&#128196;' : '&#128221;';
-        return '<div class=\'doc-item-p\' id=\'doc-'+escHtml(d.id)+'\' >' +
-          '<span class=\'doc-icon-p\'>'+icon+'</span>' +
-          '<div class=\'doc-body-p\'>' +
-            '<input class=\'doc-title-p\' type=\'text\' value=\''+escHtml(d.title||'Document')+'\'  placeholder=\'Document title\' onblur=\'saveDocTitle(\"'+escJs(d.id)+'\",this.value)\' />' +
-            '<a class=\'doc-view-p\' href=\''+escHtml(d.file_url)+'\' target=\'_blank\' rel=\'noopener\'>View document &#8599;</a>' +
+        return '<div class=\\'doc-item-p\\' id=\\'doc-'+escHtml(d.id)+'\\' >' +
+          '<span class=\\'doc-icon-p\\'>'+icon+'</span>' +
+          '<div class=\\'doc-body-p\\'>' +
+            '<input class=\\'doc-title-p\\' type=\\'text\\' value=\\''+escHtml(d.title||'Document')+'\\'  placeholder=\\'Document title\\' onblur=\\'saveDocTitle(\"'+escJs(d.id)+'\",this.value)\\' />' +
+            '<a class=\\'doc-view-p\\' href=\\''+escHtml(d.file_url)+'\\' target=\\'_blank\\' rel=\\'noopener\\'>View document &#8599;</a>' +
           '</div>' +
-          '<button class=\'doc-del-p\' onclick=\'deleteDocument(\"'+escJs(d.id)+'\")\'  >&#10005;</button>' +
+          '<button class=\\'doc-del-p\\' onclick=\\'deleteDocument(\"'+escJs(d.id)+'\")\\'  >&#10005;</button>' +
         '</div>';
       }).join('');
     }
@@ -1853,7 +1853,7 @@ exports.handler = async () => {
       msg.textContent = 'Uploading...';
       try {
         var b64 = await fileToBase64(file);
-        var title = file.name.replace(/\.[^.]+$/, '');
+        var title = file.name.replace(/\\.[^.]+$/, '');
         var res = await mediaPost('upload-media', { type: 'document', base64: b64, filename: file.name, title: title });
         if (res.ok && res.item) { _documents.push(res.item); renderDocumentsList(); msg.textContent = 'Uploaded!'; }
         else { msg.textContent = res.error || 'Upload failed'; }
