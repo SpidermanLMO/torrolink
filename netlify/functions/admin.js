@@ -15,17 +15,25 @@ const supabaseAdmin = createClient(
 );
 const resend      = new Resend(process.env.RESEND_API_KEY);
 const SITE        = process.env.DEPLOY_URL || "https://torrolink.com";
-const ADMIN_PASS  = process.env.ADMIN_PASSWORD || "changeme";
+const ENV_PASS    = process.env.ADMIN_PASSWORD || "changeme";
+let EFFECTIVE_PASS = ENV_PASS;
+
+async function loadEffectivePass() {
+  try {
+    const { data } = await supabaseAdmin.from("admin_config").select("value").eq("key", "admin_password").single();
+    if (data?.value) EFFECTIVE_PASS = data.value;
+  } catch { /* fall back to env var */ }
+}
 
 // Generate a short-lived HMAC token (5-min windows) — embedded in HTML instead of raw password
 function makeToken() {
   const ts = Math.floor(Date.now() / 300000);
-  return crypto.createHmac("sha256", ADMIN_PASS).update(String(ts)).digest("hex").slice(0, 32);
+  return crypto.createHmac("sha256", EFFECTIVE_PASS).update(String(ts)).digest("hex").slice(0, 32);
 }
 function checkToken(tok) {
   const ts = Math.floor(Date.now() / 300000);
   for (const t of [ts, ts - 1, ts - 2]) { // 10-min grace window
-    if (tok === crypto.createHmac("sha256", ADMIN_PASS).update(String(t)).digest("hex").slice(0, 32)) return true;
+    if (tok === crypto.createHmac("sha256", EFFECTIVE_PASS).update(String(t)).digest("hex").slice(0, 32)) return true;
   }
   return false;
 }
@@ -37,7 +45,7 @@ function isAuthed(event) {
     const h = authHdr.replace(/^Basic\s+/i, "");
     try {
       const [, pass] = Buffer.from(h, "base64").toString("utf-8").split(":");
-      return pass === ADMIN_PASS;
+      return pass === EFFECTIVE_PASS;
     } catch { return false; }
   }
   // Bearer token (AJAX actions — token is HMAC, not the raw password)
@@ -51,6 +59,7 @@ function unauthed() {
 }
 
 exports.handler = async (event) => {
+  await loadEffectivePass();
   if (!isAuthed(event)) return unauthed();
   if (event.httpMethod === "POST") return handleAction(event);
   return handleDashboard();
@@ -155,6 +164,15 @@ async function handleAction(event) {
           sent++;
         }
         return json(200, { ok: true, msg: `Bulk email sent to ${sent} customers` });
+      }
+      case "change_password": {
+        const { currentPassword, newPassword } = body;
+        if (!currentPassword || !newPassword) return json(400, { error: "Missing fields" });
+        if (currentPassword !== EFFECTIVE_PASS) return json(403, { error: "Current password is incorrect" });
+        if (newPassword.length < 8) return json(400, { error: "New password must be at least 8 characters" });
+        await supabaseAdmin.from("admin_config").upsert({ key: "admin_password", value: newPassword }, { onConflict: "key" });
+        EFFECTIVE_PASS = newPassword;
+        return json(200, { ok: true, msg: "Password updated. Reload and log in with your new password." });
       }
       default: return json(400, { error: "Unknown action" });
     }
@@ -299,6 +317,18 @@ tr:hover td{background:#1c2128}
 .bulk-bar{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px 20px;margin-bottom:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .bulk-bar input{flex:1;min-width:200px;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:8px 12px;border-radius:7px;font-size:.88rem;outline:none}
 .bulk-bar input:focus{border-color:#0f6b6b}
+.tab-bar{display:flex;gap:0;margin-bottom:20px;border-bottom:2px solid #21262d}
+.tab{background:none;border:none;border-bottom:3px solid transparent;color:#8b949e;font-size:.88rem;font-weight:600;padding:10px 22px;cursor:pointer;transition:all .15s;margin-bottom:-2px}
+.tab:hover{color:#e6edf3}.tab.active{color:#39d3d3;border-bottom-color:#39d3d3}
+.settings-panel{max-width:540px;padding-top:4px}
+.settings-card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:28px;margin-bottom:20px}
+.settings-card h3{color:#e6edf3;font-size:1rem;margin-bottom:8px}
+.settings-card p{color:#8b949e;font-size:.85rem;margin-bottom:4px;line-height:1.6}
+.settings-card label{display:block;font-size:.8rem;color:#8b949e;margin:14px 0 4px}
+.settings-card input{width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:9px 12px;border-radius:7px;font-size:.88rem;font-family:inherit;outline:none}
+.settings-card input:focus{border-color:#0f6b6b}
+.sbtn{margin-top:20px;background:#0f6b6b;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-weight:700;font-size:.88rem;cursor:pointer}
+.sbtn:hover{background:#0d5c5c}.sbtn:disabled{opacity:.5;cursor:not-allowed}
 </style></head><body>
 <div class="topbar"><h1>🛠 Torrolink Admin</h1><span>Loaded ${new Date().toLocaleString()}</span></div>
 <div class="main">
@@ -312,6 +342,11 @@ tr:hover td{background:#1c2128}
   <div class="stat"><div class="v">${leads.length}</div><div class="l">Total Leads</div></div>
   <div class="stat"><div class="v">${customers.length}</div><div class="l">Customers</div></div>
 </div>
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab('customers',this)">&#128100; Customers</button>
+  <button class="tab" onclick="switchTab('settings',this)">&#9881;&#65039; Settings</button>
+</div>
+<div id="tab-customers">
 <div class="toolbar">
   <input type="text" id="search" placeholder="🔍  Search business, email, handle…" oninput="ft()"/>
   <select id="fs" onchange="ft()"><option value="">All Status</option><option value="active">Active</option><option value="susp">Suspended</option></select>
@@ -325,6 +360,22 @@ tr:hover td{background:#1c2128}
 <thead><tr><th>Business / Email</th><th>Profile URL</th><th>Status</th><th>Plan / Metrics</th><th>Branding</th><th>Scans 30d</th><th>Leads</th><th>Reviews</th><th>Joined</th><th>Actions</th></tr></thead>
 <tbody>${rows||'<tr><td colspan="9" style="text-align:center;color:#555;padding:60px;">No profiles yet</td></tr>'}</tbody>
 </table></div>
+</div>
+<div id="tab-settings" style="display:none">
+<div class="settings-panel">
+  <div class="settings-card">
+    <h3>&#128273; Change Admin Password</h3>
+    <p>Enter your current password to verify, then set a new one. The change takes effect immediately — you'll need the new password next time you log in.</p>
+    <label>Current Password</label>
+    <input type="password" id="sCurrent" placeholder="Your current password" autocomplete="current-password"/>
+    <label>New Password <span style="font-weight:400;color:#555">(min 8 characters)</span></label>
+    <input type="password" id="sNew" placeholder="New password" autocomplete="new-password"/>
+    <label>Confirm New Password</label>
+    <input type="password" id="sConfirm" placeholder="Type new password again" autocomplete="new-password"/>
+    <button class="sbtn" onclick="changePass()">Save New Password</button>
+  </div>
+</div>
+</div>
 </div>
 
 <div class="mbg" id="em"><div class="modal">
@@ -504,6 +555,29 @@ function exportCsv(){
   const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download='torrolink-customers-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+function switchTab(name,btn){
+  document.getElementById('tab-customers').style.display=name==='customers'?'':'none';
+  document.getElementById('tab-settings').style.display=name==='settings'?'':'none';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+async function changePass(){
+  const cur=document.getElementById('sCurrent').value;
+  const np=document.getElementById('sNew').value;
+  const nc=document.getElementById('sConfirm').value;
+  if(!cur||!np||!nc){toast('All fields are required',true);return;}
+  if(np!==nc){toast("New passwords don't match",true);return;}
+  if(np.length<8){toast('Must be at least 8 characters',true);return;}
+  const btn=document.querySelector('.sbtn');
+  btn.disabled=true;btn.textContent='Saving…';
+  try{
+    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'change_password',currentPassword:cur,newPassword:np})});
+    const d=await r.json();
+    if(d.ok){toast(d.msg||'Password updated ✓');['sCurrent','sNew','sConfirm'].forEach(id=>document.getElementById(id).value='');}
+    else toast(d.error||'Error',true);
+  }catch(e){toast('Network error',true);}
+  btn.disabled=false;btn.textContent='Save New Password';
 }
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script></body></html>`

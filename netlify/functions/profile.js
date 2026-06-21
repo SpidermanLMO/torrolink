@@ -172,6 +172,13 @@ function adjustAlpha(hex, alpha) {
 }
 
 // ── SOCIAL ICONS (SVG, no emojis) ────────────────────────────────────────────
+function safeUrl(s) {
+  var u = String(s || '').trim();
+  if (/^javascript:/i.test(u) || /^data:/i.test(u) || /^vbscript:/i.test(u)) return '';
+  if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u;
+  return u;
+}
+
 function normalizeSocialUrl(platform, val) {
   if (!val) return '';
   val = String(val).trim();
@@ -191,6 +198,9 @@ function normalizeSocialUrl(platform, val) {
     linkedin:  'https://www.linkedin.com/in/',
     yelp:      'https://www.yelp.com/biz/',
     google:    'https://www.google.com/maps/search/?q=',
+    cashapp:   'https://cash.app/$',
+    venmo:     'https://venmo.com/',
+    paypal:    'https://paypal.me/',
   };
   return (bases[platform] || 'https://') + handle;
 }
@@ -204,6 +214,12 @@ function getSocialIcon(platform) {
     youtube:   ['#FF0000','<path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>'],
     linkedin:  ['#0A66C2','<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>'],
     yelp:      ['#D32323','<path d="M20.16 12.73l-4.703 1.612c-.8.276-1.464-.8-.887-1.494l3.085-3.7a.87.87 0 0 0-.105-1.24 9.204 9.204 0 0 0-2.742-1.566.877.877 0 0 0-1.108.52L12.16 12.9c-.294.832-1.53.832-1.824 0L8.3 6.854a.877.877 0 0 0-1.108-.52 9.204 9.204 0 0 0-2.742 1.566.87.87 0 0 0-.105 1.24l3.085 3.7c.577.694-.087 1.77-.887 1.494L1.84 12.73a.877.877 0 0 0-1.107.72 9.277 9.277 0 0 0 .386 3.163.877.877 0 0 0 1.023.58l4.86-1.07c.826-.182 1.358.886.78 1.504l-3.25 3.455a.877.877 0 0 0 .064 1.249 9.22 9.22 0 0 0 2.913 1.738.877.877 0 0 0 1.085-.47l1.985-4.527c.338-.77 1.462-.77 1.8 0l1.985 4.527a.877.877 0 0 0 1.085.47 9.22 9.22 0 0 0 2.913-1.738.877.877 0 0 0 .064-1.249l-3.25-3.455c-.578-.618-.046-1.686.78-1.504l4.86 1.07a.877.877 0 0 0 1.023-.58 9.277 9.277 0 0 0 .386-3.162.877.877 0 0 0-1.107-.72z"/>'],
+    cashapp:   ['#00D54B','<path d="M17.15 8.37c-.15-.67-.5-1.24-1-1.66A3.27 3.27 0 0 0 14.06 7.72H8.5a.77.77 0 0 0-.76.76v9.44c0 .42.34.76.76.76h5.56c.81 0 1.52-.27 2.09-.76.5-.44.85-1.06.97-1.78.08-.43.05-.84-.06-1.22a2.6 2.6 0 0 0-.63-1.07 2.57 2.57 0 0 0 .66-1.12c.1-.37.11-.77.06-1.16zm-7.15-.35h3.76c.38 0 .69.1.91.28.2.17.32.42.36.73.04.3-.01.56-.14.76a.88.88 0 0 1-.77.4H10V8.02zm4.08 5.63c-.22.19-.52.3-.9.3H10v-2.3h3.18c.38 0 .67.1.89.28.2.17.32.42.36.74.03.3-.02.56-.15.76z" fill="white"/>'],
+    venmo:     ['#008CFF','<path d="M19.02 1.6c.5.82.72 1.67.72 2.76 0 3.44-2.94 7.9-5.33 11.04H9.28L6.97 2.46l4.67-.44 1.2 9.54c1.13-1.84 2.5-4.74 2.5-6.72 0-1.08-.18-1.82-.46-2.42z" fill="white"/>'],
+    paypal:    ['#009CDE','<text x="3" y="17" font-size="12" font-weight="900" fill="white" font-family="Arial">P</text>'],
+    zelle:     ['#6D1ED4','<path d="M15.6 4H8.4L4 12l4.4 8h7.2L20 12zm-1.45 11.5H9.6l3.4-6.2H9.15l.75-1.3h5.1l-3.4 6.2h3.85z" fill="white"/>'],
+    booking:   ['#0f6b6b','<rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="white" stroke-width="2" fill="none"/><line x1="16" y1="2" x2="16" y2="6" stroke="white" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke="white" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="white" stroke-width="2"/>'],
+    menu:      ['#f4752b','<line x1="3" y1="6" x2="21" y2="6" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="3" y1="12" x2="21" y2="12" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="3" y1="18" x2="21" y2="18" stroke="white" stroke-width="2.5" stroke-linecap="round"/>'],
     google:    ['#ffffff','<path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>'],
   };
   const d = i[platform];
@@ -275,8 +291,9 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     yelp: "Yelp", google: "Google Business",
   };
 
+  const _socialOnly = ['instagram','facebook','tiktok','youtube','linkedin','twitter','yelp','google'];
   const socialLinks = showSocials ? Object.entries(socials)
-    .filter(([, url]) => url)
+    .filter(([k, url]) => url && _socialOnly.includes(k))
     .map(([platform, url]) => {
       const label = socialLabels[platform] || platform;
       const href = normalizeSocialUrl(platform, url);
@@ -285,6 +302,35 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
         <span class="soc-name">${label}</span>
       </a>`;
     }).join("") : "";
+
+  // PAYMENTS
+  const _payMap = {cashapp:'Pay via Cash App',venmo:'Pay via Venmo',paypal:'Pay via PayPal',zelle:'Pay via Zelle'};
+  const paymentButtons = ['cashapp','venmo','paypal','zelle'].filter(k => socials[k]).map(platform => {
+    const val = String(socials[platform]||'').trim();
+    if (platform === 'zelle') {
+      const zId = escHtml(val); const zJs = escJs(val);
+      return '<button type="button" class="payment-btn" onclick="(function(b){var t=document.createElement(\'textarea\');t.value=\'' + zJs + '\';document.body.appendChild(t);t.select();try{document.execCommand(\'copy\');}catch(e){}document.body.removeChild(t);var l=b.querySelector(\'.pay-lbl\');var o=l.textContent;l.textContent=\'Copied!\';setTimeout(function(){l.textContent=o;},2000);})(this)">' +
+        getSocialIcon('zelle') +
+        '<span class="pay-content"><span class="pay-lbl">' + _payMap[platform] + '</span><span class="pay-id">' + zId + '</span></span></button>';
+    }
+    const href = normalizeSocialUrl(platform, val);
+    return '<a href="' + escHtml(href) + '" target="_blank" rel="noopener" class="payment-btn">' +
+      getSocialIcon(platform) +
+      '<span class="pay-content"><span class="pay-lbl">' + _payMap[platform] + '</span></span></a>';
+  }).join('');
+  const paymentsSection = paymentButtons
+    ? '<div class="card"><div class="section-title">Pay</div><div class="payments-wrap">' + paymentButtons + '</div></div>'
+    : '';
+
+  // BOOKING + MENU
+  const _bUrl = socials.booking ? safeUrl(String(socials.booking)) : '';
+  const bookingBtn = _bUrl
+    ? '<a href="' + escHtml(_bUrl) + '" target="_blank" rel="noopener" class="cta-link-btn booking-cta">' + getSocialIcon('booking') + '<span>Book an Appointment</span></a>'
+    : '';
+  const _mUrl = socials.menu ? safeUrl(String(socials.menu)) : '';
+  const menuBtn = _mUrl
+    ? '<a href="' + escHtml(_mUrl) + '" target="_blank" rel="noopener" class="cta-link-btn menu-cta">' + getSocialIcon('menu') + '<span>View Menu</span></a>'
+    : '';
 
   // ── VIDEO ───────────────────────────────────────────────────────────────────
   const _embedUrl   = p.video_url ? toEmbedUrl(p.video_url) : "";
@@ -565,6 +611,31 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
       background: ${t.linkBg};
       border: 1px solid ${t.linkBorder};
     }
+    .payments-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .payment-btn {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: 12px; width: 100%; box-sizing: border-box;
+      text-decoration: none; font-size: 0.88rem; font-weight: 600;
+      border: 1.5px solid rgba(0,0,0,0.1); background: #fff;
+      cursor: pointer; font-family: inherit; transition: opacity 0.15s; color: #1a1a1a;
+    }
+    .payment-btn:hover { opacity: 0.82; }
+    .payment-btn .soc-badge { width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px; }
+    .payment-btn .soc-badge svg { width: 20px; height: 20px; }
+    .pay-content { display: flex; flex-direction: column; text-align: left; }
+    .pay-lbl { font-weight: 600; font-size: 0.88rem; }
+    .pay-id { font-size: 0.76rem; color: #666; margin-top: 2px; }
+    .cta-link-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 16px; border-radius: 12px; width: 100%; box-sizing: border-box;
+      text-decoration: none; font-size: 0.92rem; font-weight: 700;
+      margin-top: 10px; color: #fff; transition: opacity 0.15s;
+    }
+    .cta-link-btn:hover { opacity: 0.85; }
+    .booking-cta { background: #0f6b6b; }
+    .menu-cta { background: #f4752b; }
+    .cta-link-btn .soc-badge { background: rgba(255,255,255,0.22) !important; width: 32px; height: 32px; border-radius: 8px; }
+    .cta-link-btn .soc-badge svg { width: 18px; height: 18px; }
     .social-btn {
       color: ${t.socColor};
       background: ${t.socBg};
@@ -841,10 +912,11 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
 
   ${bioSection}
 
-  ${(phoneSection || customLinks) ? `
+  ${(phoneSection || customLinks || bookingBtn || menuBtn) ? `
   <div class="card">
     ${p.phone ? `<div class="section-title">Contact</div>${phoneSection}` : ""}
-    ${customLinks ? `<div class="section-title" style="margin-top:${p.phone ? "16px" : "0"}">Links</div>${customLinks}` : ""}
+    ${bookingBtn}${menuBtn}
+    ${customLinks ? `<div class="section-title" style="margin-top:${(p.phone||bookingBtn||menuBtn) ? "16px" : "0"}">Links</div>${customLinks}` : ""}
   </div>` : ""}
 
   ${socialLinks ? `
@@ -852,6 +924,8 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     <div class="section-title">Find us on</div>
     ${socialLinks}
   </div>` : ""}
+
+  ${paymentsSection}
 
   ${videoEmbed}
 

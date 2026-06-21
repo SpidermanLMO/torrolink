@@ -1,0 +1,13 @@
+{
+  "name": "TorroLink",
+  "short_name": "TorroLink",
+  "description": "Your Business. One Scan Away.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f6b6b",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

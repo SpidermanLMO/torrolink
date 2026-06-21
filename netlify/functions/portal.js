@@ -475,6 +475,22 @@ exports.handler = async () => {
             <div class="tl-field"><label>Google Business</label><input type="url" id="socGoogle" placeholder="maps.google.com/..." /></div>
           </div>
         </div>
+        <div class="tl-card">
+          <h2>Payment links</h2>
+          <p style="font-size:0.83rem;color:#666;margin:0 0 12px;">Add your payment handles so customers can pay you directly. Only fill in what you use.</p>
+          <div class="socials-grid">
+            <div class="tl-field"><label>Cash App</label><input type="text" id="socCashapp" placeholder="$yourcashtag" /></div>
+            <div class="tl-field"><label>Venmo</label><input type="text" id="socVenmo" placeholder="@yourhandle" /></div>
+            <div class="tl-field"><label>PayPal</label><input type="text" id="socPaypal" placeholder="paypal.me/username" /></div>
+            <div class="tl-field"><label>Zelle (phone or email)</label><input type="text" id="socZelle" placeholder="512-555-0100 or you@email.com" /></div>
+          </div>
+        </div>
+        <div class="tl-card">
+          <h2>Booking &amp; menu</h2>
+          <p style="font-size:0.83rem;color:#666;margin:0 0 12px;">Add a booking or scheduling link and/or a menu link. Customers will see a prominent button.</p>
+          <div class="tl-field"><label>Booking link</label><input type="url" id="socBooking" placeholder="calendly.com/you, square.site/appointments/..." /></div>
+          <div class="tl-field" style="margin-top:10px;"><label>Menu link</label><input type="url" id="socMenu" placeholder="Link to your menu PDF or page" /></div>
+        </div>
       </div>
 
       <!-- THEMES TAB -->
@@ -1115,6 +1131,12 @@ exports.handler = async () => {
       document.getElementById('socTwitter').value   = s.twitter   || '';
       document.getElementById('socYelp').value      = s.yelp      || '';
       document.getElementById('socGoogle').value    = s.google    || '';
+      document.getElementById('socCashapp').value  = s.cashapp  || '';
+      document.getElementById('socVenmo').value    = s.venmo    || '';
+      document.getElementById('socPaypal').value   = s.paypal   || '';
+      document.getElementById('socZelle').value    = s.zelle    || '';
+      document.getElementById('socBooking').value  = s.booking  || '';
+      document.getElementById('socMenu').value     = s.menu     || '';
 
       // Lead form config — gated behind Metrics & Leads plan
       const _hasMetrics = !!((_customer && _customer.metrics_active) || (_customer && _customer.plan === 'metrics'));
@@ -1440,6 +1462,12 @@ exports.handler = async () => {
           twitter:   document.getElementById('socTwitter').value.trim(),
           yelp:      document.getElementById('socYelp').value.trim(),
           google:    document.getElementById('socGoogle').value.trim(),
+          cashapp:   document.getElementById('socCashapp').value.trim(),
+          venmo:     document.getElementById('socVenmo').value.trim(),
+          paypal:    document.getElementById('socPaypal').value.trim(),
+          zelle:     document.getElementById('socZelle').value.trim(),
+          booking:   document.getElementById('socBooking').value.trim(),
+          menu:      document.getElementById('socMenu').value.trim(),
         },
         theme:              getThemePayload(),
         leadFormEnabled:    document.getElementById('leadFormEnabled').checked,

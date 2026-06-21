@@ -1,17 +1,37 @@
 @echo off
-cd /d C:\Users\Laign\TorroLink
+cd /d C:\Laign\Torrolink
+
+:: Try to find git — check common install locations if not in PATH
+where git >nul 2>&1
+if %errorlevel% neq 0 (
+  if exist "C:\Program Files\Git\cmd\git.exe" (
+    set GIT="C:\Program Files\Git\cmd\git.exe"
+  ) else if exist "C:\Program Files (x86)\Git\cmd\git.exe" (
+    set GIT="C:\Program Files (x86)\Git\cmd\git.exe"
+  ) else (
+    echo ERROR: Git not found. Please reinstall from https://git-scm.com
+    pause
+    exit /b 1
+  )
+) else (
+  set GIT=git
+)
+
+:: Set identity (required for commits)
+%GIT% config --global user.email "laigno@gmail.com"
+%GIT% config --global user.name "Laign"
 
 echo Removing git lock if present...
 if exist .git\index.lock del /f .git\index.lock
 
 echo Staging all changes...
-git add -A
+%GIT% add -A
 
 echo Committing...
-git commit -m "Fix: portal template literal escape audit — double all backslashes in gallery/doc innerHTML strings and regex patterns"
+%GIT% commit -m "Add payment links (Cash App, Venmo, PayPal, Zelle), booking button, and menu link to profiles"
 
 echo Pushing...
-git push origin main
+%GIT% push origin main
 
 echo.
 echo Done! Netlify deploying (2-3 min).
