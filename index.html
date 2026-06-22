@@ -627,16 +627,12 @@
           <span>Real-time scan analytics + lead capture. Cancel anytime.</span>
         </div>
       </label>
-      <button id="modalSubmitBtn" class="btn btn-primary btn-full" onclick="submitCheckoutModal()">Continue to Payment →</button>
-      <p class="modal-secure">🔒 Secure checkout powered by Stripe</p>
-    </div>
-  </div>
-
-  <!-- MOBILE STICKY CTA (hidden when pricing section is visible) -->
-  <div class="sticky-cta-mobile" id="stickyCta">
-    <a href="#pricing" class="btn btn-primary">Get Your QR Code &#8594;</a>
-  </div>
-
-  <script src="script.js?v=20260616"></script>
-</body>
-</html>
+      <div style="margin-top:14px;">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:0.84rem;color:#555;line-height:1.45;">
+          <input type="checkbox" id="modalAgreeToS" style="margin-top:3px;flex-shrink:0;accent-color:#0f6b6b;" />
+          <span>I agree to the <a href="/terms" target="_blank" style="color:#0f6b6b;font-weight:600;">Terms of Service</a> and <a href="/privacy" target="_blank" style="color:#0f6b6b;font-weight:600;">Privacy Policy</a>, including the collection and use of data as described therein.</span>
+        </label>
+        <div id="modalAgreeError" style="color:#e53e3e;font-size:0.8rem;margin-top:6px;display:none;">Please agree to the Terms of Service to continue.</div>
+      </div>
+      <button id="modalSubmitBtn" class="btn btn-primary btn-full" onclick="submitCheckoutModal()" style="margin-top:14px;">Continue to Payment →</button>
+      <p class="mo

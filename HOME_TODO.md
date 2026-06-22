@@ -61,6 +61,14 @@ Takes 2 minutes. Claude fills them in once Laign confirms.
 
 ---
 
+## 🔴 PRIORITY 1b — Additional Code Fix (discovered during agent review)
+
+| # | Task | Why |
+|---|------|-----|
+| 19b | Wire Stripe webhook to update metrics_active in Supabase on new subscription | Right now a customer can pay and still not see their analytics dashboard — Stripe fires but Supabase doesn't get updated automatically. Lucius has the fix ready. |
+
+---
+
 ## 🟡 PRIORITY 5 — Code Fix (deploy when ready)
 
 | # | Task | How |

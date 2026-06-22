@@ -5,6 +5,7 @@
 // ================================================
 
 const { Resend } = require("resend");
+const { createClient } = require("@supabase/supabase-js");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "laign@ptorro.com";
@@ -40,6 +41,9 @@ exports.handler = async (event) => {
           subject: `💰 New Subscriber: ${customer.email}`,
           html: `<p><strong>${customer.name || customer.email}</strong> just subscribed to <strong>${data.items.data[0]?.price?.nickname || "a plan"}</strong>.</p><p>Amount: $${(data.items.data[0]?.price?.unit_amount / 100).toFixed(2)}/mo</p>`,
         });
+        // Unlock metrics dashboard in Supabase
+        const supabaseOnCreate = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+        await supabaseOnCreate.from("customers").update({ metrics_active: true }).eq("email", customer.email);
         break;
       }
 
@@ -101,6 +105,9 @@ exports.handler = async (event) => {
           subject: `📉 Cancellation: ${customer.email}`,
           html: `<p><strong>${customer.email}</strong> has cancelled their subscription. Consider a win-back email.</p>`,
         });
+        // Lock metrics dashboard in Supabase
+        const supabaseOnDelete = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+        await supabaseOnDelete.from("customers").update({ metrics_active: false }).eq("email", customer.email);
         break;
       }
     }

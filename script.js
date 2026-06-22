@@ -149,6 +149,13 @@ async function submitCheckoutModal() {
   const addMetrics    = document.getElementById('modalAddMetrics')?.checked || false;
   const btn = document.getElementById('modalSubmitBtn');
 
+  const agreeToS = document.getElementById('modalAgreeToS');
+  if (agreeToS && !agreeToS.checked) {
+    document.getElementById('modalAgreeError').style.display = 'block';
+    return;
+  }
+  if (agreeToS) document.getElementById('modalAgreeError').style.display = 'none';
+
   if (!businessName) {
     nameInput.classList.add('error');
     nameInput.focus();
