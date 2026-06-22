@@ -100,7 +100,7 @@ Once Laign approves a sequence, it can be triggered through Resend (TorroLink) o
 BRAND: [TorroLink | Waypoint Roofing]
 SEQUENCE: [sequence name]
 TOUCH: [Touch 1 of 3 | Touch 2 of 3 | etc.]
-FROM: [orders@torrolink.com | TBD for Waypoint]
+FROM: [hello@torrolink.com | laign@wproofs.com]
 FROM NAME: [TorroLink | Laign Orros]
 SUBJECT LINE: [subject]
 PREVIEW TEXT: [preview text shown in inbox]
@@ -139,6 +139,42 @@ The campaign includes 3 fully written email sequences:
 - Send from: `hello@torrolink.com` (verify this address in Resend dashboard if not already done — takes 2 min)
 - Do NOT use `orders@torrolink.com` for campaigns — reserved for transactional receipts only
 - Sequences need to be built inside Resend using the copy in the campaign doc. Laign authorizes before any sequence goes live.
+
+---
+
+## Field Prospecting Report Standard
+
+The Huntress generates Waypoint Roofing visit sheets for Laign before each prospecting day. These are functional field tools, not marketing copy. They must meet this standard or they do not go out.
+
+**Required for every report:**
+- Actual street address for every lead (no address = do not include the entry)
+- Phone number for every entry (look it up — do not omit)
+- Category separation: real estate agents and insurance agents are always two distinct sections, never mixed
+- 5 leads per category minimum when the request specifies both types
+- Notes for each entry: why this person is worth visiting, what the angle is
+- Routing suggestion at the bottom (logical order to minimize driving)
+- No star bullets, no em dashes, no emoji anywhere in the document
+- Attribute to Hawk or Waypoint Roofing — not Bruce, not PTorro Holdings
+
+**Format (per entry):**
+```
+**[Number]. [Name or Firm]**
+[Street Address, Suite, City TX ZIP]
+([Area Code]) [Phone]
+Hours: [if known]
+Notes: [why visit, what to say, what the angle is]
+```
+
+**What triggers a redo:**
+- Any entry missing a real street address
+- Sections mixed together (RE agents and insurance agents in the same list)
+- Em dashes, star bullets, or emojis anywhere
+- TorroLink tasks mixed into a roofing prospecting sheet
+- Fewer leads than requested
+- Attributed to PTorro Holdings, Bruce, or any non-roofing identity
+
+**Report file naming convention:**
+`marketing/waypoint/prospecting/[area]-[YYYY-MM-DD].md`
 
 ---
 
