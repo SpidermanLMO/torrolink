@@ -8,7 +8,7 @@ const QRCode = require("qrcode");
 const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const OWNER_EMAIL = process.env.OWNER_EMAIL || "laigno@gmail.com";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "laign@ptorro.com";
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") return respond(405, { error: "Method not allowed" });

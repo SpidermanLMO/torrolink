@@ -17,7 +17,7 @@ const supabase = createClient(
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
 const SITE        = process.env.DEPLOY_URL || "https://torrolink.com";
-const OWNER_EMAIL = process.env.OWNER_EMAIL  || "laigno@gmail.com";
+const OWNER_EMAIL = process.env.OWNER_EMAIL  || "laign@ptorro.com";
 
 // ── HELPERS ───────────────────────────────────────
 

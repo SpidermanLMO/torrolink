@@ -20,11 +20,11 @@ Bruce is the overseer. Every file, every system, every decision traces back here
 
 | Domain | Agent | Status | File |
 |--------|-------|--------|------|
-| TorroLink | El Chappo | 🔴 Pre-launch — 6 blockers remaining | EL_CHAPPO.md |
+| TorroLink | El Chappo | 🟢 LIVE — torrolink.com, Stripe live, all systems go | EL_CHAPPO.md |
 | Roofing sales | — | 🟡 Active — no solid pipeline yet | WIKI.md → Roofing Sales |
 | Knowledge system | — | 🟢 Live | RAW.md · WIKI.md · INDEX.md |
-| TorroLink codebase | El Chappo | 🟢 Deployed, all functions healthy | memory/projects/torrolink.md |
-| Marketing | Nightwing + Vicki Vale + The Huntress | 🟡 Agents built, content pending | NIGHTWING.md |
+| TorroLink codebase | El Chappo | 🟢 Deployed — 31 functions, payment links, favicons, all healthy | memory/projects/torrolink.md |
+| Marketing | Nightwing + Vicki Vale + The Huntress | 🟢 30-day campaign live — Day 1 started 2026-06-21 | NIGHTWING.md |
 
 **Sub-agents:**
 - Peter Parker (Web Research — delegated to any agent as needed) reports to Bruce
@@ -63,11 +63,12 @@ BRUCE.md    ← this file — master view of everything
 
 ---
 
-## Current Priorities (as of 2026-06-19)
+## Current Priorities (as of 2026-06-21)
 
-1. Complete TorroLink launch blockers (6 steps — see LAUNCH_CHECKLIST.md)
-2. Build roofing sales pipeline — target real estate agents first
-3. Grow PTorro Holdings social presence (TikTok @lmorros, IG @laign_o)
+1. **Execute 30-day social campaign** — Vicki Vale has Day 1 post ready (TikTok talking head). Laign posts daily.
+2. **Get first paying TorroLink customer** — door hangers, truck QR, job site outreach
+3. **Build roofing sales pipeline** — target real estate agents first
+4. **Grow PTorro Holdings social presence** (TikTok @lmorros, IG @laign_o)
 
 ---
 

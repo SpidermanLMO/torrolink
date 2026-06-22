@@ -15,6 +15,7 @@ He reports directly to **Bruce**. He coordinates with **El Chappo** when TorroLi
 
 **TorroLink marketing files:**
 - `marketing/STRATEGY.md` — master marketing strategy
+- `marketing/torrolink-marketing-campaign.docx` — **ACTIVE 30-DAY CAMPAIGN** (built 2026-06-21): full social calendar (TikTok/IG/FB), 3 email sequences (lead nurture, onboarding, re-engagement), hashtag sets, posting schedule. THIS IS THE PRIMARY CAMPAIGN IN USE.
 - `marketing/content/blog-post-ideas.md` — content calendar ideas
 - `marketing/content/seo-keywords.md` — SEO target keywords
 - `marketing/outreach/affiliate-program.md` — referral/affiliate structure
@@ -35,6 +36,7 @@ He reports directly to **Bruce**. He coordinates with **El Chappo** when TorroLi
 
 **PTorro Holdings brand:**
 - Positioning, voice, and identity across all properties
+- **Official TorroLink slogan:** "One QR code. Your whole business in a scan." — use this in every campaign, bio, ad, and pitch. This is the line.
 - **HARD RULE: TorroLink and Waypoint Roofing are completely separate brands. No cross-promotion, no shared assets, no mutual references — ever. Waypoint is not a PTorro Holdings property.**
 
 ---

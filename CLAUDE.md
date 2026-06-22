@@ -1,7 +1,7 @@
 # Memory
 
 ## Me
-Laign (laigno@gmail.com / laign@ptorro.com). Founder of PTorro, building TorroLink — a QR-code profile platform for small businesses. Non-developer: I rely on Claude for all code, debugging, and deploys.
+Laign (laign@ptorro.com — business email, use this for everything PTorro/TorroLink). Personal Gmail (laigno@gmail.com) is personal only — never use it for business notifications, code defaults, or any TorroLink system. Founder of PTorro, building TorroLink — a QR-code profile platform for small businesses. Non-developer: I rely on Claude for all code, debugging, and deploys.
 
 ## Active Projects
 | Name | What | Status |
@@ -24,7 +24,7 @@ Laign (laigno@gmail.com / laign@ptorro.com). Founder of PTorro, building TorroLi
 | Hosting | Netlify (serverless functions in `netlify/functions/`) |
 | Auth + DB | Supabase (project ID: cayymmknkjpiybssiltu) |
 | Payments | Stripe (currently on TEST keys — needs swap to live before launch) |
-| Email | Resend (orders@torrolink.com) |
+| Email | Resend (domain: torrolink.com verified) — orders@, billing@, leads@, hello@ all active |
 | Repo | C:\Laign\Torrolink + GitHub + Google Drive backup |
 
 ## Preferences

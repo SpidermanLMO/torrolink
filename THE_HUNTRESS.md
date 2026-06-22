@@ -125,6 +125,23 @@ Laign marks `STATUS: Approved` → sequence moves to queue.
 
 ---
 
+## Active Campaign Sequences
+
+**30-day TorroLink marketing campaign** (`marketing/torrolink-marketing-campaign.docx`) — read this first before any TorroLink email work.
+
+The campaign includes 3 fully written email sequences:
+- **Lead nurture** (4 emails over 14 days) — for people who show interest but haven't bought
+- **Post-purchase onboarding** (3 emails) — welcome sequence for new customers
+- **Re-engagement** (1 email at 30 days) — for leads who went cold
+
+**Email infrastructure for these sequences:**
+- Platform: **Resend** — already connected and live
+- Send from: `hello@torrolink.com` (verify this address in Resend dashboard if not already done — takes 2 min)
+- Do NOT use `orders@torrolink.com` for campaigns — reserved for transactional receipts only
+- Sequences need to be built inside Resend using the copy in the campaign doc. Laign authorizes before any sequence goes live.
+
+---
+
 ## Sequence Library
 
 ### TorroLink — Cold SMB Outreach (3-touch)

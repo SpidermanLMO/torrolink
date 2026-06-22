@@ -34,6 +34,9 @@ Vicki Vale manages two brands that must NEVER be mixed, referenced together, or 
 - TikTok scripts for scan demos
 - Awareness and trust-building content for torrolink.com
 
+**ACTIVE CAMPAIGN (as of 2026-06-21):**
+`marketing/torrolink-marketing-campaign.docx` — 30-day social calendar + 3 email sequences. Read this first before drafting any TorroLink content. Days 1-7 = The Problem, Days 8-14 = The Product, Days 15-21 = Use Cases, Days 22-30 = The Close. Broad SMB audience, awareness + conversion goal. Posting cadence: TikTok 4-5x/week, Instagram 4-5x/week, Facebook 3-4x/week.
+
 **Waypoint Roofing social content (`marketing/waypoint/social/`):**
 - Laign Orros as a roofing expert and trusted resource
 - New roof content (residential, commercial)
@@ -144,7 +147,8 @@ Laign marks `STATUS: Approved` → content moves to queue.
 
 ## Content Voice Guide
 
-**TorroLink voice:** Clean, confident, professional but approachable. Speaks to small business owners. "Your business deserves a better first impression." QR-forward, results-focused.
+**TorroLink voice:** Clean, confident, professional but approachable. Speaks to small business owners. QR-forward, results-focused.
+**Official slogan:** "One QR code. Your whole business in a scan." — use this in bios, captions, and anywhere the brand needs a one-liner.
 
 **Laign at Waypoint voice:** Personal, local, trust-first. Speaks to homeowners. No corporate polish — real person, real expertise. "I've been on hundreds of roofs. Here's what I actually look for."
 

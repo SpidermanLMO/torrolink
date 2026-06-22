@@ -7,7 +7,7 @@
 
 Torrolink sells QR codes to local small businesses. But the real product is **trust and discoverability** — a scannable bridge between a physical business and a digital presence, at a price any small business can afford.
 
-**Core value proposition:**
+**Official slogan (use this everywhere — social bios, ads, pitches, print):**
 > "One QR code. Your whole business in a scan."
 
 We're not competing with Linktree (which targets influencers). We're targeting the restaurant owner who hands out menus, the plumber who leaves business cards, the food truck that wants foot traffic to follow them on Instagram.

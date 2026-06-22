@@ -10,7 +10,7 @@ const { Resend } = require("resend");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const OWNER_EMAIL = process.env.OWNER_EMAIL || "laigno@gmail.com";
+const OWNER_EMAIL = process.env.OWNER_EMAIL || "laign@ptorro.com";
 
 // Agent registry — all agents the supervisor watches
 const AGENTS = [

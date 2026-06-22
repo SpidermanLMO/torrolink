@@ -18,7 +18,7 @@ if %errorlevel% neq 0 (
 )
 
 :: Set identity (required for commits)
-%GIT% config --global user.email "laigno@gmail.com"
+%GIT% config --global user.email "laign@ptorro.com"
 %GIT% config --global user.name "Laign"
 
 echo Removing git lock if present...
@@ -28,7 +28,7 @@ echo Staging all changes...
 %GIT% add -A
 
 echo Committing...
-%GIT% commit -m "Add payment links (Cash App, Venmo, PayPal, Zelle), booking button, and menu link to profiles"
+%GIT% commit -m "Route all owner notifications to laign@ptorro.com, remove laigno@gmail.com from all functions"
 
 echo Pushing...
 %GIT% push origin main
