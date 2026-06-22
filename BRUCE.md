@@ -21,12 +21,13 @@ Bruce is the overseer. Every file, every system, every decision traces back here
 | Domain | Agent | Status | File |
 |--------|-------|--------|------|
 | TorroLink | El Chappo | 🟢 LIVE — torrolink.com, Stripe live, all systems go | EL_CHAPPO.md |
-| Roofing sales | — | 🟡 Active — no solid pipeline yet | WIKI.md → Roofing Sales |
+| Roofing sales | Hawk | 🟡 Active — Day 1 outreach 2026-06-22 | HAWK.md · memory/roofing-tracker.md |
 | Knowledge system | — | 🟢 Live | RAW.md · WIKI.md · INDEX.md |
 | TorroLink codebase | El Chappo | 🟢 Deployed — 31 functions, payment links, favicons, all healthy | memory/projects/torrolink.md |
 | Marketing | Nightwing + Vicki Vale + The Huntress | 🟢 30-day campaign live — Day 1 started 2026-06-21 | NIGHTWING.md |
 
 **Sub-agents:**
+- Hawk (Waypoint Roofing — field sales, referral partners, pipeline) reports to Bruce
 - Peter Parker (Web Research — delegated to any agent as needed) reports to Bruce
 - Nightwing (Marketing — PTorro Holdings) reports to Bruce
   - Vicki Vale (Social & Content — TorroLink + Waypoint, hard firewall) reports to Nightwing

@@ -27,6 +27,40 @@ Laign (laign@ptorro.com — business email, use this for everything PTorro/Torro
 | Email | Resend (domain: torrolink.com verified) — orders@, billing@, leads@, hello@ all active |
 | Repo | C:\Laign\Torrolink + GitHub + Google Drive backup |
 
+## Netlify Environment Variables
+| Var | Purpose |
+|-----|---------|
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_ANON_KEY` | Supabase client-side key (safe in browser) |
+| `SUPABASE_SERVICE_KEY` | Supabase service role key (server-side DB queries only) |
+| `RESEND_API_KEY` | Resend email API |
+| `STRIPE_SECRET_KEY` | Stripe secret (currently TEST — swap to live before launch) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `OWNER_EMAIL` | laign@ptorro.com — all owner notifications route here |
+| `ADMIN_PASSWORD` | Admin dashboard password |
+| `ADMIN_SECRET` | Admin secret token |
+| `ANTHROPIC_API_KEY` | Claude API for AI agents |
+| `URL` | Netlify site URL |
+| `DEPLOY_URL` | Netlify deploy URL |
+
+## Roofing
+**Brand:** Waypoint Roofing (PTorro Holdings LLC)
+**Profile:** torrolink.com/p/ptorro-holdings-llc
+**Waypoint email:** laign@wproofs.com
+**Tracker:** memory/roofing-tracker.md — visit log, referral partners, pipeline
+
+## Email Access (for agents)
+| Account | How agents access |
+|---------|------------------|
+| laigno@gmail.com | Gmail MCP — create_draft tool (connected) |
+| laign@ptorro.com | Gmail MCP — same connector if authorized, else show draft in chat |
+| laign@wproofs.com | Gmail (Google account) — needs second Gmail connector in Cowork settings |
+| TorroLink system emails | agent-mailer Netlify function (deploy needed) |
+
+**Email guardrail:** Agents ALWAYS show draft first. Laign approves → then send. Never auto-send to real people without approval.
+
+**agent-mailer function:** POST to /.netlify/functions/agent-mailer with x-agent-secret header (= ADMIN_SECRET value). Allowed senders: hello@, orders@, billing@, leads@, supervisor@, hawk@ — all @torrolink.com.
+
 ## Preferences
 - No code in chat — always write to files
 - Run `_fix_deploy.bat` to deploy (I run it, Claude updates the commit message first)
