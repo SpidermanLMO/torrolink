@@ -29,17 +29,16 @@ exports.handler = async (event) => {
     return { statusCode: 302, headers: { Location: "/" } };
   }
 
-  // ── LOG SCAN EVENT (async, don't await — don't slow down the redirect) ──────
+  // ── LOG SCAN EVENT ────────────────────────────────────────────────────────
   const headers = event.headers || {};
   const ua = headers["user-agent"] || "";
   const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim()
     || headers["client-ip"]
     || null;
 
-  // Netlify CDN injects x-country (ISO 3166-1 alpha-2) at the edge
-  const country = headers["x-country"] || headers["x-nf-country"] || null;
+  // Netlify CDN injects x-country at the edge (fallback if geo API fails)
+  const countryFallback = headers["x-country"] || headers["x-nf-country"] || null;
 
-  // Check tablet first — iPad/Android tablet UAs also contain "mobile"/"android"
   const deviceType = /ipad/i.test(ua) || (/android/i.test(ua) && !/mobile/i.test(ua))
     ? "tablet"
     : /mobile|android|iphone/i.test(ua)
@@ -52,15 +51,36 @@ exports.handler = async (event) => {
     : /mac/i.test(ua) ? "macOS"
     : "Other";
 
-  // Fire and forget — scan logging should never delay the redirect
-  supabase.from("scan_events").insert({
-    profile_id: profile.id,
-    ip_address: ip,
-    country,
+  // Geo lookup — ip-api.com free tier (no key, HTTP ok from server-side)
+  let geoCity = null, geoRegion = null, geoCountry = countryFallback;
+  if (ip && ip !== "127.0.0.1" && ip !== "::1") {
+    try {
+      const geoRes = await fetch(
+        `http://ip-api.com/json/${ip}?fields=status,city,regionName,countryCode&lang=en`,
+        { signal: AbortSignal.timeout(1500) }
+      );
+      if (geoRes.ok) {
+        const geo = await geoRes.json();
+        if (geo.status === "success") {
+          geoCity    = geo.city       || null;
+          geoRegion  = geo.regionName || null;
+          geoCountry = geo.countryCode || countryFallback;
+        }
+      }
+    } catch (_) { /* geo lookup timed out — proceed without it */ }
+  }
+
+  // Insert scan record (await so Netlify doesn't cut it off before it fires)
+  await supabase.from("scan_events").insert({
+    profile_id:  profile.id,
+    ip_address:  ip,
+    country:     geoCountry,
+    region:      geoRegion,
+    city:        geoCity,
     device_type: deviceType,
     os,
-    referrer: headers["referer"] || null,
-  }).then(() => {}).catch(() => {});
+    referrer:    headers["referer"] || null,
+  }).catch(() => {});
 
   // Redirect to the profile page
   return {

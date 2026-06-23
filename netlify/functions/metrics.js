@@ -226,11 +226,21 @@ function buildDashboardHtml({ handle, businessName, ownerEmail, profileId, hasMe
       <!-- BREAKDOWNS -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px;" class="two-col">
         <div class="tl-card">
-          <h2 style="margin-bottom:16px;">Traffic by device</h2>
+          <h2 style="margin-bottom:16px;">By device</h2>
           <div id="deviceBreakdown" class="no-data">Loading…</div>
         </div>
         <div class="tl-card">
-          <h2 style="margin-bottom:16px;">Traffic by country</h2>
+          <h2 style="margin-bottom:16px;">By OS</h2>
+          <div id="osBreakdown" class="no-data">Loading…</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px;" class="two-col">
+        <div class="tl-card">
+          <h2 style="margin-bottom:16px;">Top cities</h2>
+          <div id="cityBreakdown" class="no-data">Loading…</div>
+        </div>
+        <div class="tl-card">
+          <h2 style="margin-bottom:16px;">By country</h2>
           <div id="countryBreakdown" class="no-data">Loading…</div>
         </div>
       </div>
@@ -342,7 +352,7 @@ function buildDashboardHtml({ handle, businessName, ownerEmail, profileId, hasMe
       // Fetch 60 days of scans for period comparisons
       const [scanRes, totalRes, leadRes] = await Promise.all([
         _supabase.from('scan_events')
-          .select('scanned_at, device_type, country')
+          .select('scanned_at, device_type, os, country, region, city')
           .eq('profile_id', PROFILE_ID)
           .gte('scanned_at', ts(60))
           .order('scanned_at', { ascending: false }),
@@ -440,14 +450,20 @@ function buildDashboardHtml({ handle, businessName, ownerEmail, profileId, hasMe
         },
       });
 
-      // ── Device + country breakdowns ───────────
+      // ── Breakdowns ────────────────────────────
       const deviceCounts  = {};
+      const osCounts      = {};
+      const cityCounts    = {};
       const countryCounts = {};
       scans60.forEach(s => {
-        const d = s.device_type || 'Unknown'; deviceCounts[d] = (deviceCounts[d] || 0) + 1;
-        const c = s.country     || 'Unknown'; countryCounts[c] = (countryCounts[c] || 0) + 1;
+        const d  = s.device_type || 'Unknown'; deviceCounts[d]  = (deviceCounts[d]  || 0) + 1;
+        const o  = s.os          || 'Unknown'; osCounts[o]      = (osCounts[o]      || 0) + 1;
+        const ci = s.city        || 'Unknown'; cityCounts[ci]   = (cityCounts[ci]   || 0) + 1;
+        const co = s.country     || 'Unknown'; countryCounts[co]= (countryCounts[co]|| 0) + 1;
       });
       renderBreakdown('deviceBreakdown',  deviceCounts,  scans60.length);
+      renderBreakdown('osBreakdown',      osCounts,      scans60.length);
+      renderBreakdown('cityBreakdown',    cityCounts,    scans60.length);
       renderBreakdown('countryBreakdown', countryCounts, scans60.length);
 
       // ── Leads table ───────────────────────────
