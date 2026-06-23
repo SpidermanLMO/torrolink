@@ -27,7 +27,7 @@ Would it make sense to connect for a few minutes?
 
 Laign Orros
 Waypoint Roofing
-[PHONE]
+(737) 383-2250
 laign@wproofs.com
 
 ---
@@ -48,14 +48,14 @@ If you have clients dealing with recent storm damage, I'm happy to come out at n
 
 Laign Orros
 Waypoint Roofing
-[PHONE]
+(737) 383-2250
 
 ---
 
 ## DEPLOYMENT NOTES
 - Send Touch 1 Tuesday–Thursday, 9–11am
 - Personalize [First Name] and [CITY]
-- Confirm [PHONE] with Laign
+- Confirm (737) 383-2250 with Laign
 - Touch 2 Day 6 only if no reply to Touch 1
 - If they reply → personal conversation, stop sequence
 - Do NOT mention TorroLink in any of these emails

@@ -43,11 +43,42 @@ Laign (laign@ptorro.com — business email, use this for everything PTorro/Torro
 | `URL` | Netlify site URL |
 | `DEPLOY_URL` | Netlify deploy URL |
 
+## SESSION START — Read These Files Every Session
+Before doing anything, read these files in order:
+1. `BRUCE.md` — master agent overview, current priorities, all domain status
+2. `HAWK.md` — Waypoint Roofing field agent, referral partner system
+3. `memory/roofing-tracker.md` — visit log, pipeline, referral partners
+4. `memory/projects/torrolink.md` — TorroLink full project context
+
+---
+
+## Agent System
+PTorro Holdings runs on a named-agent system. Each agent owns a domain.
+
+| Agent | Role | File |
+|-------|------|------|
+| **Bruce** | Master agent — oversees everything | BRUCE.md |
+| **Hawk** | Waypoint Roofing — field sales, referral partners, pipeline | HAWK.md |
+| **El Chappo** | TorroLink — product, revenue, tech | EL_CHAPPO.md |
+| **Lucius** | Tech & QA — code fixes, deploys | LUCIUS.md |
+| **Alfred** | Customer Success | ALFRED.md |
+| **Oracle** | Intelligence & reporting | ORACLE.md |
+| **Nightwing** | Marketing — PTorro Holdings | NIGHTWING.md |
+| **Vicki Vale** | Social & Content — TorroLink + Waypoint | VICKI_VALE.md |
+| **The Huntress** | Email & Outreach — TorroLink + Waypoint | THE_HUNTRESS.md |
+| **Peter Parker** | Web Research | PETER_PARKER.md |
+
+**To activate an agent:** Read their .md file and act within that agent's domain.
+
+---
+
 ## Roofing
 **Brand:** Waypoint Roofing (PTorro Holdings LLC)
+**Agent:** Hawk (HAWK.md)
 **Profile:** torrolink.com/p/ptorro-holdings-llc
 **Waypoint email:** laign@wproofs.com
 **Tracker:** memory/roofing-tracker.md — visit log, referral partners, pipeline
+**Outreach started:** 2026-06-22 (Day 1)
 
 ## Email Access (for agents)
 | Account | How agents access |

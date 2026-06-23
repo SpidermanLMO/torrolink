@@ -27,7 +27,7 @@ If that sounds useful, I'd love to connect — even just a quick call or text.
 
 Laign Orros
 Waypoint Roofing
-[PHONE]
+(737) 383-2250
 laign@wproofs.com
 
 ---
@@ -50,7 +50,7 @@ No pressure — just wanted to put that on your radar.
 
 Laign Orros
 Waypoint Roofing
-[PHONE]
+(737) 383-2250
 
 ---
 
@@ -70,7 +70,7 @@ I'll leave it there. Feel free to reach out anytime.
 
 Laign Orros
 Waypoint Roofing
-[PHONE]
+(737) 383-2250
 laign@wproofs.com
 
 ---
@@ -78,7 +78,7 @@ laign@wproofs.com
 ## DEPLOYMENT NOTES
 - Send Touch 1 Tuesday–Thursday, 8–10am
 - Personalize [First Name] and [CITY] — confirm city with Laign before sending
-- Add [PHONE] — Laign to confirm his cell for outreach
+- Phone confirmed: (737) 383-2250
 - Space: Touch 2 Day 5, Touch 3 Day 11 only if no reply
 - If they reply to any touch → move to personal conversation, stop sequence
 - Do NOT mention TorroLink in any of these emails

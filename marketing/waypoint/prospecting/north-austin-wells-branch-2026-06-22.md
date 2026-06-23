@@ -13,7 +13,8 @@ Target these offices to introduce yourself, drop cards, and start building a ref
 
 **1. Keller Williams Austin Northwest**
 12515-8 Research Blvd, Austin TX 78759
-No direct office number publicly listed — walk in.
+(512) 346-3550
+Email: NOT FOUND — walk in or call; ask for office manager by name
 Notes: Large office, Research Blvd corridor. High transaction volume in Wells Branch and 78753. Ask for the office's preferred vendor contact or team leads.
 
 ---
@@ -21,13 +22,15 @@ Notes: Large office, Research Blvd corridor. High transaction volume in Wells Br
 **2. JBGoodwin REALTORS Northwest Austin**
 3933 Steck Ave, Suite B-101, Austin TX 78759
 (512) 502-7804
+Email: jgoodwin@jbgoodwin.com
 Notes: Major independent brokerage, long standing in Austin. Same building as Heaton Bennett Insurance (insurance stop below). Can knock out two visits in one parking lot.
 
 ---
 
 **3. Bramlett Partners**
 6850 Austin Centre Blvd, Suite 180, Austin TX 78731
-(512) 883-5445
+(512) 910-7497
+Email: NOT FOUND — contact form only at bramlettpartners.com/contact-us. Call to get direct email for managing broker.
 Notes: 2,100+ five-star reviews. Very active across North Austin and Wells Branch listings. Ask for the managing broker or office coordinator. High-volume shop.
 
 ---
@@ -36,6 +39,7 @@ Notes: 2,100+ five-star reviews. Very active across North Austin and Wells Branc
 9442 N Capital of Texas Hwy, Plaza 1-625, Austin TX 78759
 (512) 343-7500
 Hours: Mon-Fri 8:30am - 5:30pm
+Email: sarah.raymond@cbrealty.com
 Notes: National brand, solid agent roster in 78759 and Wells Branch. Ask for the office manager. Good entry point for a multi-agent referral relationship.
 
 ---
@@ -57,14 +61,16 @@ Lead with: "I work roofing in North Austin. I wanted to introduce myself — a l
 2013 Wells Branch Pkwy, Suite 107, Austin TX 78728
 (512) 251-3473
 Hours: Mon-Fri 9:00am - 5:30pm
+Email: marijane.billington.vab322@statefarm.com
 Notes: Wells Branch anchor location. Dedicated homeowners and auto book. Next to Dominos. She has deep roots here. High priority.
 
 ---
 
 **2. Robert Ndegwa — State Farm**
-1200 W Howard Ln, Suite F, Austin TX 78753
+1508 Dessau Ridge Lane, Suite 805, Austin TX 78754 (ADDRESS UPDATED — old listing showed W Howard Ln; website confirms new location)
 (512) 837-8818
-Notes: 25+ years in the area, ChFC designation, strong reputation. Serves 78753 directly. Likely handles a large homeowners book.
+Email: NOT FOUND — contact form only at protectyourdreams.biz. Call or walk in.
+Notes: 25+ years in the area, ChFC designation, 4.9/5 on Google with 598 reviews. Bilingual English/Spanish. Serves 78753/78754. Large homeowners book. High priority.
 
 ---
 
@@ -72,6 +78,7 @@ Notes: 25+ years in the area, ChFC designation, strong reputation. Serves 78753 
 3933 Steck Ave, Suite B119, Austin TX 78759
 (512) 372-8311
 Hours: Mon-Fri 8:00am - 4:30pm
+Email: hbi@insureaustin.com
 Notes: Independent agency, works with 40+ carriers. Sits in same building as JBGoodwin Realtors. One parking lot, two stops. Independent agents refer out more freely than captive agents.
 
 ---
@@ -79,6 +86,8 @@ Notes: Independent agency, works with 40+ carriers. Sits in same building as JBG
 **4. Nelson Robinson — Allstate**
 9800 N Lamar Blvd, Suite 180, Austin TX 78753
 (512) 835-5600
+Hours: Mon-Thu 9:00am - 6:00pm, Fri 9:00am - 5:00pm
+Email: NRobinson@allstate.com
 Notes: Allstate, active in 78753. Homeowners claims are Allstate's bread and butter. Introduce yourself with storm season in mind.
 
 ---
@@ -86,6 +95,8 @@ Notes: Allstate, active in 78753. Homeowners claims are Allstate's bread and but
 **5. Contigo Insurance Agency**
 9310 Georgian Dr, Austin TX 78753
 (512) 518-7000
+Hours: Mon-Fri 9:00am - 6:00pm, Sat 10:00am - 2:00pm
+Email: georgian@contigoagency.com (location-specific) or info@contigoagency.com (general)
 Notes: Local independent agency, 78753. Good candidate for a longer referral relationship. Independent agencies typically have more flexibility on who they refer out to.
 
 ---

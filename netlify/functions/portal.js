@@ -1032,11 +1032,17 @@ exports.handler = async () => {
       if (!password || password.length < 8) {
         msgEl.innerHTML = '<div class="tl-msg error">Password must be at least 8 characters.</div>'; return;
       }
-      const { error } = await _supabase.auth.updateUser({ password });
+      const { data: updData, error } = await _supabase.auth.updateUser({ password });
       if (error) {
         msgEl.innerHTML = '<div class="tl-msg error">' + escHtml(error.message) + '</div>';
       } else {
-        msgEl.innerHTML = '<div class="tl-msg success">Password updated! You are now signed in.</div>';
+        msgEl.innerHTML = '<div class="tl-msg success">Password set! Taking you to your profile…</div>';
+        const { data: { session: freshSession } } = await _supabase.auth.getSession();
+        if (freshSession) {
+          setTimeout(() => onSignedIn(freshSession), 800);
+        } else {
+          setTimeout(() => location.reload(), 900);
+        }
       }
     }
 
@@ -1735,6 +1741,40 @@ exports.handler = async () => {
       if (!text) { el.innerHTML = ''; return; }
       el.innerHTML = '<div class="tl-msg ' + type + '">' + text + '</div>';
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+// ── PWA install banner ──────────────────────────────────────────────────────
+    (function(){
+      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+      if (isStandalone || localStorage.getItem('pwa_dismissed')) return;
+      var dp = null;
+      if (isIOS) {
+        var b = document.getElementById('iosBanner');
+        if (b) b.classList.add('show');
+      } else {
+        window.addEventListener('beforeinstallprompt', function(e) {
+          e.preventDefault(); dp = e;
+          var b = document.getElementById('pwaBanner');
+          if (b) b.classList.add('show');
+          var btn = document.getElementById('pwaBannerBtn');
+          if (btn) btn.addEventListener('click', async function() {
+            if (!dp) return;
+            dp.prompt();
+            var res = await dp.userChoice; dp = null;
+            var banner = document.getElementById('pwaBanner');
+            if (res.outcome === 'accepted') {
+              if (banner) banner.innerHTML = '<span style="margin:0 auto;font-size:0.88rem;font-weight:700;">&#10003;&nbsp;Torrolink installed &mdash; check your home screen!</span>';
+              localStorage.setItem('pwa_dismissed','1');
+            } else if (banner) { banner.classList.remove('show'); }
+          });
+        });
+      }
+    })();
+    function dismissPwaBanner(){
+      ['pwaBanner','iosBanner'].forEach(function(id){
+        var el=document.getElementById(id);if(el)el.classList.remove('show');
+      });
+      localStorage.setItem('pwa_dismissed','1');
     }
     function escHtml(s) {
       return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');

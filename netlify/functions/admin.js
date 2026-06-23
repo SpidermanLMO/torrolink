@@ -25,6 +25,29 @@ async function loadEffectivePass() {
   } catch { /* fall back to env var */ }
 }
 
+function _genCode(len = 8) {
+  const chars = "abcdefghjkmnpqrstuvwxyz23456789";
+  let s = ""; for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)]; return s;
+}
+function _slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+}
+async function _uniqueHandle(base) {
+  let h = _slugify(base) || "business", n = 0;
+  while (true) {
+    const c = n === 0 ? h : `${h}-${n}`;
+    const { data } = await supabaseAdmin.from("profiles").select("id").eq("handle", c).maybeSingle();
+    if (!data) return c; n++;
+  }
+}
+async function _uniqueCode() {
+  while (true) {
+    const code = _genCode(8);
+    const { data } = await supabaseAdmin.from("profiles").select("id").eq("code", code).maybeSingle();
+    if (!data) return code;
+  }
+}
+
 // Generate a short-lived HMAC token (5-min windows) — embedded in HTML instead of raw password
 function makeToken() {
   const ts = Math.floor(Date.now() / 300000);
@@ -174,6 +197,94 @@ async function handleAction(event) {
         EFFECTIVE_PASS = newPassword;
         return json(200, { ok: true, msg: "Password updated. Reload and log in with your new password." });
       }
+      case "create_beta": {
+        const { name: bName, email: bEmail, businessName: bBiz } = body;
+        if (!bEmail || !bBiz) return json(400, { error: "Email and business name required" });
+        const cleanEmail = bEmail.trim().toLowerCase();
+        // Create auth user (no email confirmation needed — we send the setup link)
+        const { error: authErr } = await supabaseAdmin.auth.admin.createUser({
+          email: cleanEmail, email_confirm: true,
+        });
+        if (authErr && !authErr.message.toLowerCase().includes("already")) {
+          return json(500, { error: authErr.message });
+        }
+        // Upsert customer
+        let betaCustId;
+        const { data: existBeta } = await supabaseAdmin.from("customers").select("id").eq("email", cleanEmail).maybeSingle();
+        if (existBeta) {
+          betaCustId = existBeta.id;
+          await supabaseAdmin.from("customers").update({ plan: "beta", metrics_active: true }).eq("id", betaCustId);
+        } else {
+          const { data: newBC, error: bcErr } = await supabaseAdmin.from("customers")
+            .insert({ email: cleanEmail, name: bName || bBiz, plan: "beta", metrics_active: true })
+            .select("id").single();
+          if (bcErr) return json(500, { error: bcErr.message });
+          betaCustId = newBC.id;
+        }
+        // Create profile
+        const bHandle = await _uniqueHandle(bBiz);
+        const bCode   = await _uniqueCode();
+        const { data: bProf, error: bpErr } = await supabaseAdmin.from("profiles")
+          .insert({ customer_id: betaCustId, handle: bHandle, code: bCode, business_name: bBiz, is_active: true, has_metrics: true })
+          .select("id, handle, code").single();
+        if (bpErr) return json(500, { error: bpErr.message });
+        const bQrUrl  = `${SITE}/q/${bProf.code}`;
+        const bProfUrl = `${SITE}/p/${bProf.handle}`;
+        // Generate QR image
+        const QRCode = require("qrcode");
+        const bQrData = await QRCode.toDataURL(bQrUrl, { errorCorrectionLevel: "H", width: 1200, margin: 2, color: { dark: "#0a4d4d", light: "#ffffff" } });
+        const bQrB64 = bQrData.replace(/^data:image\/png;base64,/, "");
+        // Generate account setup link (recovery link lets them set their own password)
+        const { data: bLink } = await supabaseAdmin.auth.admin.generateLink({
+          type: "recovery", email: cleanEmail, options: { redirectTo: `${SITE}/portal` },
+        });
+        const setupLink = bLink?.properties?.action_link || bLink?.action_link || `${SITE}/portal`;
+        // Welcome email with QR attached
+        const bFirst = (bName || bBiz).split(" ")[0] || "there";
+        await resend.emails.send({
+          from: "Torrolink <orders@torrolink.com>",
+          to: bEmail,
+          subject: "You're in — here's your Torrolink QR code 🎉",
+          attachments: [{ filename: "torrolink-qr.png", content: bQrB64 }],
+          html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
+  <div style="background:#0a4d4d;padding:32px;border-radius:12px 12px 0 0;text-align:center;">
+    <h1 style="color:#fff;margin:0;font-size:1.7rem;">You're in — let's test this thing.</h1>
+    <p style="color:rgba(255,255,255,0.8);margin:8px 0 0;">Exclusive beta access · No payment required</p>
+  </div>
+  <div style="background:#f9f9fb;padding:32px;border-radius:0 0 12px 12px;">
+    <p style="font-size:1rem;color:#333;">Hey ${esc(bFirst)},</p>
+    <p style="color:#555;line-height:1.7;">I'm giving you early access to <strong>Torrolink</strong> — a QR code profile platform built for small businesses like yours. Your QR code for <strong>${esc(bBiz)}</strong> is attached to this email as a high-res PNG.</p>
+    <div style="background:#fff;border-radius:10px;padding:20px;margin:24px 0;border:1px solid #e5e5ea;text-align:center;">
+      <p style="margin:0 0 4px;font-size:0.88rem;color:#888;">Your live profile page</p>
+      <a href="${bProfUrl}" style="color:#0f6b6b;font-weight:700;font-size:1rem;">${bProfUrl}</a>
+      <p style="margin:8px 0 0;font-size:0.82rem;color:#aaa;">This is what people see when they scan your QR code.</p>
+    </div>
+    <div style="text-align:center;margin:28px 0;">
+      <p style="font-weight:700;color:#333;margin:0 0 6px;">Step 1 — Activate your account</p>
+      <a href="${setupLink}" style="background:#0f6b6b;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;display:inline-block;">Set Up My Account →</a>
+      <p style="font-size:0.8rem;color:#aaa;margin:8px 0 0;">Click to create a password — takes 30 seconds. Link expires in 24 hours.</p>
+    </div>
+    <div style="background:#f0fafa;border-radius:10px;padding:18px 20px;border:1px solid #c5e8e8;">
+      <p style="margin:0 0 8px;font-weight:700;color:#333;">After you're in, I'd love your honest feedback:</p>
+      <ul style="color:#555;line-height:2.2;margin:0;padding-left:18px;">
+        <li>What's confusing or missing?</li>
+        <li>Would you pay for this? What price feels right?</li>
+        <li>What would make you actually use the QR code?</li>
+      </ul>
+    </div>
+    <p style="color:#555;line-height:1.7;margin-top:24px;">Just reply to this email — I read everything.</p>
+    <p style="font-size:0.85rem;color:#888;margin-top:16px;">— Laign Orros, Founder<br><a href="mailto:orders@torrolink.com" style="color:#0f6b6b;">orders@torrolink.com</a></p>
+  </div>
+</div>`,
+        });
+        // Owner alert
+        await resend.emails.send({
+          from: "Torrolink Alerts <orders@torrolink.com>", to: OWNER_EMAIL,
+          subject: `🧪 Beta tester created: ${esc(bBiz)}`,
+          html: `<p><strong>${esc(bName||bBiz)}</strong> (${esc(bEmail)}) added as beta tester.<br>Profile: <a href="${bProfUrl}">${bProfUrl}</a></p>`,
+        }).catch(() => {});
+        return json(200, { ok: true, msg: `Beta account created — welcome email sent to ${cleanEmail}`, profileUrl: bProfUrl });
+      }
       default: return json(400, { error: "Unknown action" });
     }
   } catch (err) {
@@ -227,7 +338,8 @@ async function handleDashboard() {
     const statusBadge = isSusp ? `<span class="badge susp">Suspended</span>` : p.is_active ? `<span class="badge active">Active</span>` : `<span class="badge inactive">Inactive</span>`;
     const metricsBadge = p.has_metrics ? `<span class="badge metrics">Metrics</span>` : `<span class="badge free">—</span>`;
     const freeLabel = cust.free_until ? `<br><small style="color:#3fb950;">Free until ${new Date(cust.free_until).toLocaleDateString()}</small>` : "";
-    const planLabel = cust.plan ? esc(cust.plan) : "—";
+    const isBeta = cust.plan === "beta";
+    const planLabel = isBeta ? `<span class="badge beta">Beta</span>` : (cust.plan ? esc(cust.plan) : "—");
     const revList = reviewsByProfile[p.id] || [];
     const revCount = revList.length;
     return `<tr data-profile-id="${esc(p.id)}" data-customer-id="${esc(p.customer_id||"")}" data-email="${esc(cust.email||"")}" data-name="${esc(cust.name||"")}">
@@ -289,6 +401,7 @@ tr:hover td{background:#1c2128}
 .badge.metrics{background:#1a2a3a;color:#58a6ff;border:1px solid #388bfd}
 .badge.free{color:#555}
 .badge.brand{background:#2a1a3a;color:#d2a8ff;border:1px solid #8957e5}
+.badge.beta{background:#1a2a3a;color:#f0b429;border:1px solid #e3a008}
 .ag{display:flex;gap:5px;flex-wrap:wrap}
 .ba{border:none;padding:4px 9px;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer;transition:opacity .15s}
 .ba:hover{opacity:.8}.ba:disabled{opacity:.35;cursor:not-allowed}
@@ -352,6 +465,7 @@ tr:hover td{background:#1c2128}
   <select id="fs" onchange="ft()"><option value="">All Status</option><option value="active">Active</option><option value="susp">Suspended</option></select>
   <select id="fm" onchange="ft()"><option value="">All Plans</option><option value="yes">Has Metrics</option><option value="no">No Metrics</option></select>
   <span class="cnt" id="cnt">${profiles.length} profiles</span>
+  <button class="rbtn" onclick="openBeta()" style="background:#1a1a2d;color:#f0b429;border-color:#e3a008;">🧪 Add Beta Tester</button>
   <button class="rbtn" onclick="openBe()" style="background:#1a2d1a;color:#3fb950;border-color:#238636;">📢 Bulk Email</button>
   <button class="rbtn" onclick="exportCsv()">⬇ Export CSV</button>
   <button class="rbtn" onclick="location.reload()">↺ Refresh</button>
@@ -398,6 +512,18 @@ tr:hover td{background:#1c2128}
   <label>Subject</label><input type="text" id="beSubj" value="A message from Torrolink"/>
   <label>Message</label><textarea id="beMsg" placeholder="Write your message to all customers…" style="min-height:130px;"></textarea>
   <div class="ma"><button class="bcn" onclick="closeBe()">Cancel</button><button class="bsd" id="beBtn" onclick="sendBulk()">Send to All →</button></div>
+</div></div>
+
+<div class="mbg" id="betaMdl"><div class="modal" style="width:480px;max-width:95vw;">
+  <h3>🧪 Add Beta Tester</h3>
+  <p style="font-size:.82rem;color:#8b949e;margin-bottom:4px;">Creates a free account, generates their QR code, and sends them a welcome email with a setup link.</p>
+  <label>Full Name <span style="color:#555;font-weight:400;">(optional)</span></label>
+  <input type="text" id="btName" placeholder="Jane Smith"/>
+  <label>Email <span style="color:#f85149;">*</span></label>
+  <input type="email" id="btEmail" placeholder="jane@herbusiness.com"/>
+  <label>Business Name <span style="color:#f85149;">*</span></label>
+  <input type="text" id="btBiz" placeholder="Jane's Landscaping"/>
+  <div class="ma"><button class="bcn" onclick="closeBeta()">Cancel</button><button class="bsd" id="btBtn" style="background:#e3a008;" onclick="sendBeta()">Create & Send Invite →</button></div>
 </div></div>
 
 <div id="toast"></div>
@@ -578,6 +704,23 @@ async function changePass(){
     else toast(d.error||'Error',true);
   }catch(e){toast('Network error',true);}
   btn.disabled=false;btn.textContent='Save New Password';
+}
+function openBeta(){document.getElementById('betaMdl').classList.add('open');}
+function closeBeta(){document.getElementById('betaMdl').classList.remove('open');}
+async function sendBeta(){
+  const name=document.getElementById('btName').value.trim();
+  const email=document.getElementById('btEmail').value.trim();
+  const biz=document.getElementById('btBiz').value.trim();
+  if(!email||!biz){toast('Email and business name required',true);return;}
+  const btn=document.getElementById('btBtn');
+  btn.disabled=true;btn.textContent='Creating…';
+  try{
+    const r=await fetch(AU,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+AT},body:JSON.stringify({action:'create_beta',name,email,businessName:biz})});
+    const d=await r.json();
+    if(d.ok){toast('Beta tester created ✓ — invite sent');closeBeta();['btName','btEmail','btBiz'].forEach(id=>document.getElementById(id).value='');setTimeout(()=>location.reload(),1500);}
+    else toast(d.error||'Error',true);
+  }catch(e){toast('Network error',true);}
+  btn.disabled=false;btn.textContent='Create & Send Invite →';
 }
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script></body></html>`
