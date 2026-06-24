@@ -1,7 +1,7 @@
 @echo off
 cd /d C:\Laign\Torrolink
 
-:: Try to find git — check common install locations if not in PATH
+:: Try to find git -- check common install locations if not in PATH
 where git >nul 2>&1
 if %errorlevel% neq 0 (
   if exist "C:\Program Files\Git\cmd\git.exe" (
@@ -28,7 +28,7 @@ echo Staging all changes...
 %GIT% add -A
 
 echo Committing...
-%GIT% commit -m "Profile: Show QR button + TorroLink CTA moved to bottom of all profiles"
+%GIT% commit -m "Fix: portal sign-in + admin Add Beta Tester (template literal escapes) + homepage polish"
 
 echo Pushing...
 %GIT% push origin main

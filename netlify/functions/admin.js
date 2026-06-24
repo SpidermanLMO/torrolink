@@ -678,7 +678,7 @@ function exportCsv(){
       cells[8]?.textContent?.trim()||'',
     ]);
   });
-  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
   a.download='torrolink-customers-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }

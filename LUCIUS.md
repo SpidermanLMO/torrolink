@@ -94,10 +94,25 @@ If Lucius needs information outside his domain (customer data, billing info, mar
 4. Confirm portal sign-in UI renders at /portal
 5. Report green/yellow/red to El Chappo
 
-**Template literal rule (portal.js — critical):**
-Any `\X` escape inside the `<script>` block of portal.js needs doubled backslashes (`\\X`).
-Single quotes in onclick HTML attributes use `&apos;` — never `\'`.
-Always run `node --check netlify/functions/portal.js` after any portal.js edit.
+**Template literal rule (ALL functions that generate HTML+JS — critical):**
+Any function that returns a template literal containing a `<script>` block is affected.
+Files: portal.js, admin.js, metrics.js, design-portal.js, profile.js.
+
+Rules:
+- `\n` inside a JS string in the script block → MUST be `\\n` (double backslash)
+- `\t` inside a JS string in the script block → MUST be `\\t`
+- `\'` in onclick HTML attributes → use `&apos;` instead, never `\'`
+- Any `\X` escape inside the script block needs doubled backslashes (`\\X`)
+
+Why: Node.js evaluates `\n` in the template literal to a real newline. The browser
+then sees an unterminated string literal → SyntaxError → entire script block dies →
+all button functions become undefined. `node --check` does NOT catch this (it only
+validates Node.js syntax, not the browser JS inside the template string).
+
+After any edit to these files, run the full audit scanner:
+`python3 -c "..."` (see LUCIUS_fix_admin_csv_escape.py for the scanner pattern)
+
+Always run `node --check netlify/functions/<file>.js` after any edit too.
 
 **Large file rule (CIFS):**
 Never use the Edit tool on portal.js, profile.js, admin.js, stripe-webhook.js, or any file over ~300 lines.
