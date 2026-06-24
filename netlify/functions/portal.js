@@ -331,7 +331,7 @@ exports.handler = async () => {
     <button onclick="showChangePwModal()" id="changePwBtn" style="display:none;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);color:rgba(255,255,255,0.75);font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:6px;">&#128274; Password</button>
     <button onclick="signOut()" id="signOutBtn" style="display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:6px;">Sign out</button>
   <!-- Change Password modal -->
-  <div id="changePwModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div id="changePwModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:#fff;border-radius:14px;padding:32px 28px;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
       <h3 style="margin:0 0 6px;color:#0a4d4d;">Set a Password</h3>
       <p style="margin:0 0 20px;font-size:0.88rem;color:#666;">Choose a password you'll use to sign in from now on.</p>
