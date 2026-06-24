@@ -51,12 +51,12 @@ async function _uniqueCode() {
 
 // Generate a short-lived HMAC token (5-min windows) — embedded in HTML instead of raw password
 function makeToken() {
-  const ts = Math.floor(Date.now() / 300000);
+  const ts = Math.floor(Date.now() / 3600000);
   return crypto.createHmac("sha256", EFFECTIVE_PASS).update(String(ts)).digest("hex").slice(0, 32);
 }
 function checkToken(tok) {
-  const ts = Math.floor(Date.now() / 300000);
-  for (const t of [ts, ts - 1, ts - 2]) { // 10-min grace window
+  const ts = Math.floor(Date.now() / 3600000);
+  for (const t of [ts, ts - 1, ts - 2]) { // 3-hour grace window
     if (tok === crypto.createHmac("sha256", EFFECTIVE_PASS).update(String(t)).digest("hex").slice(0, 32)) return true;
   }
   return false;
@@ -78,13 +78,18 @@ function isAuthed(event) {
   }
   return false;
 }
-function unauthed() {
+function unauthed(method) {
+  if (method === "POST") {
+    // AJAX call — return JSON 401 with NO WWW-Authenticate so browser skips native dialog
+    return { statusCode: 401, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Session expired. Please reload the page." }) };
+  }
+  // Initial page load — Basic Auth dialog is correct here
   return { statusCode: 401, headers: { "WWW-Authenticate": 'Basic realm="Torrolink Admin"', "Content-Type": "text/plain" }, body: "Unauthorized" };
 }
 
 exports.handler = async (event) => {
   await loadEffectivePass();
-  if (!isAuthed(event)) return unauthed();
+  if (!isAuthed(event)) return unauthed(event.httpMethod);
   if (event.httpMethod === "POST") return handleAction(event);
   return handleDashboard();
 };
