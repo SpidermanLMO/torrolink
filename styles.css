@@ -14,7 +14,7 @@
   --gray-light: #f4f6f8;
   --white:   #ffffff;
   --border:  #e2e6ea;
-  --shadow:  0 4px 24px rgba(15,107,107,0.10);
+  --shadow:  0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(15,107,107,0.13);
   --radius:  12px;
   --font: 'Inter', sans-serif;
 }
@@ -53,7 +53,7 @@ body {
   color: var(--white);
   border-color: var(--orange);
 }
-.btn-primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); transform: translateY(-1px); }
+.btn-primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(244,117,43,0.30); }
 
 .btn-outline {
   background: transparent;
@@ -119,6 +119,7 @@ h2 {
   font-size: clamp(1.9rem, 4vw, 2.8rem);
   font-weight: 800;
   line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--charcoal);
   margin-bottom: 16px;
 }
@@ -315,16 +316,16 @@ h2 {
   font-size: 2.5rem;
   font-weight: 900;
   color: var(--teal);
-  opacity: 0.25;
+  opacity: 0.4;
   margin-bottom: 12px;
   line-height: 1;
 }
 .step h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
 .step p { color: var(--gray-dark); font-size: 0.95rem; }
 .step-arrow {
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: var(--teal);
-  opacity: 0.3;
+  opacity: 0.55;
   padding: 0 12px;
   align-self: center;
   flex-shrink: 0;
@@ -346,9 +347,9 @@ h2 {
   text-align: left;
   border: 2px solid transparent;
   position: relative;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
-.plan:hover { box-shadow: var(--shadow); }
+.plan:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.07), 0 16px 48px rgba(15,107,107,0.16); transform: translateY(-3px); }
 .plan-featured {
   background: var(--teal);
   color: var(--white);
