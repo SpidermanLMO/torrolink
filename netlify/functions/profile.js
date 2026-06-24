@@ -883,6 +883,42 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     .powered .get-yours { display: block; margin-top: 6px; font-size: 0.78rem; }
     .powered .get-yours a { background: #0f6b6b; color: #fff; padding: 5px 14px; border-radius: 20px; font-weight: 700; }
 
+    /* QR share overlay */
+    .qr-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.88); align-items: center; justify-content: center;
+      flex-direction: column; cursor: pointer;
+    }
+    .qr-overlay.open { display: flex; }
+    .qr-overlay-box {
+      background: #fff; border-radius: 20px; padding: 28px 24px 20px;
+      text-align: center; max-width: 320px; width: 90%; cursor: default;
+    }
+    .qr-overlay-box img { width: 240px; height: 240px; border-radius: 8px; display: block; margin: 0 auto; }
+    .qr-overlay-url { margin: 12px 0 4px; font-size: 0.82rem; color: #333; font-weight: 600; }
+    .qr-overlay-hint { font-size: 0.7rem; color: #aaa; margin-top: 2px; }
+    .qr-overlay-close {
+      position: absolute; top: 18px; right: 22px; background: none; border: none;
+      color: #fff; font-size: 2rem; cursor: pointer; line-height: 1;
+    }
+
+    /* TorroLink CTA bottom block */
+    .tl-cta-bottom {
+      text-align: center; padding: 22px 20px 48px;
+      border-top: 1px solid rgba(128,128,128,0.12); margin-top: 4px;
+    }
+    .tl-cta-powered { font-size: 0.78rem; color: #aaa; margin-bottom: 14px; }
+    .tl-cta-powered a { color: #0f6b6b; text-decoration: none; font-weight: 600; }
+    .tl-cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .tl-cta-btns a {
+      display: inline-block; padding: 10px 20px; border-radius: 50px;
+      font-size: 0.83rem; font-weight: 700; text-decoration: none;
+      transition: opacity 0.15s, transform 0.12s;
+    }
+    .tl-cta-btns a:hover { opacity: 0.82; transform: scale(1.03); }
+    .tl-cta-btn-primary { background: #0f6b6b; color: #fff !important; }
+    .tl-cta-btn-ghost { border: 2px solid #0f6b6b; color: #0f6b6b !important; background: transparent; }
+
     /* ── MOBILE ──────────────────────────────────── */
     @media (max-width: 520px) {
       .hero-band { padding: 40px 20px 80px; min-height: 260px; }
@@ -942,6 +978,7 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     </button>
     ${p.phone ? `<a class="action-btn" href="tel:${escHtml(p.phone)}" aria-label="Call ${escHtml(p.business_name||'')}">&#128222; Call</a>` : ""}
     <a class="action-btn" href="/.netlify/functions/vcard?handle=${escHtml(p.handle||"")}" target="_blank" rel="noopener" aria-label="Save contact">&#128101; Save Contact</a>
+    <button class="action-btn" onclick="showQrModal()" aria-label="Show QR code">&#128247; Show QR</button>
   </div>` : ""}
 
   ${bioSection}
@@ -986,12 +1023,40 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
     <p id="tl-lb-caption"></p>
   </div>
 
-  <div class="powered">
-    Powered by <a href="https://torrolink.com" target="_blank" rel="noopener">Torrolink</a>
-    <span class="get-yours"><a href="https://torrolink.com/#pricing" target="_blank" rel="noopener">✨ Get your own smart QR profile</a></span>
+  <!-- QR share overlay -->
+  <div class="qr-overlay" id="qrOverlay" onclick="closeQrModal()">
+    <button class="qr-overlay-close" onclick="closeQrModal()" aria-label="Close">&times;</button>
+    <div class="qr-overlay-box" onclick="event.stopPropagation()">
+      <img id="qrOverlayImg" src="" alt="QR Code" />
+      <div class="qr-overlay-url">torrolink.com/p/${escHtml(p.handle||'')}</div>
+      <div class="qr-overlay-hint">Tap anywhere outside to close</div>
+    </div>
+  </div>
+
+  <!-- TorroLink CTA bottom -->
+  <div class="tl-cta-bottom">
+    <div class="tl-cta-powered">Powered by <a href="https://torrolink.com" target="_blank" rel="noopener">Torrolink</a></div>
+    <div class="tl-cta-btns">
+      <a href="https://torrolink.com/#pricing" target="_blank" rel="noopener" class="tl-cta-btn-primary">&#10024; Get Your QR Profile</a>
+      <a href="https://torrolink.com/#pricing" target="_blank" rel="noopener" class="tl-cta-btn-ghost">See Plans &amp; Pricing</a>
+    </div>
   </div>
 
   <script>
+    // ── QR overlay ────────────────────────────────────────────────────────────
+    function showQrModal() {
+      var overlay = document.getElementById('qrOverlay');
+      var img = document.getElementById('qrOverlayImg');
+      var url = 'https://torrolink.com/p/${escHtml(p.handle||'')}';
+      img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(url) + '&ecc=M&margin=10';
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeQrModal() {
+      document.getElementById('qrOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
     // ── No carousel — hero layout is static ──────────────────────────────────
 
     // ── Lead form ────────────────────────────────────────────────────────
