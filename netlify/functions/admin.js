@@ -619,8 +619,8 @@ function openReviews(td){
           '<div class="rv-meta">'+new Date(rv.submitted_at).toLocaleDateString()+' · '+(vis?'<span style="color:#3fb950;">Visible</span>':'<span style="color:#f85149;">Hidden</span>')+'</div>'+
         '</div>'+
         '<div class="rv-actions">'+
-          '<button class="ba '+(vis?'sus':'act')+'" onclick="toggleRev(''+rv.id+'','+(String(!vis))+',this)">'+(vis?'Hide':'Show')+'</button>'+
-          '<button class="ba del" onclick="deleteRev(''+rv.id+'',this)">Delete</button>'+
+          '<button class="ba '+(vis?'sus':'act')+'" onclick="toggleRev(&apos;'+rv.id+'&apos;,'+(String(!vis))+',this)">'+(vis?'Hide':'Show')+'</button>'+
+          '<button class="ba del" onclick="deleteRev(&apos;'+rv.id+'&apos;,this)">Delete</button>'+
         '</div>'+
       '</div>';
     }).join('');
