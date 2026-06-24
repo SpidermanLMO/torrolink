@@ -2117,7 +2117,7 @@ exports.handler = async () => {
       // Referred table
       var referredHtml = '';
       if (referred.length > 0) {
-        referredHtml = '<h3 style="font-size:0.95rem;margin:20px 0 8px;">People You've Referred</h3>' +
+        referredHtml = '<h3 style="font-size:0.95rem;margin:20px 0 8px;">People You&rsquo;ve Referred</h3>' +
           '<table class="referral-table"><thead><tr>' +
           '<th>Name</th><th>Status</th><th>Joined</th>' +
           '</tr></thead><tbody>' +
@@ -2133,7 +2133,7 @@ exports.handler = async () => {
 
       // Metrics gate notice
       var metricsNotice = !hasMetrics
-        ? '<div style="margin-bottom:16px;padding:12px 14px;background:#fff8f0;border:1px solid rgba(244,117,43,0.25);border-radius:8px;font-size:0.85rem;color:#7c4000;">&#128274; Referral discounts apply to your <strong>Metrics &amp; Leads</strong> subscription. <a href="#" onclick="switchTab('upgrade');return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Subscribe to Metrics &rarr;</a></div>'
+        ? '<div style="margin-bottom:16px;padding:12px 14px;background:#fff8f0;border:1px solid rgba(244,117,43,0.25);border-radius:8px;font-size:0.85rem;color:#7c4000;">&#128274; Referral discounts apply to your <strong>Metrics &amp; Leads</strong> subscription. <a href="#" onclick="switchTab(&apos;upgrade&apos;);return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Subscribe to Metrics &rarr;</a></div>'
         : '';
 
       el.innerHTML =
