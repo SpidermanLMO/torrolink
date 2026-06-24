@@ -320,9 +320,27 @@ exports.handler = async () => {
     .doc-view-p { font-size:0.7rem; color:#0f6b6b; display:block; margin-top:2px; }
     .doc-del-p { color:#c00; background:none; border:none; cursor:pointer; font-size:0.9rem; flex-shrink:0; }
     .media-msg { font-size:0.8rem; color:#0f6b6b; margin-top:6px; min-height:18px; }
+  #pwaBanner.show { display: flex !important; }
+  #iosBanner.show { display: block !important; }
   </style>
 </head>
 <body class="tl-page">
+
+  <!-- PWA install banner (Android/Chrome) -->
+  <div id="pwaBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0a4d4d;color:#fff;padding:14px 18px;z-index:10000;align-items:center;gap:12px;box-shadow:0 -2px 16px rgba(0,0,0,0.25);">
+    <span style="font-size:0.9rem;flex:1;">&#128241; Add Torrolink to your home screen for quick access.</span>
+    <button id="pwaBannerBtn" style="background:#f4752b;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.88rem;white-space:nowrap;">Install</button>
+    <button onclick="dismissPwaBanner()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.2rem;cursor:pointer;padding:0 4px;">&#10005;</button>
+  </div>
+
+  <!-- PWA install banner (iOS/Safari) -->
+  <div id="iosBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#0a4d4d;color:#fff;padding:14px 18px;z-index:10000;box-shadow:0 -2px 16px rgba(0,0,0,0.25);">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="font-size:0.9rem;flex:1;font-weight:700;">&#128241; Add to Home Screen</span>
+      <button onclick="dismissPwaBanner()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:1.2rem;cursor:pointer;padding:0 4px;">&#10005;</button>
+    </div>
+    <p style="margin:0;font-size:0.84rem;color:rgba(255,255,255,0.85);line-height:1.5;">Tap <strong>&#9633; Share</strong> at the bottom of Safari, then tap <strong>Add to Home Screen</strong>.</p>
+  </div>
 
   <div class="tl-topbar">
     <a href="/" class="logo">Torrolink</a>
