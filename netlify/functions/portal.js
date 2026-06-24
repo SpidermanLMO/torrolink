@@ -1632,7 +1632,7 @@ exports.handler = async () => {
         var d = new Date(log.logged_at).toLocaleDateString();
         var note = log.notes ? ' — ' + escP(log.notes) : '';
         return '<div class="log-entry"><span>' + d + note + '</span>' +
-          '<button class="log-del" title="Remove" onclick="deleteLog(\'' + log.id + '\',\'' + p.id + '\')">✕</button></div>';
+          '<button class="log-del" title="Remove" onclick="deleteLog(&apos;' + log.id + '&apos;,&apos;' + p.id + '&apos;)">✕</button></div>';
       }).join('');
 
       return '<div class="partner-card ' + heat + '" id="pc-' + p.id + '">' +
