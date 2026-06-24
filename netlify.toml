@@ -91,6 +91,21 @@
   status = 200
 
 [[redirects]]
+  from = "/track-action"
+  to = "/.netlify/functions/track-action"
+  status = 200
+
+[[redirects]]
+  from = "/referral-partners"
+  to = "/.netlify/functions/referral-partners"
+  status = 200
+
+[[redirects]]
+  from = "/refer-earn"
+  to = "/.netlify/functions/refer-earn"
+  status = 200
+
+[[redirects]]
   from = "/terms"
   to = "/terms.html"
   status = 200

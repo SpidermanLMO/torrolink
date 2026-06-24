@@ -12,7 +12,7 @@ Lucius owns the TorroLink codebase. He reports to **El Chappo**. He escalates to
 ## Domain — What Lucius Owns
 
 **Code:**
-- `netlify/functions/` — all 31 serverless functions
+- `netlify/functions/` — all serverless functions (added `refer-earn.js` 2026-06-23)
 - `index.html` — homepage
 - `success.html` · `terms.html` · `privacy.html` · `google3f3079bc097c6a27.html`
 - `favicon.svg` · `logo.svg`
@@ -100,14 +100,22 @@ Single quotes in onclick HTML attributes use `&apos;` — never `\'`.
 Always run `node --check netlify/functions/portal.js` after any portal.js edit.
 
 **Large file rule (CIFS):**
-Never use the Edit tool on portal.js, profile.js, admin.js, or any file over ~300 lines.
-Use Python via bash:
+Never use the Edit tool on portal.js, profile.js, admin.js, stripe-webhook.js, or any file over ~300 lines.
+Use Python via bash — save scripts as `LUCIUS_*.py` in the repo root:
 ```python
-path = '/sessions/.../mnt/Torrolink/netlify/functions/portal.js'
+path = '/sessions/nice-vigilant-sagan/mnt/Torrolink/netlify/functions/portal.js'
 with open(path, 'r', encoding='utf-8') as f: src = f.read()
 src = src.replace(old, new, 1)
 with open(path, 'w', encoding='utf-8') as f: f.write(src)
 ```
+Always run `node --check` after. Watch for truncation on Windows paths — use Linux mount paths in scripts.
+
+**Referral system (added 2026-06-23):**
+- `refer-earn.js` — GET referral data for portal tab
+- `stripe-webhook.js` — referral code gen, crediting, Stripe discount application
+- `portal.js` — Refer & Earn tab (loadReferral, renderReferral, copyReferralLink)
+- `script.js` — ?ref= URL param capture → sessionStorage → checkout
+- Supabase: `referral_partners`, `referral_logs` tables + customers columns (referral_code, referred_by, referral_credits, stripe_subscription_id)
 
 ---
 

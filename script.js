@@ -30,6 +30,19 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 });
 
 // Smooth scroll for all anchor links
+// ── Referral code capture ─────────────────────────────────────
+// If someone visits torrolink.com/?ref=ABCD1234, save the code so
+// it gets passed to checkout and the referrer gets credit.
+(function captureRefCode() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref && /^[A-F0-9]{8}$/i.test(ref)) {
+      sessionStorage.setItem('tl_ref', ref.toUpperCase());
+    }
+  } catch(e) {}
+})();
+
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
     const target = document.querySelector(this.getAttribute('href'));
@@ -167,6 +180,10 @@ async function submitCheckoutModal() {
   btn.disabled    = true;
 
   try {
+    const _refCode = (function() {
+      try { return sessionStorage.getItem('tl_ref') || undefined; } catch(e) { return undefined; }
+    })();
+
     const res = await fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -175,6 +192,7 @@ async function submitCheckoutModal() {
         businessName,
         customerEmail: customerEmail || undefined,
         addMetrics: addMetrics || undefined,
+        referredBy: _refCode,
       }),
     });
     const data = await res.json();

@@ -50,20 +50,33 @@ El Chappo operates exclusively inside TorroLink. He does not make decisions that
 
 ---
 
-## Current Mission (2026-06-19)
+## Current Status (2026-06-23)
 
-**Primary:** Get TorroLink live for real customers.
+**TorroLink is LIVE** — launched 2026-06-21. Stripe live. All env vars set. Portal working.
 
-| # | Blocker | Action needed |
-|---|---------|---------------|
-| 1 | Supabase migrations | Laign runs SQL in app.supabase.com |
-| 2 | Stripe live webhook | Laign creates endpoint in Stripe dashboard |
-| 3 | STRIPE_WEBHOOK_SECRET | Laign adds to Netlify env vars |
-| 4 | Swap to sk_live_ | Laign swaps STRIPE_SECRET_KEY in Netlify |
-| 5 | ADMIN_PASSWORD | Laign sets in Netlify env vars |
-| 6 | SPF/DKIM | Laign verifies in Resend dashboard |
+### Built overnight (2026-06-23):
 
-**Secondary:** Start getting real customer signups once live.
+**Feature A — Affiliate Referral Program (scaling discounts)**
+- New Netlify function: `refer-earn.js` — serves referral data to portal
+- `stripe-webhook.js` — generates referral codes for new customers, credits referrers when someone they referred buys Metrics, applies Stripe coupons (20/40/60/80/100% off), de-credits on cancel, saves `stripe_subscription_id`
+- `create-checkout.js` — accepts `referredBy` param, passes to Stripe session metadata
+- `script.js` — captures `?ref=XXXXXXXX` from URL, stores in sessionStorage, passes to checkout
+- Stripe coupons: TORROLINK-REFER-20/40/60/80/100 (created lazily on first use)
+
+**Feature B — Business Referral Partner Tracker (in portal)**
+- Partners tab was ALREADY fully coded in portal.js + referral-partners.js
+- Tables `referral_partners` + `referral_logs` created in Supabase via MCP ✅
+
+**Portal — Refer & Earn tab**
+- `portal.js` — new "🎁 Refer & Earn" tab: referral link + copy button, progress bar, tier table, referred-customers list, upgrade nudge for non-Metrics users
+
+### Waiting on Laign to deploy:
+1. Run `_fix_deploy.bat` — commit message already updated, ready to go
+2. Confirm Partners tab works in portal after deploy
+
+### Next priorities:
+- Get first paying TorroLink customer
+- Continue roofing referral outreach (15 targets in memory/roofing-tracker.md)
 
 ---
 

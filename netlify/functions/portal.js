@@ -117,6 +117,114 @@ exports.handler = async () => {
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
+
+    /* ── Partner Tracker ────────────────────────────────────── */
+    .partner-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .partner-card {
+      border-radius: 12px; border: 1.5px solid #e2e6ea;
+      padding: 16px; background: #fff; position: relative;
+      border-left-width: 5px; transition: box-shadow 0.15s;
+    }
+    .partner-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
+    .partner-card.heat-gray   { border-left-color: #9ca3af; }
+    .partner-card.heat-blue   { border-left-color: #3b82f6; }
+    .partner-card.heat-gold   { border-left-color: #f59e0b; }
+    .partner-card.heat-red    { border-left-color: #ef4444; }
+    .partner-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: #0f6b6b; color: #fff; border-radius: 20px;
+      padding: 2px 10px; font-size: 0.75rem; font-weight: 700;
+    }
+    .partner-name { font-weight: 700; font-size: 1rem; margin: 0 40px 2px 0; }
+    .partner-meta { font-size: 0.82rem; color: #666; margin-bottom: 8px; }
+    .partner-contact { font-size: 0.82rem; color: #444; margin-bottom: 10px; }
+    .partner-contact a { color: #0f6b6b; text-decoration: none; }
+    .partner-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .p-btn {
+      padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;
+      font-weight: 600; cursor: pointer; font-family: inherit; border: none;
+    }
+    .p-btn-log    { background: #0f6b6b; color: #fff; }
+    .p-btn-edit   { background: #f4f6f8; color: #333; border: 1.5px solid #e2e6ea; }
+    .p-btn-delete { background: none; color: #c0392b; border: 1.5px solid #fdd; }
+    .partner-logs { margin-top: 10px; border-top: 1px solid #f0f0f0; padding-top: 10px; display: none; }
+    .partner-logs.open { display: block; }
+    .log-entry {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 0; font-size: 0.8rem; color: #555; border-bottom: 1px solid #f8f8f8;
+    }
+    .log-del { background: none; border: none; color: #bbb; cursor: pointer; font-size: 0.85rem; padding: 0 4px; }
+    .log-del:hover { color: #c0392b; }
+    .partner-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      z-index: 999; align-items: center; justify-content: center;
+    }
+    .partner-modal-overlay.open { display: flex; }
+    .partner-modal {
+      background: #fff; border-radius: 16px; padding: 28px 24px;
+      width: min(90vw, 420px); max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.18);
+    }
+    .partner-modal h3 { margin: 0 0 20px; font-size: 1.1rem; }
+    .pm-field { margin-bottom: 14px; }
+    .pm-field label { display: block; font-size: 0.82rem; font-weight: 600; color: #555; margin-bottom: 5px; }
+    .pm-field input, .pm-field select, .pm-field textarea {
+      width: 100%; padding: 9px 12px; border: 1.5px solid #e0e0e8; border-radius: 10px;
+      font-size: 0.9rem; font-family: inherit; outline: none; box-sizing: border-box;
+      transition: border-color 0.2s; background: #fafafa;
+    }
+    .pm-field input:focus, .pm-field select:focus, .pm-field textarea:focus { border-color: #0f6b6b; }
+    .pm-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    .heat-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; font-size: 0.78rem; }
+    .heat-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; }
+
+    /* ── Refer & Earn tab ───────────────────────────── */
+    .referral-hero {
+      background: linear-gradient(135deg, #0f6b6b, #0a4d4d);
+      border-radius: 14px; padding: 28px 24px; color: #fff; margin-bottom: 20px; text-align: center;
+    }
+    .referral-hero h2 { margin: 0 0 6px; font-size: 1.3rem; }
+    .referral-hero p  { margin: 0; font-size: 0.9rem; opacity: 0.85; }
+    .referral-link-box {
+      background: #fff; border: 1.5px solid #c0d8d8; border-radius: 10px;
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin: 16px 0 8px;
+    }
+    .referral-link-box input {
+      flex: 1; border: none; outline: none; font-size: 0.88rem; color: #333;
+      background: transparent; font-family: inherit;
+    }
+    .referral-link-copy {
+      padding: 6px 14px; background: #0f6b6b; color: #fff; border: none;
+      border-radius: 7px; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background 0.15s; white-space: nowrap;
+    }
+    .referral-link-copy:hover { background: #0a5050; }
+    .referral-progress {
+      background: #f4f6f8; border-radius: 12px; padding: 18px 20px; margin-bottom: 16px;
+    }
+    .referral-progress-bar-wrap {
+      background: #e2e6ea; border-radius: 99px; height: 10px; margin: 10px 0 6px; overflow: hidden;
+    }
+    .referral-progress-bar {
+      background: linear-gradient(90deg, #0f6b6b, #16a085);
+      height: 100%; border-radius: 99px; transition: width 0.5s ease;
+    }
+    .referral-tier-label {
+      font-size: 1.5rem; font-weight: 800; color: #0f6b6b; text-align: center; margin: 10px 0 4px;
+    }
+    .referral-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 8px; }
+    .referral-table th {
+      text-align: left; color: #888; font-weight: 600; padding: 6px 8px;
+      border-bottom: 1.5px solid #e2e6ea;
+    }
+    .referral-table td { padding: 8px 8px; border-bottom: 1px solid #f0f0f0; color: #444; }
+    .referral-badge-active   { color: #0f6b6b; font-weight: 700; }
+    .referral-badge-inactive { color: #aaa; }
+    .tier-row { display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; }
+    .tier-row:last-child { border-bottom: none; }
+    .tier-row.current { font-weight: 700; color: #0f6b6b; }
+
     /* ── Theme picker ─────────────────────────────── */
     .pattern-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
@@ -304,7 +412,9 @@ exports.handler = async () => {
         <button class="tab-btn" onclick="switchTab('themes')">&#127912; Themes</button>
         <button class="tab-btn" onclick="switchTab('qr')">My QR Code</button>
         <button class="tab-btn" onclick="switchTab('reviews')">&#11088; Reviews</button>
+        <button class="tab-btn" onclick="switchTab('partners')">&#128101; Partners</button>
         <button class="tab-btn" onclick="switchTab('gallery')">&#128247; Gallery</button>
+        <button class="tab-btn" onclick="switchTab('referral')" style="color:#0f6b6b;border-color:#c0d8d8;">&#127873; Refer &amp; Earn</button>
         <button class="tab-btn" onclick="switchTab('upgrade')" style="color:#f4752b;border-color:#f4752b;">&#8679; Upgrade</button>
       </div>
 
@@ -626,6 +736,20 @@ exports.handler = async () => {
         </div>
       </div>
 
+      <!-- REFER & EARN TAB -->
+      <div id="tab-referral" class="tab-panel">
+        <div style="max-width:560px;">
+          <div class="referral-hero">
+            <h2>&#127873; Refer &amp; Earn</h2>
+            <p>Share your referral link. Every business that joins Metrics &amp; Leads through you earns you a discount — up to 100% free.</p>
+          </div>
+
+          <div id="referralContent">
+            <p style="color:#999;font-size:0.88rem;text-align:center;padding:24px 0;">Loading your referral info...</p>
+          </div>
+        </div>
+      </div>
+
       <!-- UPGRADE TAB -->
       <div id="tab-upgrade" class="tab-panel">
         <div id="upgradeContent">
@@ -635,6 +759,75 @@ exports.handler = async () => {
       </div>
 
       <!-- GALLERY TAB -->
+      <!-- PARTNERS TAB -->
+      <div id="tab-partners" class="tab-panel">
+        <div style="max-width:560px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <h2 style="margin:0;">Referral Partners</h2>
+            <button class="tl-btn tl-btn-teal" style="padding:8px 16px;font-size:0.85rem;" onclick="openPartnerModal()">+ Add Partner</button>
+          </div>
+          <p style="font-size:0.85rem;color:#666;margin:0 0 16px;">Track who sends you referrals. The card color shows relationship heat — how many referrals and how recently.</p>
+          <div class="heat-legend">
+            <span><span class="heat-dot" style="background:#9ca3af;"></span>New</span>
+            <span><span class="heat-dot" style="background:#3b82f6;"></span>Warming</span>
+            <span><span class="heat-dot" style="background:#f59e0b;"></span>Active</span>
+            <span><span class="heat-dot" style="background:#ef4444;"></span>Hot</span>
+          </div>
+          <div id="partnerGrid" class="partner-grid">
+            <p style="color:#999;font-size:0.88rem;">Loading partners...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PARTNER MODAL (add / edit) -->
+      <div id="partnerModalOverlay" class="partner-modal-overlay" onclick="if(event.target===this)closePartnerModal()">
+        <div class="partner-modal">
+          <h3 id="partnerModalTitle">Add Partner</h3>
+          <input type="hidden" id="pmPartnerId" value="" />
+          <div class="pm-field">
+            <label>Name *</label>
+            <input id="pmName" type="text" placeholder="John Smith" />
+          </div>
+          <div class="pm-field">
+            <label>Company</label>
+            <input id="pmCompany" type="text" placeholder="Keller Williams" />
+          </div>
+          <div class="pm-field">
+            <label>Category</label>
+            <select id="pmCategory">
+              <option value="realtor">Realtor</option>
+              <option value="insurance">Insurance Agent</option>
+              <option value="plumber">Plumber</option>
+              <option value="electrician">Electrician</option>
+              <option value="hvac">HVAC</option>
+              <option value="cpa">CPA / Accountant</option>
+              <option value="attorney">Attorney</option>
+              <option value="mortgage">Mortgage Broker</option>
+              <option value="inspector">Home Inspector</option>
+              <option value="arborist">Arborist</option>
+              <option value="landscaper">Landscaper</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="pm-field">
+            <label>Phone</label>
+            <input id="pmPhone" type="tel" placeholder="(512) 555-1234" />
+          </div>
+          <div class="pm-field">
+            <label>Email</label>
+            <input id="pmEmail" type="email" placeholder="john@kwrealty.com" />
+          </div>
+          <div class="pm-field">
+            <label>Notes</label>
+            <textarea id="pmNotes" rows="2" placeholder="How you met, what they specialize in..."></textarea>
+          </div>
+          <div class="pm-actions">
+            <button class="p-btn p-btn-edit" onclick="closePartnerModal()">Cancel</button>
+            <button class="p-btn p-btn-log" onclick="savePartnerModal()">Save</button>
+          </div>
+        </div>
+      </div>
+
       <div id="tab-gallery" class="tab-panel">
         <!-- Photo Gallery -->
         <div class="tl-card">
@@ -1386,6 +1579,261 @@ exports.handler = async () => {
       reader.readAsDataURL(file);
     }
 
+    // ══════════════════════════════════════════════════════════════════════════
+    // REFERRAL PARTNER TRACKER
+    // ══════════════════════════════════════════════════════════════════════════
+    var _partners = [];
+
+    // Weighted score: recent referrals count more than old ones
+    function partnerScore(logs) {
+      var now = Date.now();
+      var score = 0;
+      (logs || []).forEach(function(log) {
+        var age = (now - new Date(log.logged_at).getTime()) / 86400000; // days
+        if (age <= 30)       score += 3.0;
+        else if (age <= 90)  score += 1.5;
+        else if (age <= 365) score += 0.5;
+        else                 score += 0.1;
+      });
+      return score;
+    }
+
+    function scoreToHeat(score) {
+      if (score <= 0)   return 'heat-gray';
+      if (score < 3)    return 'heat-blue';
+      if (score < 7)    return 'heat-gold';
+      return 'heat-red';
+    }
+
+    function escP(s) {
+      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function catLabel(cat) {
+      var map = { realtor:'Realtor', insurance:'Insurance Agent', plumber:'Plumber',
+        electrician:'Electrician', hvac:'HVAC', cpa:'CPA / Accountant', attorney:'Attorney',
+        mortgage:'Mortgage Broker', inspector:'Home Inspector', arborist:'Arborist',
+        landscaper:'Landscaper', other:'Other' };
+      return map[cat] || cat;
+    }
+
+    function renderPartnerCard(p) {
+      var score = partnerScore(p.logs);
+      var heat  = scoreToHeat(score);
+      var count = p.logs.length;
+      var lastLog = p.logs[0] ? new Date(p.logs[0].logged_at).toLocaleDateString() : null;
+
+      var contactHtml = '';
+      if (p.phone) contactHtml += '<a href="tel:' + escP(p.phone) + '">' + escP(p.phone) + '</a>';
+      if (p.phone && p.email) contactHtml += ' &nbsp;·&nbsp; ';
+      if (p.email) contactHtml += '<a href="mailto:' + escP(p.email) + '">' + escP(p.email) + '</a>';
+
+      var logsHtml = (p.logs || []).map(function(log) {
+        var d = new Date(log.logged_at).toLocaleDateString();
+        var note = log.notes ? ' — ' + escP(log.notes) : '';
+        return '<div class="log-entry"><span>' + d + note + '</span>' +
+          '<button class="log-del" title="Remove" onclick="deleteLog(\'' + log.id + '\',\'' + p.id + '\')">✕</button></div>';
+      }).join('');
+
+      return '<div class="partner-card ' + heat + '" id="pc-' + p.id + '">' +
+        '<div class="partner-badge">' + count + ' ref' + (count !== 1 ? 's' : '') + '</div>' +
+        '<div class="partner-name">' + escP(p.name) + '</div>' +
+        '<div class="partner-meta">' + escP(catLabel(p.category)) + (p.company ? ' · ' + escP(p.company) : '') + '</div>' +
+        (contactHtml ? '<div class="partner-contact">' + contactHtml + '</div>' : '') +
+        '<div class="partner-actions">' +
+          '<button class="p-btn p-btn-log" onclick="logReferral(\'' + p.id + '\')">+ Log Referral</button>' +
+          '<button class="p-btn p-btn-edit" onclick="editPartner(\'' + p.id + '\')">Edit</button>' +
+          (count > 0 ? '<button class="p-btn p-btn-edit" onclick="toggleLogs(\'' + p.id + '\')">History (' + count + ')</button>' : '') +
+          '<button class="p-btn p-btn-delete" onclick="deletePartner(\'' + p.id + '\')">Delete</button>' +
+        '</div>' +
+        (logsHtml ? '<div class="partner-logs" id="logs-' + p.id + '">' + logsHtml + '</div>' : '') +
+        '</div>';
+    }
+
+    function renderPartnerGrid() {
+      var grid = document.getElementById('partnerGrid');
+      if (!grid) return;
+      if (_partners.length === 0) {
+        grid.innerHTML = '<p style="color:#999;font-size:0.88rem;text-align:center;padding:24px 0;">No partners yet. Add your first referral partner above.</p>';
+        return;
+      }
+      // Sort by score descending
+      var sorted = _partners.slice().sort(function(a, b) {
+        return partnerScore(b.logs) - partnerScore(a.logs);
+      });
+      grid.innerHTML = sorted.map(renderPartnerCard).join('');
+    }
+
+    async function loadPartners() {
+      if (!_session || !_profile) return;
+      var grid = document.getElementById('partnerGrid');
+      if (grid) grid.innerHTML = '<p style="color:#999;font-size:0.88rem;">Loading...</p>';
+
+      try {
+        var res = await fetch('/.netlify/functions/referral-partners', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + _session.access_token
+          },
+          body: JSON.stringify({ action: 'list', profileId: _profile.id })
+        });
+        var data = await res.json();
+        _partners = data.partners || [];
+        renderPartnerGrid();
+      } catch(e) {
+        if (grid) grid.innerHTML = '<p style="color:#c0392b;font-size:0.88rem;">Could not load partners. Try refreshing.</p>';
+      }
+    }
+
+    function openPartnerModal(partner) {
+      document.getElementById('partnerModalTitle').textContent = partner ? 'Edit Partner' : 'Add Partner';
+      document.getElementById('pmPartnerId').value  = partner ? partner.id : '';
+      document.getElementById('pmName').value       = partner ? partner.name    : '';
+      document.getElementById('pmCompany').value    = partner ? partner.company : '';
+      document.getElementById('pmCategory').value   = partner ? partner.category : 'realtor';
+      document.getElementById('pmPhone').value      = partner ? partner.phone   : '';
+      document.getElementById('pmEmail').value      = partner ? partner.email   : '';
+      document.getElementById('pmNotes').value      = partner ? partner.notes   : '';
+      document.getElementById('partnerModalOverlay').classList.add('open');
+      setTimeout(function() { document.getElementById('pmName').focus(); }, 100);
+    }
+
+    function closePartnerModal() {
+      document.getElementById('partnerModalOverlay').classList.remove('open');
+    }
+
+    function editPartner(id) {
+      var p = _partners.find(function(x) { return x.id === id; });
+      if (p) openPartnerModal(p);
+    }
+
+    async function savePartnerModal() {
+      if (!_session || !_profile) return;
+      var partnerId = document.getElementById('pmPartnerId').value;
+      var name      = document.getElementById('pmName').value.trim();
+      if (!name) { alert('Name is required.'); return; }
+
+      var payload = {
+        action:    partnerId ? 'update' : 'add',
+        profileId: _profile.id,
+        partnerId: partnerId || undefined,
+        name, 
+        company:  document.getElementById('pmCompany').value.trim(),
+        category: document.getElementById('pmCategory').value,
+        phone:    document.getElementById('pmPhone').value.trim(),
+        email:    document.getElementById('pmEmail').value.trim(),
+        notes:    document.getElementById('pmNotes').value.trim(),
+      };
+
+      try {
+        var res = await fetch('/.netlify/functions/referral-partners', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + _session.access_token
+          },
+          body: JSON.stringify(payload)
+        });
+        var data = await res.json();
+        if (data.error) { alert('Error: ' + data.error); return; }
+
+        if (partnerId) {
+          // Update in place
+          var idx = _partners.findIndex(function(x) { return x.id === partnerId; });
+          if (idx >= 0) {
+            _partners[idx] = Object.assign(_partners[idx], data.partner);
+          }
+        } else {
+          _partners.push(data.partner);
+        }
+        closePartnerModal();
+        renderPartnerGrid();
+      } catch(e) {
+        alert('Network error. Please try again.');
+      }
+    }
+
+    async function deletePartner(id) {
+      if (!confirm('Delete this partner and all their referral history?')) return;
+      if (!_session || !_profile) return;
+
+      try {
+        var res = await fetch('/.netlify/functions/referral-partners', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + _session.access_token
+          },
+          body: JSON.stringify({ action: 'delete', profileId: _profile.id, partnerId: id })
+        });
+        var data = await res.json();
+        if (data.error) { alert('Error: ' + data.error); return; }
+        _partners = _partners.filter(function(x) { return x.id !== id; });
+        renderPartnerGrid();
+      } catch(e) {
+        alert('Network error. Please try again.');
+      }
+    }
+
+    async function logReferral(partnerId) {
+      if (!_session || !_profile) return;
+      var notes = prompt('Optional: add a note for this referral (or leave blank and click OK)');
+      if (notes === null) return; // cancelled
+
+      try {
+        var res = await fetch('/.netlify/functions/referral-partners', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + _session.access_token
+          },
+          body: JSON.stringify({ action: 'log', profileId: _profile.id, partnerId, notes })
+        });
+        var data = await res.json();
+        if (data.error) { alert('Error: ' + data.error); return; }
+
+        var p = _partners.find(function(x) { return x.id === partnerId; });
+        if (p) {
+          p.logs.unshift(data.log);
+          renderPartnerGrid();
+        }
+      } catch(e) {
+        alert('Network error. Please try again.');
+      }
+    }
+
+    async function deleteLog(logId, partnerId) {
+      if (!confirm('Remove this referral entry?')) return;
+      if (!_session || !_profile) return;
+
+      try {
+        var res = await fetch('/.netlify/functions/referral-partners', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + _session.access_token
+          },
+          body: JSON.stringify({ action: 'delete-log', profileId: _profile.id, logId })
+        });
+        var data = await res.json();
+        if (data.error) { alert('Error: ' + data.error); return; }
+
+        var p = _partners.find(function(x) { return x.id === partnerId; });
+        if (p) {
+          p.logs = p.logs.filter(function(l) { return l.id !== logId; });
+          renderPartnerGrid();
+        }
+      } catch(e) {
+        alert('Network error. Please try again.');
+      }
+    }
+
+    function toggleLogs(partnerId) {
+      var el = document.getElementById('logs-' + partnerId);
+      if (el) el.classList.toggle('open');
+    }
+
     // ── QR code rendering ────────────────────────────────────
     function renderQRCode() {
       const container = document.getElementById('qrCanvas');
@@ -1591,18 +2039,147 @@ exports.handler = async () => {
     }
 
     function switchTab(name) {
-      const tabs = ['profile', 'links', 'themes', 'qr', 'reviews', 'gallery', 'upgrade'];
+      const tabs = ['profile', 'links', 'themes', 'qr', 'reviews', 'partners', 'gallery', 'referral', 'upgrade'];
       document.querySelectorAll('.tab-btn').forEach((b, i) => {
         b.classList.toggle('active', tabs[i] === name);
       });
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
-      // Hide save button on upgrade tab
+      // Hide save button on upgrade and referral tabs
       const saveRow = document.getElementById('saveRow');
-      if (name === 'reviews') loadReviews();
-      if (saveRow) saveRow.style.display = name === 'upgrade' ? 'none' : 'block';
+      if (name === 'reviews')  loadReviews();
+      if (name === 'partners') loadPartners();
+      if (name === 'referral') loadReferral();
+      if (saveRow) saveRow.style.display = (name === 'upgrade' || name === 'referral') ? 'none' : 'block';
       // Build upgrade tab content on first open
       if (name === 'upgrade' && _profile) buildUpgradeTab(_profile);
+    }
+
+    // ── Refer & Earn tab ───────────────────────────────────────────
+    var _referralData = null;
+
+    async function loadReferral() {
+      if (!_session || !_profile) return;
+      const el = document.getElementById('referralContent');
+      if (!el) return;
+      if (_referralData) { renderReferral(_referralData); return; } // already loaded
+      el.innerHTML = '<p style="color:#999;font-size:0.88rem;text-align:center;padding:24px 0;">Loading...</p>';
+
+      try {
+        var res = await fetch('/.netlify/functions/refer-earn', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _session.access_token },
+          body: JSON.stringify({ action: 'get' }),
+        });
+        var data = await res.json();
+        if (data.error) throw new Error(data.error);
+        _referralData = data;
+        renderReferral(data);
+      } catch(e) {
+        el.innerHTML = '<p style="color:#c0392b;font-size:0.88rem;">Could not load referral info. Try refreshing.</p>';
+      }
+    }
+
+    function renderReferral(d) {
+      var el = document.getElementById('referralContent');
+      if (!el) return;
+
+      var hasMetrics = d.hasMetrics;
+      var credits    = d.credits || 0;
+      var pct        = d.discount ? d.discount.pct : 0;
+      var nextAt     = d.discount ? d.discount.nextAt : 1;
+      var nextLabel  = d.discount ? d.discount.nextLabel : '';
+      var link       = d.referralLink || '';
+      var code       = d.referralCode || '';
+      var referred   = d.referred || [];
+
+      // Progress bar: cap at 5 referrals = 100%
+      var barPct = Math.min((credits / 5) * 100, 100);
+
+      // Tier table
+      var tiers = [
+        { refs: 1, label: '20% off',  price: '$8.22/mo' },
+        { refs: 2, label: '40% off',  price: '$6.17/mo' },
+        { refs: 3, label: '60% off',  price: '$4.11/mo' },
+        { refs: 4, label: '80% off',  price: '$2.06/mo' },
+        { refs: 5, label: 'FREE',     price: '$0/mo &#127881;' },
+      ];
+      var tiersHtml = tiers.map(function(t) {
+        var isCurrent = (credits >= t.refs && (t.refs === 5 || credits < t.refs + 1));
+        if (t.refs === 5) isCurrent = credits >= 5;
+        return '<div class="tier-row' + (isCurrent ? ' current' : '') + '">' +
+          '<span>' + t.refs + ' referral' + (t.refs > 1 ? 's' : '') + (isCurrent ? ' &#10003;' : '') + '</span>' +
+          '<span>' + t.label + '</span>' +
+          '<span style="color:#888;">' + t.price + '</span>' +
+          '</div>';
+      }).join('');
+
+      // Referred table
+      var referredHtml = '';
+      if (referred.length > 0) {
+        referredHtml = '<h3 style="font-size:0.95rem;margin:20px 0 8px;">People You've Referred</h3>' +
+          '<table class="referral-table"><thead><tr>' +
+          '<th>Name</th><th>Status</th><th>Joined</th>' +
+          '</tr></thead><tbody>' +
+          referred.map(function(r) {
+            var date = new Date(r.joinedAt).toLocaleDateString();
+            var status = r.active
+              ? '<span class="referral-badge-active">&#9679; Active</span>'
+              : '<span class="referral-badge-inactive">Inactive</span>';
+            return '<tr><td>' + escP(r.name) + '</td><td>' + status + '</td><td>' + date + '</td></tr>';
+          }).join('') +
+          '</tbody></table>';
+      }
+
+      // Metrics gate notice
+      var metricsNotice = !hasMetrics
+        ? '<div style="margin-bottom:16px;padding:12px 14px;background:#fff8f0;border:1px solid rgba(244,117,43,0.25);border-radius:8px;font-size:0.85rem;color:#7c4000;">&#128274; Referral discounts apply to your <strong>Metrics &amp; Leads</strong> subscription. <a href="#" onclick="switchTab('upgrade');return false;" style="color:#f4752b;font-weight:700;text-decoration:none;">Subscribe to Metrics &rarr;</a></div>'
+        : '';
+
+      el.innerHTML =
+        metricsNotice +
+        '<div class="tl-card">' +
+          '<h3 style="margin:0 0 4px;font-size:0.95rem;">Your Referral Link</h3>' +
+          '<p style="font-size:0.82rem;color:#666;margin:0 0 8px;">Share this link. When someone buys Metrics &amp; Leads through it, you earn a discount.</p>' +
+          '<div class="referral-link-box">' +
+            '<input type="text" id="refLinkInput" value="' + escP(link) + '" readonly onclick="this.select()" />' +
+            '<button class="referral-link-copy" onclick="copyReferralLink()">Copy</button>' +
+          '</div>' +
+          '<p style="font-size:0.78rem;color:#aaa;margin:0;">Your code: <strong>' + escP(code) + '</strong></p>' +
+        '</div>' +
+
+        '<div class="referral-progress">' +
+          '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;">' +
+            '<span style="font-size:0.88rem;font-weight:600;color:#333;">Your Progress</span>' +
+            '<span style="font-size:0.82rem;color:#888;">' + credits + ' active referral' + (credits !== 1 ? 's' : '') + '</span>' +
+          '</div>' +
+          '<div class="referral-progress-bar-wrap"><div class="referral-progress-bar" style="width:' + barPct + '%"></div></div>' +
+          (pct > 0
+            ? '<div class="referral-tier-label">' + (pct === 100 ? 'FREE &#127881;' : pct + '% off') + '</div>'
+            : '') +
+          (nextAt
+            ? '<p style="font-size:0.82rem;color:#666;text-align:center;margin:4px 0 0;">Next: ' + escP(nextLabel) + ' at ' + nextAt + ' referral' + (nextAt !== 1 ? 's' : '') + '</p>'
+            : '') +
+        '</div>' +
+
+        '<div class="tl-card">' +
+          '<h3 style="font-size:0.9rem;margin:0 0 10px;">Discount Tiers</h3>' +
+          tiersHtml +
+        '</div>' +
+
+        referredHtml;
+    }
+
+    function copyReferralLink() {
+      var input = document.getElementById('refLinkInput');
+      if (!input) return;
+      try {
+        input.select();
+        document.execCommand('copy');
+        // Brief visual feedback
+        var btn = input.parentNode.querySelector('.referral-link-copy');
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = 'Copy'; }, 1800); }
+      } catch(e) {}
     }
 
     // ── Upgrade tab ────────────────────────────────────────────────

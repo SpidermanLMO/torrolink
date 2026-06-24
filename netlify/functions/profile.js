@@ -12,6 +12,7 @@ const supabase = createClient(
 );
 
 exports.handler = async (event) => {
+  try {
   const handle = event.path.replace(/^\/p\//, "").split("/")[0].toLowerCase();
   if (!handle) return { statusCode: 302, headers: { Location: "/" } };
 
@@ -66,6 +67,39 @@ exports.handler = async (event) => {
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" },
     body: renderProfile(profile, reviews || [], photos || [], documents || []),
   };
+  } catch (err) {
+    console.error("[profile] unhandled error:", err && err.message ? err.message : err);
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+      body: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Error — TorroLink</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0f6b6b 0%,#1a2e4a 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{background:#fff;border-radius:24px;padding:48px 36px;max-width:420px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+    .icon{font-size:3rem;margin-bottom:16px;}
+    h1{font-size:1.5rem;font-weight:800;color:#1a1a2e;margin-bottom:10px;}
+    p{color:#666;font-size:0.95rem;line-height:1.5;margin-bottom:28px;}
+    .btn{display:inline-block;background:#0f6b6b;color:#fff;font-weight:700;font-size:0.95rem;padding:13px 28px;border-radius:50px;text-decoration:none;}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">&#9888;&#65039;</div>
+    <h1>Something went wrong</h1>
+    <p>This profile couldn't load right now. Please try again in a moment.</p>
+    <a href="https://torrolink.com" class="btn">Go to TorroLink</a>
+  </div>
+</body>
+</html>`,
+    };
+  }
 };
 
 // ── THEME ENGINE ───────────────────────────────────────────────────────────────
@@ -1121,6 +1155,40 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
         });
       }
     }
+
+    // ── ACTION TRACKING ──────────────────────────────────────────────────────
+    (function() {
+      var _pid = '${escJs(p.id || "")}';
+      if (!_pid) return;
+      function trackAction(type, target) {
+        try {
+          fetch('/track-action', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ profileId: _pid, type: type, target: target || '' }),
+            keepalive: true
+          });
+        } catch(_) {}
+      }
+      // Phone links
+      document.querySelectorAll('a[href^="tel:"]').forEach(function(el) {
+        el.addEventListener('click', function() { trackAction('phone_tap', el.getAttribute('href')); });
+      });
+      // Email links
+      document.querySelectorAll('a[href^="mailto:"]').forEach(function(el) {
+        el.addEventListener('click', function() { trackAction('email_tap', el.getAttribute('href')); });
+      });
+      // Save Contact button
+      document.querySelectorAll('a[href*="vcard"]').forEach(function(el) {
+        el.addEventListener('click', function() { trackAction('save_contact', ''); });
+      });
+      // External links (skip lead form and lightbox internals)
+      document.querySelectorAll('a[href^="http"]').forEach(function(el) {
+        if (!el.closest('#leadForm') && !el.closest('.tl-lightbox')) {
+          el.addEventListener('click', function() { trackAction('link_tap', el.getAttribute('href')); });
+        }
+      });
+    })();
   </script>
 </body>
 </html>`;

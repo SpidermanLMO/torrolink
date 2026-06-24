@@ -10,7 +10,7 @@ exports.handler = async (event) => {
   const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
   try {
-    const { plan, businessName, customerEmail, addMetrics } = JSON.parse(event.body || "{}");
+    const { plan, businessName, customerEmail, addMetrics, referredBy } = JSON.parse(event.body || "{}");
 
     // ── PRICE MAP ─────────────────────────────────────
     const prices = {
@@ -43,7 +43,7 @@ exports.handler = async (event) => {
       success_url: `${process.env.DEPLOY_URL || "https://torrolink.com"}/success?session_id={CHECKOUT_SESSION_ID}&plan=${plan}`,
       cancel_url: `${process.env.DEPLOY_URL || "https://torrolink.com"}/#pricing`,
       customer_email: customerEmail || undefined,
-      metadata: { plan, businessName: businessName || "", addMetrics: addMetrics ? "true" : "false" },
+      metadata: { plan, businessName: businessName || "", addMetrics: addMetrics ? "true" : "false", referredBy: referredBy || "" },
     };
 
     const session = await stripe.checkout.sessions.create(sessionConfig);

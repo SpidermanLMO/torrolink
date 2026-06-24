@@ -245,6 +245,20 @@ function buildDashboardHtml({ handle, businessName, ownerEmail, profileId, hasMe
         </div>
       </div>
 
+
+      <!-- PROFILE ACTIONS SECTION -->
+      <div class="tl-card" id="actionsCard" style="display:none;">
+        <h2 style="margin-bottom:16px;">Profile Engagement</h2>
+        <p style="font-size:0.83rem;color:#666;margin:0 0 16px;">Tracks taps and interactions from people who viewed your profile page.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;" id="actionStatGrid">
+          <div class="no-data">Loading…</div>
+        </div>
+        <div style="margin-top:20px;">
+          <h3 style="font-size:0.9rem;margin:0 0 12px;color:#444;">Recent Activity (last 30 days)</h3>
+          <div id="actionBreakdown" class="no-data">Loading…</div>
+        </div>
+      </div>
+
       <!-- LEADS TABLE -->
       <div class="tl-card">
         <div class="section-head">
@@ -468,6 +482,7 @@ function buildDashboardHtml({ handle, businessName, ownerEmail, profileId, hasMe
 
       // ── Leads table ───────────────────────────
       renderLeads(allLeads);
+      loadActions();
     }
 
     function renderBreakdown(elId, counts, total) {
@@ -511,6 +526,63 @@ function buildDashboardHtml({ handle, businessName, ownerEmail, profileId, hasMe
         '<table class="leads-table"><thead><tr>' +
           '<th>When</th><th>Name</th><th>Contact</th><th>Message</th>' +
         '</tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+
+
+    // ── Profile Actions ───────────────────────────────────────────
+    async function loadActions() {
+      const { data, error } = await _supabase
+        .from('profile_actions')
+        .select('action_type, occurred_at')
+        .eq('profile_id', PROFILE_ID)
+        .gte('occurred_at', ts(30))
+        .order('occurred_at', { ascending: false });
+
+      if (error || !data || !data.length) return;
+
+      document.getElementById('actionsCard').style.display = '';
+
+      const labels = {
+        phone_tap:    '📞 Phone taps',
+        email_tap:    '✉️  Email taps',
+        link_tap:     '🔗 Link clicks',
+        save_contact: '💾 Save contact',
+        form_submit:  '📋 Form submits',
+      };
+
+      // Count by type
+      const counts = {};
+      data.forEach(function(a) { counts[a.action_type] = (counts[a.action_type] || 0) + 1; });
+
+      // Stat grid
+      const grid = document.getElementById('actionStatGrid');
+      grid.innerHTML = Object.entries(counts)
+        .sort(function(a, b) { return b[1] - a[1]; })
+        .map(function(pair) {
+          var type = pair[0], count = pair[1];
+          return '<div style="background:#f8fafa;border-radius:10px;padding:14px;text-align:center;">' +
+            '<div style="font-size:1.5rem;font-weight:800;color:#0f6b6b;">' + count + '</div>' +
+            '<div style="font-size:0.78rem;color:#666;margin-top:3px;">' + (labels[type] || type) + '</div>' +
+            '</div>';
+        }).join('');
+
+      // Breakdown bar chart by type
+      var total = data.length;
+      var el = document.getElementById('actionBreakdown');
+      if (!total) { el.innerHTML = '<div class="no-data">No engagement yet</div>'; return; }
+      el.innerHTML = Object.entries(counts)
+        .sort(function(a, b) { return b[1] - a[1]; })
+        .map(function(pair) {
+          var type = pair[0], count = pair[1];
+          var pct = Math.round(count / total * 100);
+          return '<div class="breakdown-row">' +
+            '<div class="breakdown-meta">' +
+              '<span style="font-weight:600;">' + (labels[type] || type) + '</span>' +
+              '<span style="color:#999;">' + count + ' (' + pct + '%)</span>' +
+            '</div>' +
+            '<div class="breakdown-bar-bg"><div class="breakdown-bar-fill" style="width:' + pct + '%;"></div></div>' +
+          '</div>';
+        }).join('');
     }
 
     function exportLeads() {

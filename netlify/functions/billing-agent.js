@@ -17,9 +17,14 @@ exports.handler = async (event) => {
   const sig = event.headers["stripe-signature"];
 
   let stripeEvent;
+  // Netlify may base64-encode the raw body; decode it first so the
+  // HMAC is computed against the exact bytes Stripe signed.
+  const rawBody = event.isBase64Encoded
+    ? Buffer.from(event.body, "base64").toString("utf8")
+    : event.body;
   try {
     stripeEvent = stripe.webhooks.constructEvent(
-      event.body,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
@@ -88,7 +93,7 @@ exports.handler = async (event) => {
               <h2 style="color:#e06420;">Payment Issue</h2>
               <p>Hi ${customer.name?.split(" ")[0] || "there"}, we were unable to process your payment of <strong>$${(data.amount_due / 100).toFixed(2)}</strong>.</p>
               <p>Please update your payment method to keep your QR code and services active.</p>
-              <a href="https://torrolink.com/billing" style="background:#f4752b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">Update Payment Method</a>
+              <a href="https://torrolink.com/portal" style="background:#f4752b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">Update Payment Method</a>
               <p style="color:#888;font-size:0.85rem;margin-top:24px;">Torrolink — A PTorro Holdings Company</p>
             </div>
           `,

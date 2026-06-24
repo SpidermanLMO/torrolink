@@ -6,7 +6,7 @@ Laign (laign@ptorro.com — business email, use this for everything PTorro/Torro
 ## Active Projects
 | Name | What | Status |
 |------|------|--------|
-| **TorroLink** | QR code profile platform for SMBs | Live at torrolink.com, pre-launch |
+| **TorroLink** | QR code profile platform for SMBs | 🟢 LIVE at torrolink.com (launched 2026-06-21) |
 → Details: memory/projects/torrolink.md
 
 ## Key Tools & Shortcuts
@@ -23,7 +23,7 @@ Laign (laign@ptorro.com — business email, use this for everything PTorro/Torro
 |-------|------|
 | Hosting | Netlify (serverless functions in `netlify/functions/`) |
 | Auth + DB | Supabase (project ID: cayymmknkjpiybssiltu) |
-| Payments | Stripe (currently on TEST keys — needs swap to live before launch) |
+| Payments | Stripe (LIVE keys active as of 2026-06-21) |
 | Email | Resend (domain: torrolink.com verified) — orders@, billing@, leads@, hello@ all active |
 | Repo | C:\Laign\Torrolink + GitHub + Google Drive backup |
 
@@ -34,7 +34,7 @@ Laign (laign@ptorro.com — business email, use this for everything PTorro/Torro
 | `SUPABASE_ANON_KEY` | Supabase client-side key (safe in browser) |
 | `SUPABASE_SERVICE_KEY` | Supabase service role key (server-side DB queries only) |
 | `RESEND_API_KEY` | Resend email API |
-| `STRIPE_SECRET_KEY` | Stripe secret (currently TEST — swap to live before launch) |
+| `STRIPE_SECRET_KEY` | Stripe secret (LIVE — sk_live_ active) |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
 | `OWNER_EMAIL` | laign@ptorro.com — all owner notifications route here |
 | `ADMIN_PASSWORD` | Admin dashboard password |
@@ -45,10 +45,11 @@ Laign (laign@ptorro.com — business email, use this for everything PTorro/Torro
 
 ## SESSION START — Read These Files Every Session
 Before doing anything, read these files in order:
-1. `BRUCE.md` — master agent overview, current priorities, all domain status
-2. `HAWK.md` — Waypoint Roofing field agent, referral partner system
-3. `memory/roofing-tracker.md` — visit log, pipeline, referral partners
-4. `memory/projects/torrolink.md` — TorroLink full project context
+1. `TASKS.md` — current task list, what's active, what's waiting, what's done
+2. `BRUCE.md` — master agent overview, current priorities, all domain status
+3. `HAWK.md` — Waypoint Roofing field agent, referral partner system
+4. `memory/roofing-tracker.md` — visit log, pipeline, referral partners
+5. `memory/projects/torrolink.md` — TorroLink full project context
 
 ---
 

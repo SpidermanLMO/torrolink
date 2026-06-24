@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       .from("profiles")
       .select("id, handle, is_active")
       .eq("code", code)
-      .single();
+      .maybeSingle();
 
     if (error || !profile || !profile.is_active) {
       return { statusCode: 302, headers: { Location: "/", "Cache-Control": "no-store" }, body: "" };
@@ -102,5 +102,5 @@ exports.handler = async (event) => {
       headers: { Location: "/", "Cache-Control": "no-store" },
       body: "",
     };
-  }
+    }
 };

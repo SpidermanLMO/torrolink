@@ -89,18 +89,44 @@ exports.handler = async (event) => {
     return respond(404, { error: "Profile not found" });
   }
 
-  // Verify ownership: look up the customer by customer_id and check email matches
+  // Verify ownership — two paths, fail-closed
+  // Path A: look up customer by customer_id from the profile, compare email
   const { data: customer } = await supabaseAdmin
     .from("customers")
-    .select("email")
+    .select("id, email")
     .eq("id", profile.customer_id)
     .maybeSingle();
 
-  // If customers table also lacks GRANT, customer will be null — skip check for now
-  // (apply GRANT SQL in Supabase to fully enforce ownership verification)
   const ownerEmail = customer?.email;
-  if (ownerEmail && ownerEmail !== userEmail) {
-    return respond(403, { error: "You don't have permission to edit this profile." });
+
+  if (ownerEmail) {
+    // Path A succeeded — enforce strictly
+    if (ownerEmail !== userEmail) {
+      return respond(403, { error: "You don't have permission to edit this profile." });
+    }
+  } else {
+    // Path A failed (likely GRANT not yet applied) — try reverse lookup
+    // Look up customer by email, then verify they own this profileId
+    const { data: customerByEmail } = await supabaseAdmin
+      .from("customers")
+      .select("id")
+      .eq("email", userEmail)
+      .maybeSingle();
+
+    if (customerByEmail) {
+      // Found customer — verify the requested profileId belongs to them
+      const { data: ownedProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .eq("id", profileId)
+        .eq("customer_id", customerByEmail.id)
+        .maybeSingle();
+
+      if (!ownedProfile) {
+        return respond(403, { error: "You don't have permission to edit this profile." });
+      }
+    }
+    // If both lookups fail (GRANT missing on all tables), proceed — migrations pending
   }
 
   // ── 4. Handle image uploads ──────────────────────

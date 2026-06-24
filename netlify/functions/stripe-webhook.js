@@ -10,6 +10,7 @@ const { createClient } = require("@supabase/supabase-js");
 const { Resend }        = require("resend");
 const QRCode            = require("qrcode");
 const stripe            = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const crypto            = require("crypto");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -114,6 +115,7 @@ exports.handler = async (event) => {
   const plan          = session.metadata?.plan          || "qr-code";
   const businessName  = session.metadata?.businessName  || customerName || "My Business";
   const addMetrics    = session.metadata?.addMetrics === "true";
+  const referredBy    = (session.metadata?.referredBy || "").trim() || null;
   const stripeCustomerId = session.customer || null;
 
   // Classify the purchase type
@@ -148,6 +150,7 @@ exports.handler = async (event) => {
           stripe_customer_id: stripeCustomerId,
           plan,
           metrics_active:     isMetricsUpgrade,
+          referred_by:        referredBy || null,
         })
         .select("id")
         .single();
@@ -187,6 +190,16 @@ exports.handler = async (event) => {
   </div>
 </div>`,
       });
+      // Credit referrer if this customer was referred
+      const { data: thisCustomer } = await supabase
+        .from("customers")
+        .select("referred_by")
+        .eq("id", customerId)
+        .maybeSingle();
+      if (thisCustomer?.referred_by) {
+        await creditReferrer(thisCustomer.referred_by).catch(e => console.error("creditReferrer error:", e.message));
+      }
+
       return { statusCode: 200, body: JSON.stringify({ received: true }) };
     }
 
@@ -408,6 +421,18 @@ async function handleSubscriptionDeleted(subscription) {
         html:    `<p><strong>${customer.email}</strong> cancelled their Metrics &amp; Leads subscription.</p>`,
       }).catch(() => {});
     }
+    // De-credit referrer if this customer was referred
+    if (customer) {
+      const { data: fullCustomer } = await supabase
+        .from("customers")
+        .select("referred_by")
+        .eq("id", customer.id)
+        .maybeSingle();
+      if (fullCustomer?.referred_by) {
+        await decreditReferrer(fullCustomer.referred_by).catch(e => console.error("decreditReferrer error:", e.message));
+      }
+    }
+
     return { statusCode: 200, body: JSON.stringify({ received: true }) };
   } catch (err) {
     console.error("handleSubscriptionDeleted error:", err);
@@ -499,13 +524,22 @@ async function handlePaymentSucceeded(invoice) {
 async function handleSubscriptionCreated(subscription) {
   try {
     const stripeCustomerId = subscription.customer;
+    const subscriptionId   = subscription.id;
     const { data: customer } = await supabase
       .from("customers")
       .select("id, email, name")
       .eq("stripe_customer_id", stripeCustomerId)
       .maybeSingle();
 
-    const email = customer?.email || "unknown";
+    if (customer) {
+      // Save subscription ID so we can apply referral discounts later
+      await supabase
+        .from("customers")
+        .update({ stripe_subscription_id: subscriptionId })
+        .eq("id", customer.id);
+    }
+
+    const email  = customer?.email || "unknown";
     const amount = (subscription.items?.data?.[0]?.price?.unit_amount / 100 || 0).toFixed(2);
     await resend.emails.send({
       from:    "Torrolink Alerts <orders@torrolink.com>",
@@ -617,4 +651,113 @@ function escHtml(str) {
   return String(str || "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;")
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+// ── REFERRAL PROGRAM HELPERS ─────────────────────────────────────
+
+function generateReferralCode() {
+  return crypto.randomBytes(4).toString("hex").toUpperCase();
+}
+
+async function ensureReferralCode(customerId) {
+  for (let i = 0; i < 10; i++) {
+    const candidate = generateReferralCode();
+    const { data: clash } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("referral_code", candidate)
+      .maybeSingle();
+    if (!clash) {
+      await supabase
+        .from("customers")
+        .update({ referral_code: candidate })
+        .eq("id", customerId);
+      return candidate;
+    }
+  }
+  return null;
+}
+
+// Discount tiers: 1 ref=20%, 2=40%, 3=60%, 4=80%, 5+=100%
+function discountPct(credits) {
+  if (credits <= 0) return 0;
+  if (credits === 1) return 20;
+  if (credits === 2) return 40;
+  if (credits === 3) return 60;
+  if (credits === 4) return 80;
+  return 100;
+}
+
+const COUPON_IDS = {
+  20: "TORROLINK-REFER-20",
+  40: "TORROLINK-REFER-40",
+  60: "TORROLINK-REFER-60",
+  80: "TORROLINK-REFER-80",
+  100: "TORROLINK-REFER-100",
+};
+
+async function ensureCoupon(pct, couponId) {
+  try {
+    await stripe.coupons.retrieve(couponId);
+  } catch {
+    await stripe.coupons.create({
+      id: couponId,
+      percent_off: pct,
+      duration: "forever",
+      name: `Torrolink Referral Reward — ${pct}% off`,
+    });
+  }
+}
+
+async function applyReferralDiscount(subscriptionId, credits) {
+  if (!subscriptionId) return;
+  const pct = discountPct(credits);
+  try {
+    if (pct === 0) {
+      await stripe.subscriptions.deleteDiscount(subscriptionId).catch(() => {});
+      return;
+    }
+    const couponId = COUPON_IDS[pct];
+    if (!couponId) return;
+    await ensureCoupon(pct, couponId);
+    await stripe.subscriptions.update(subscriptionId, { coupon: couponId });
+  } catch (e) {
+    console.error("applyReferralDiscount error:", e.message);
+  }
+}
+
+async function creditReferrer(referralCode) {
+  if (!referralCode) return;
+  const { data: referrer } = await supabase
+    .from("customers")
+    .select("id, referral_credits, stripe_subscription_id")
+    .eq("referral_code", referralCode)
+    .maybeSingle();
+  if (!referrer) return;
+
+  const newCredits = (referrer.referral_credits || 0) + 1;
+  await supabase
+    .from("customers")
+    .update({ referral_credits: newCredits })
+    .eq("id", referrer.id);
+
+  await applyReferralDiscount(referrer.stripe_subscription_id, newCredits);
+}
+
+async function decreditReferrer(referredByCode) {
+  if (!referredByCode) return;
+  const { data: referrer } = await supabase
+    .from("customers")
+    .select("id, referral_credits, stripe_subscription_id")
+    .eq("referral_code", referredByCode)
+    .maybeSingle();
+  if (!referrer) return;
+
+  const newCredits = Math.max(0, (referrer.referral_credits || 0) - 1);
+  await supabase
+    .from("customers")
+    .update({ referral_credits: newCredits })
+    .eq("id", referrer.id);
+
+  await applyReferralDiscount(referrer.stripe_subscription_id, newCredits);
 }
