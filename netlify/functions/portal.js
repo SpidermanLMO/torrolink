@@ -1104,29 +1104,34 @@ exports.handler = async () => {
       // Build pattern swatches with defaults right away
       buildPatternGrid();
 
-      // Detect recovery link in hash BEFORE getSession processes it
-      var _hashParams = new URLSearchParams(window.location.hash.slice(1));
-      var _isRecovery = _hashParams.get('type') === 'recovery';
+      // Detect recovery flow from URL — Supabase uses PKCE by default:
+      // implicit flow → #access_token=...&type=recovery (hash)
+      // PKCE flow    → ?code=... (query param, type unknown until event fires)
+      var _hashParams  = new URLSearchParams(window.location.hash.slice(1));
+      var _isRecovery  = _hashParams.get('type') === 'recovery'; // implicit flow only
+      var _hasPkceCode = new URLSearchParams(window.location.search).has('code'); // PKCE
 
-      // Register listener FIRST — getSession() fires events synchronously on next tick
+      // Register listener FIRST — before getSession() triggers code exchange
       _supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
-          // Show new-password form with email + confirm field
+          _isRecovery = true; // block SIGNED_IN (fires after this) from sending to dashboard
           var _recEmail = session && session.user ? session.user.email : '';
           document.getElementById('loginScreen').style.display = 'block';
-          document.getElementById('loginMsg').innerHTML =
-            '<div class="tl-msg success" style="margin-bottom:16px;">Set a new password for <strong>' + escHtml(_recEmail) + '</strong></div>';
+          document.getElementById('loginMsg').innerHTML = ''; // clear sign-in errors
           document.getElementById('panelSignIn').style.display = 'none';
           document.getElementById('panelCreate').style.display = 'none';
+          // Email + form + status msg all inside panelReset so they stay visible
           document.getElementById('panelReset').innerHTML =
+            '<div class="tl-msg success" style="margin-bottom:16px;">Setting a new password for <strong>' + escHtml(_recEmail) + '</strong></div>' +
             '<div class="tl-field"><label>New password</label>' +
             '<input type="password" id="newPassword" placeholder="At least 8 characters" autocomplete="new-password" /></div>' +
             '<div class="tl-field"><label>Confirm new password</label>' +
             '<input type="password" id="newPasswordConfirm" placeholder="Type it again" autocomplete="new-password" /></div>' +
-            '<button class="tl-btn tl-btn-full" onclick="updatePassword()">Set New Password</button>';
+            '<button class="tl-btn tl-btn-full" onclick="updatePassword()">Set New Password</button>' +
+            '<div id="resetMsg" style="margin-top:10px;"></div>';
           document.getElementById('panelReset').style.display = 'block';
-          _session = session; // store so updateUser works
-        } else if (event === 'SIGNED_IN' && session && !_isRecovery) {
+          _session = session;
+        } else if (event === 'SIGNED_IN' && session && !_isRecovery && !_hasPkceCode) {
           await onSignedIn(session);
         } else if (event === 'TOKEN_REFRESHED' && session) {
           _session = session;
@@ -1135,14 +1140,17 @@ exports.handler = async () => {
         }
       });
 
-      // Now call getSession — if recovery token in hash, skip onSignedIn
+      // getSession() triggers PKCE code exchange if ?code= is in URL
       const { data: { session } } = await _supabase.auth.getSession();
-      if (session && !_isRecovery) {
+      if (session && !_isRecovery && !_hasPkceCode) {
+        // Normal existing session — go straight to dashboard
         await onSignedIn(session);
-      } else if (!session && !_isRecovery) {
+      } else if (_hasPkceCode) {
+        // PKCE code in URL — PASSWORD_RECOVERY or SIGNED_IN event will handle UI
+        // Show login screen as placeholder; the event handler updates it
         document.getElementById('loginScreen').style.display = 'block';
-      } else if (_isRecovery) {
-        // loginScreen shown by PASSWORD_RECOVERY event above
+      } else {
+        // No session, or implicit recovery — show login screen
         document.getElementById('loginScreen').style.display = 'block';
       }
     })();
@@ -1270,7 +1278,7 @@ exports.handler = async () => {
     async function updatePassword() {
       var password  = document.getElementById('newPassword') ? document.getElementById('newPassword').value : '';
       var confirm   = document.getElementById('newPasswordConfirm') ? document.getElementById('newPasswordConfirm').value : password;
-      var msgEl     = document.getElementById('loginMsg');
+      var msgEl     = document.getElementById('resetMsg') || document.getElementById('loginMsg');
       if (!password || password.length < 8) {
         msgEl.innerHTML = '<div class="tl-msg error">Password must be at least 8 characters.</div>'; return;
       }

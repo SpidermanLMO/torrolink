@@ -28,7 +28,7 @@ echo Staging all changes...
 %GIT% add -A
 
 echo Committing...
-%GIT% commit -m "Fix: sign-in error visibility + password reset flow + admin session + PWA"
+%GIT% commit -m "Fix: password recovery PKCE v2 — block SIGNED_IN, fix msg visibility, resetMsg"
 
 echo Pushing...
 %GIT% push origin main
@@ -36,4 +36,4 @@ echo Pushing...
 echo.
 echo Done! Netlify deploying (2-3 min).
 echo.
-pause
+pau
