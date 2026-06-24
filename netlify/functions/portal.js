@@ -19,6 +19,9 @@ exports.handler = async () => {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0f6b6b" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.min.js"></script>
   <style>
@@ -325,7 +328,22 @@ exports.handler = async () => {
     <a href="/" class="logo">Torrolink</a>
     <span id="topbarHandle" style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin-left:auto;"></span>
     <a id="viewProfileBtn" href="#" target="_blank" rel="noopener" style="display:none;background:rgba(255,255,255,0.18);border:none;color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:8px;text-decoration:none;">&#128279; My Profile</a>
+    <button onclick="showChangePwModal()" id="changePwBtn" style="display:none;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);color:rgba(255,255,255,0.75);font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:6px;">&#128274; Password</button>
     <button onclick="signOut()" id="signOutBtn" style="display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:6px;">Sign out</button>
+  <!-- Change Password modal -->
+  <div id="changePwModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:14px;padding:32px 28px;max-width:380px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+      <h3 style="margin:0 0 6px;color:#0a4d4d;">Set a Password</h3>
+      <p style="margin:0 0 20px;font-size:0.88rem;color:#666;">Choose a password you'll use to sign in from now on.</p>
+      <div id="changePwMsg"></div>
+      <input type="password" id="changePwInput" placeholder="New password (8+ chars)" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;margin-bottom:10px;" />
+      <input type="password" id="changePwConfirm" placeholder="Confirm password" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:0.95rem;margin-bottom:16px;" />
+      <div style="display:flex;gap:10px;">
+        <button onclick="submitChangePassword()" style="flex:1;background:#0f6b6b;color:#fff;border:none;padding:11px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.95rem;">Set Password</button>
+        <button onclick="closeChangePwModal()" style="background:#f0f0f0;border:none;padding:11px 18px;border-radius:8px;cursor:pointer;font-weight:600;">Cancel</button>
+      </div>
+    </div>
+  </div>
   </div>
 
   <div class="tl-content">
@@ -1239,6 +1257,34 @@ exports.handler = async () => {
       }
     }
 
+    function showChangePwModal() {
+      document.getElementById('changePwMsg').innerHTML = '';
+      document.getElementById('changePwInput').value = '';
+      document.getElementById('changePwConfirm').value = '';
+      document.getElementById('changePwModal').style.display = 'flex';
+    }
+    function closeChangePwModal() {
+      document.getElementById('changePwModal').style.display = 'none';
+    }
+    async function submitChangePassword() {
+      var pw  = document.getElementById('changePwInput').value;
+      var pw2 = document.getElementById('changePwConfirm').value;
+      var msg = document.getElementById('changePwMsg');
+      if (!pw || pw.length < 8) {
+        msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Password must be at least 8 characters.</div>'; return;
+      }
+      if (pw !== pw2) {
+        msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Passwords don't match.</div>'; return;
+      }
+      msg.innerHTML = '<div class="tl-msg" style="margin-bottom:12px;">Saving…</div>';
+      var result = await _supabase.auth.updateUser({ password: pw });
+      if (result.error) {
+        msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">' + escHtml(result.error.message) + '</div>';
+      } else {
+        msg.innerHTML = '<div class="tl-msg success" style="margin-bottom:12px;">Password set! You're all set.</div>';
+        setTimeout(closeChangePwModal, 1400);
+      }
+    }
     async function signOut() {
       await _supabase.auth.signOut();
     }
@@ -1249,6 +1295,7 @@ exports.handler = async () => {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('editorScreen').style.display = 'block';
       document.getElementById('signOutBtn').style.display = 'inline-block';
+      document.getElementById('changePwBtn').style.display = 'inline-block';
 
       // Load profile for this customer email
       const email = session.user.email;
@@ -2319,6 +2366,13 @@ exports.handler = async () => {
       el.innerHTML = '<div class="tl-msg ' + type + '">' + text + '</div>';
       el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+// ── Service worker registration ─────────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function(){});
+      });
+    }
+
 // ── PWA install banner ──────────────────────────────────────────────────────
     (function(){
       var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;

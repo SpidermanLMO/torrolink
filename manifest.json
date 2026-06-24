@@ -1,0 +1,15 @@
+{
+  "name": "Torrolink Portal",
+  "short_name": "Torrolink",
+  "description": "Manage your QR code profile",
+  "start_url": "/portal",
+  "scope": "/portal",
+  "display": "standalone",
+  "background_color": "#0a4d4d",
+  "theme_color": "#0f6b6b",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
