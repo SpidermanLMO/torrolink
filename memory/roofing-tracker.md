@@ -1,5 +1,5 @@
 # Waypoint Roofing — Referral Partner Tracker
-_Updated: 2026-06-22_
+_Updated: 2026-06-23_
 
 **Brand:** Waypoint Roofing (PTorro Holdings LLC)
 **Focus:** Retail roofing — listing sellers, pre-closing buyers, insurance downgrades, uninsurable buyers, age-outs
@@ -22,6 +22,11 @@ _Updated: 2026-06-22_
 | 2026-06-22 | Saydi Vasquez De Tome | Farmers Insurance | Insurance agent | (512) 997-9750 | Pflugerville TX | 🔲 Not visited | |
 | 2026-06-22 | Robert Ndegwa | State Farm | Insurance agent | — | Austin / Manor / Pflugerville | 🔲 Not visited | Covers all of east Austin area |
 | 2026-06-22 | Pflugerville Insurance Ag | Independent | Insurance agency | (512) 447-7995 | 103 East Main, Pflugerville TX | 🔲 Not visited | Independent — more flexible for referral deals |
+| 2026-06-23 | David Simmons | State Farm | Insurance agent | (512) 837-8825 | 1011 Kramer Lane, Austin TX 78758 | 🔲 Not visited | Between Chinatown and the Domain — prime location. Homeowners focus, Manor Chamber of Commerce member. Top priority. |
+| 2026-06-23 | Cynthia Hill | Spyglass Realty | Individual agent | (512) 731-9304 | Austin TX 78759 (North Austin) | 🔲 Not visited | Platinum agent, 30 recent sales, 261 active showings — high volume = more clients who need roofs. Top priority. |
+| 2026-06-23 | Gail Huebel | eXp Realty | Individual agent | (512) 848-3477 | Austin TX 78759 (Domain area) | 🔲 Not visited | 10 active listings in 78758 Domain area — solid referral candidate. |
+| 2026-06-23 | Greg Pearson | State Farm | Insurance agent | (512) 451-0188 | 8705 Shoal Creek Blvd Suite 102, Austin TX 78757 | 🔲 Not visited | Near Hwy 183 and Mopac. 85+ years combined staff experience. Homeowners focus — strong ACV downgrade lead potential. |
+| 2026-06-23 | Mouin Atallah | Farmers Insurance | Insurance agent | (512) 254-0462 | 2120 W Braker Ln, Austin TX 78758 | 🔲 Not visited | Near Domain/Arboretum. Homeowners insurance focus. Drop-in friendly office location. |
 
 ---
 
