@@ -1641,10 +1641,10 @@ exports.handler = async () => {
         '<div class="partner-meta">' + escP(catLabel(p.category)) + (p.company ? ' · ' + escP(p.company) : '') + '</div>' +
         (contactHtml ? '<div class="partner-contact">' + contactHtml + '</div>' : '') +
         '<div class="partner-actions">' +
-          '<button class="p-btn p-btn-log" onclick="logReferral(\'' + p.id + '\')">+ Log Referral</button>' +
-          '<button class="p-btn p-btn-edit" onclick="editPartner(\'' + p.id + '\')">Edit</button>' +
-          (count > 0 ? '<button class="p-btn p-btn-edit" onclick="toggleLogs(\'' + p.id + '\')">History (' + count + ')</button>' : '') +
-          '<button class="p-btn p-btn-delete" onclick="deletePartner(\'' + p.id + '\')">Delete</button>' +
+          '<button class="p-btn p-btn-log" onclick="logReferral(&apos;' + p.id + '&apos;)">+ Log Referral</button>' +
+          '<button class="p-btn p-btn-edit" onclick="editPartner(&apos;' + p.id + '&apos;)">Edit</button>' +
+          (count > 0 ? '<button class="p-btn p-btn-edit" onclick="toggleLogs(&apos;' + p.id + '&apos;)">History (' + count + ')</button>' : '') +
+          '<button class="p-btn p-btn-delete" onclick="deletePartner(&apos;' + p.id + '&apos;)">Delete</button>' +
         '</div>' +
         (logsHtml ? '<div class="partner-logs" id="logs-' + p.id + '">' + logsHtml + '</div>' : '') +
         '</div>';
