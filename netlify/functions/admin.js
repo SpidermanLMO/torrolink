@@ -222,13 +222,21 @@ async function handleAction(event) {
           if (bcErr) return json(500, { error: bcErr.message });
           betaCustId = newBC.id;
         }
-        // Create profile
-        const bHandle = await _uniqueHandle(bBiz);
-        const bCode   = await _uniqueCode();
-        const { data: bProf, error: bpErr } = await supabaseAdmin.from("profiles")
-          .insert({ customer_id: betaCustId, handle: bHandle, code: bCode, business_name: bBiz, is_active: true, has_metrics: true })
-          .select("id, handle, code").single();
-        if (bpErr) return json(500, { error: bpErr.message });
+        // Create profile (idempotent — reuse if already created on a prior attempt)
+        let bProf;
+        const { data: existProf } = await supabaseAdmin.from("profiles")
+          .select("id, handle, code").eq("customer_id", betaCustId).maybeSingle();
+        if (existProf) {
+          bProf = existProf;
+        } else {
+          const bHandle = await _uniqueHandle(bBiz);
+          const bCode   = await _uniqueCode();
+          const { data: newBProf, error: bpErr } = await supabaseAdmin.from("profiles")
+            .insert({ customer_id: betaCustId, handle: bHandle, code: bCode, business_name: bBiz, is_active: true, has_metrics: true })
+            .select("id, handle, code").single();
+          if (bpErr) return json(500, { error: bpErr.message });
+          bProf = newBProf;
+        }
         const bQrUrl  = `${SITE}/q/${bProf.code}`;
         const bProfUrl = `${SITE}/p/${bProf.handle}`;
         // Generate QR image
