@@ -383,7 +383,6 @@ exports.handler = async () => {
         </button>
       </div>
 
-      <div id="loginMsg"></div>
 
       <!-- Sign In panel -->
       <div id="panelSignIn">
@@ -400,6 +399,7 @@ exports.handler = async () => {
         <p style="font-size:0.82rem;color:#999;margin-top:12px;text-align:center;">
           <a href="#" onclick="showResetForm(event)" style="color:#0f6b6b;">Forgot password?</a>
         </p>
+        <div id="loginMsg" style="margin-top:10px;"></div>
       </div>
 
       <!-- Create Account panel -->

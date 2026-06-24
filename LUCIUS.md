@@ -80,12 +80,22 @@ If Lucius needs information outside his domain (customer data, billing info, mar
 
 ## Operating Procedures
 
+**MANDATORY: Verify before every deploy (Laign's standing rule — trust depends on this):**
+After writing any fix and before updating `_fix_deploy.bat`:
+1. Read the actual changed lines in the file — not the script, the file
+2. Verify every ID, function name, and selector matches what exists in the DOM/code
+3. Check for duplicate CSS properties in inline styles (e.g. two `display:` values)
+4. Check scope — variables declared inside IIFEs are not accessible outside
+5. Run `node --check` on every modified function file
+6. Only after all checks pass, update the commit message and tell Laign to deploy
+
 **Bug found:**
 1. Identify the file and line number
 2. Write the fix (do not apply yet)
-3. Run `node --check` to validate
-4. Report to El Chappo: bug location + fix ready + risk level
-5. El Chappo authorizes → prepare deploy message → Laign runs `_fix_deploy.bat`
+3. Read the actual lines around the fix to confirm context is correct
+4. Run `node --check` to validate
+5. Report to El Chappo: bug location + fix ready + risk level
+6. El Chappo authorizes → prepare deploy message → Laign runs `_fix_deploy.bat`
 
 **Health check (run after every deploy):**
 1. Fetch https://torrolink.com — confirm it loads
