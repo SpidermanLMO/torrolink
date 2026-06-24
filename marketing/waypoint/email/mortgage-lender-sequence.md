@@ -15,7 +15,7 @@ STATUS: Draft — awaiting Laign approval
 
 Hi [First Name],
 
-My name is Laign Orros — I'm with Waypoint Roofing in [CITY].
+My name is Laign Orros — I'm with Waypoint Roofing in Dripping Springs.
 
 I know lenders sometimes hold up or condition a loan because of roof issues that need to be addressed before closing. When that happens, your client needs a roofer who can move quickly, document the work properly, and get things back on track.
 
@@ -25,7 +25,7 @@ Happy to be a resource you can call when a roof issue threatens a close.
 
 Laign Orros
 Waypoint Roofing
-[PHONE]
+732-503-5069
 laign@wproofs.com
 
 ---
@@ -46,14 +46,14 @@ Happy to connect if it would ever be useful.
 
 Laign Orros
 Waypoint Roofing
-[PHONE]
+732-503-5069
 
 ---
 
 ## DEPLOYMENT NOTES
 - Send Touch 1 Tuesday–Thursday, 9–11am
-- Personalize [First Name] and [CITY]
-- Confirm [PHONE] with Laign
+- Personalize [First Name] and Dripping Springs
+- Confirm 732-503-5069 with Laign
 - Touch 2 Day 7 only if no reply
 - If they reply → personal conversation, stop sequence
 - Emphasize speed and documentation — lenders care about both

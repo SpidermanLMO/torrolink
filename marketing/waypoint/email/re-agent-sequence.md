@@ -15,7 +15,7 @@ STATUS: Draft — awaiting Laign approval
 
 Hi [First Name],
 
-My name is Laign Orros — I'm with Waypoint Roofing here in [CITY].
+My name is Laign Orros — I'm with Waypoint Roofing here in Dripping Springs.
 
 I wanted to reach out because I work with a lot of homeowners going through real estate transactions — whether it's a pre-listing inspection, a buyer asking about roof condition, or a deal that almost fell through over a roof issue.
 
@@ -77,7 +77,7 @@ laign@wproofs.com
 
 ## DEPLOYMENT NOTES
 - Send Touch 1 Tuesday–Thursday, 8–10am
-- Personalize [First Name] and [CITY] — confirm city with Laign before sending
+- Personalize [First Name] and Dripping Springs — confirm city with Laign before sending
 - Phone confirmed: (737) 383-2250
 - Space: Touch 2 Day 5, Touch 3 Day 11 only if no reply
 - If they reply to any touch → move to personal conversation, stop sequence

@@ -15,7 +15,7 @@ STATUS: Draft — awaiting Laign approval
 
 Hi [First Name],
 
-My name is Laign Orros — I work in roofing with Waypoint Roofing here in [CITY].
+My name is Laign Orros — I work in roofing with Waypoint Roofing here in Dripping Springs.
 
 I specialize in insurance claims — hail damage, wind damage, storm damage. I know how to work through the process with homeowners so they're not left confused or underserved by their policy.
 
@@ -54,7 +54,7 @@ Waypoint Roofing
 
 ## DEPLOYMENT NOTES
 - Send Touch 1 Tuesday–Thursday, 9–11am
-- Personalize [First Name] and [CITY]
+- Personalize [First Name] and Dripping Springs
 - Confirm (737) 383-2250 with Laign
 - Touch 2 Day 6 only if no reply to Touch 1
 - If they reply → personal conversation, stop sequence
