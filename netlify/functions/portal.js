@@ -1318,7 +1318,7 @@ exports.handler = async () => {
         msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Password must be at least 8 characters.</div>'; return;
       }
       if (pw !== pw2) {
-        msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Passwords don't match.</div>'; return;
+        msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Passwords don\'t match.</div>'; return;
       }
       msg.innerHTML = '<div class="tl-msg" style="margin-bottom:12px;">Saving…</div>';
       var result = await _supabase.auth.updateUser({ password: pw });
