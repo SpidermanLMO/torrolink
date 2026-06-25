@@ -68,6 +68,10 @@ PTorro Holdings runs on a named-agent system. Each agent owns a domain.
 | **Vicki Vale** | Social & Content — TorroLink + Waypoint | VICKI_VALE.md |
 | **The Huntress** | Email & Outreach — TorroLink + Waypoint | THE_HUNTRESS.md |
 | **Peter Parker** | Web Research | PETER_PARKER.md |
+| **Duke** | Web Design Business — GM | DUKE.md |
+| **Beachhead** | Web Design — Field Sales | DUKE.md |
+| **Snake Eyes** | Web Design — Build & Deploy | DUKE.md |
+| **Mainframe** | Web Design — Tech & Fixes | DUKE.md |
 
 **To activate an agent:** Read their .md file and act within that agent's domain.
 
@@ -98,4 +102,4 @@ PTorro Holdings runs on a named-agent system. Each agent owns a domain.
 - Run `_fix_deploy.bat` to deploy (I run it, Claude updates the commit message first)
 - Netlify env vars hold all secrets — never hardcode keys in files
 - Full autonomous permission for code fixes during active sessions
-→ Full technical context: memory/context/tech-stack.md
+→ Full 

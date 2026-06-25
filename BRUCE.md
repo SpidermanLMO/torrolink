@@ -22,6 +22,7 @@ Bruce is the overseer. Every file, every system, every decision traces back here
 |--------|-------|--------|------|
 | TorroLink | El Chappo | 🟢 LIVE — torrolink.com, Stripe live, all systems go | EL_CHAPPO.md |
 | Roofing sales | Hawk | 🟡 Active — Day 1 outreach 2026-06-22 | HAWK.md · memory/roofing-tracker.md |
+| Web Design Business | Duke | 🟡 BUILDING — research complete, naming + templates next | DUKE.md |
 | Knowledge system | — | 🟢 Live | RAW.md · WIKI.md · INDEX.md |
 | TorroLink codebase | El Chappo | 🟢 Deployed — 31 functions, payment links, favicons, all healthy | memory/projects/torrolink.md |
 | Marketing | Nightwing + Vicki Vale + The Huntress | 🟢 30-day campaign live — Day 1 started 2026-06-21 | NIGHTWING.md |

@@ -346,7 +346,7 @@ exports.handler = async () => {
     <a href="/" class="logo">Torrolink</a>
     <span id="topbarHandle" style="color:rgba(255,255,255,0.6);font-size:0.85rem;margin-left:auto;"></span>
     <a id="viewProfileBtn" href="#" target="_blank" rel="noopener" style="display:none;background:rgba(255,255,255,0.18);border:none;color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:8px;text-decoration:none;">&#128279; My Profile</a>
-    <button onclick="showChangePwModal()" id="changePwBtn" style="display:none;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);color:rgba(255,255,255,0.75);font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:6px;">&#128274; Password</button>
+
     <button onclick="signOut()" id="signOutBtn" style="display:none;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;font-weight:600;font-size:0.82rem;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;margin-left:6px;">Sign out</button>
   <!-- Change Password modal -->
   <div id="changePwModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;">
@@ -564,6 +564,12 @@ exports.handler = async () => {
             <button class="add-link-btn" onclick="addCheckbox()">+ Add option</button>
           </div>
         </div>
+      </div>
+
+      <!-- Account settings (bottom of profile tab) -->
+      <div class="tl-card" style="margin-top:4px;">
+        <h2>Account</h2>
+        <button id="changePwBtn" onclick="showChangePwModal()" style="background:none;border:none;color:#0f6b6b;font-size:0.88rem;font-weight:600;cursor:pointer;padding:0;font-family:inherit;">&#128274; Change password</button>
       </div>
 
       <!-- LINKS & SOCIALS TAB -->
@@ -1339,7 +1345,7 @@ exports.handler = async () => {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('editorScreen').style.display = 'block';
       document.getElementById('signOutBtn').style.display = 'inline-block';
-      document.getElementById('changePwBtn').style.display = 'inline-block';
+      // changePwBtn is now inside Profile tab — always visible after sign-in
 
       // Load profile for this customer email
       const email = session.user.email;

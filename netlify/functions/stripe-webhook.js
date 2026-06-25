@@ -532,10 +532,10 @@ async function handleSubscriptionCreated(subscription) {
       .maybeSingle();
 
     if (customer) {
-      // Save subscription ID so we can apply referral discounts later
+      // Save subscription ID and ensure metrics_active is set
       await supabase
         .from("customers")
-        .update({ stripe_subscription_id: subscriptionId })
+        .update({ stripe_subscription_id: subscriptionId, metrics_active: true })
         .eq("id", customer.id);
     }
 
