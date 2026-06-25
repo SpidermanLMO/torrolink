@@ -146,7 +146,7 @@ async function handleAction(event) {
         const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
           type: "recovery",
           email: resetEmail,
-          options: { redirectTo: `${SITE}/portal` },
+          options: { redirectTo: `${SITE}/set-password` },
         });
         if (linkErr) return json(500, { error: linkErr.message });
         const resetLink = linkData?.properties?.action_link || linkData?.action_link;
@@ -250,7 +250,7 @@ async function handleAction(event) {
         const bQrB64 = bQrData.replace(/^data:image\/png;base64,/, "");
         // Generate account setup link (recovery link lets them set their own password)
         const { data: bLink } = await supabaseAdmin.auth.admin.generateLink({
-          type: "recovery", email: cleanEmail, options: { redirectTo: `${SITE}/portal` },
+          type: "recovery", email: cleanEmail, options: { redirectTo: `${SITE}/set-password` },
         });
         const setupLink = bLink?.properties?.action_link || bLink?.action_link || `${SITE}/portal`;
         // Welcome email with QR attached

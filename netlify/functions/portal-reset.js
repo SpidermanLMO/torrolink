@@ -38,7 +38,7 @@ exports.handler = async (event) => {
     const { data, error } = await supabase.auth.admin.generateLink({
       type: "recovery",
       email: email.trim().toLowerCase(),
-      options: { redirectTo: SITE + "/portal" },
+      options: { redirectTo: SITE + "/set-password" },
     });
 
     if (!error && data?.properties?.action_link) {

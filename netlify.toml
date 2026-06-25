@@ -76,6 +76,11 @@
   status = 200
 
 [[redirects]]
+  from = "/set-password"
+  to = "/.netlify/functions/set-password"
+  status = 200
+
+[[redirects]]
   from = "/portal-save"
   to = "/.netlify/functions/portal-save"
   status = 200
@@ -117,10 +122,4 @@
 
 [[redirects]]
   from = "/success"
-  to = "/success.html"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  to = "/s
