@@ -1283,7 +1283,7 @@ exports.handler = async () => {
         msgEl.innerHTML = '<div class="tl-msg error">Password must be at least 8 characters.</div>'; return;
       }
       if (password !== confirm) {
-        msgEl.innerHTML = '<div class="tl-msg error">Passwords don\'t match — please re-enter.</div>'; return;
+        msgEl.innerHTML = '<div class="tl-msg error">Passwords do not match — try again.</div>'; return;
       }
       msgEl.innerHTML = '<div class="tl-msg">Saving…</div>';
       const { error } = await _supabase.auth.updateUser({ password });
@@ -1318,14 +1318,14 @@ exports.handler = async () => {
         msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Password must be at least 8 characters.</div>'; return;
       }
       if (pw !== pw2) {
-        msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Passwords don\'t match.</div>'; return;
+        msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">Passwords do not match.</div>'; return;
       }
       msg.innerHTML = '<div class="tl-msg" style="margin-bottom:12px;">Saving…</div>';
       var result = await _supabase.auth.updateUser({ password: pw });
       if (result.error) {
         msg.innerHTML = '<div class="tl-msg error" style="margin-bottom:12px;">' + escHtml(result.error.message) + '</div>';
       } else {
-        msg.innerHTML = '<div class="tl-msg success" style="margin-bottom:12px;">Password set! You're all set.</div>';
+        msg.innerHTML = '<div class="tl-msg success" style="margin-bottom:12px;">Password set! You are all set.</div>';
         setTimeout(closeChangePwModal, 1400);
       }
     }
