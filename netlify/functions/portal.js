@@ -1410,6 +1410,11 @@ exports.handler = async () => {
       }
 
       // Content blocks (new) — falls back to old links array for backward compat
+      // Clear existing content blocks before repopulating — prevents infinite duplication
+      // (populateEditor can be called multiple times; without this, blocks multiply on every render)
+      // Clear contentList before repopulating (prevents exponential duplication on re-render)
+      var _cbContainer = document.getElementById('contentList');
+      if (_cbContainer) _cbContainer.innerHTML = '';
       var cbArr = (Array.isArray(p.content_blocks) && p.content_blocks.length > 0)
         ? p.content_blocks
         : (Array.isArray(p.links) ? p.links : []).map(function(l){
@@ -1443,6 +1448,7 @@ exports.handler = async () => {
       document.getElementById('leadHasTextbox').checked  = !!p.lead_form_has_textbox;
       document.getElementById('leadFormConfig').style.display = leadEnabled ? 'block' : 'none';
       const checkboxes = Array.isArray(p.lead_form_checkboxes) ? p.lead_form_checkboxes : [];
+      document.getElementById('checkboxList').innerHTML = ''; // clear before repopulate (prevents infinite repeat bug)
       checkboxes.forEach(opt => addCheckbox(opt));
       // Show upgrade notice or enable toggle based on plan
       if (leadCard) {
@@ -1466,7 +1472,13 @@ exports.handler = async () => {
 
       // QR tab
       _profileId   = p.id || null;
-      _qrTargetUrl = window.location.origin + '/q/' + p.code;
+      // Guard: if p.code is missing the QR would encode '/q/null' → scans to homepage
+      if (!p.code) {
+        console.warn('[portal] Profile missing QR code — contact support');
+        _qrTargetUrl = window.location.origin + '/p/' + p.handle; // fallback: link direct to profile
+      } else {
+        _qrTargetUrl = window.location.origin + '/q/' + p.code;
+      }
       _qrLogoUrl   = p.logo_url || null;
       renderQRCode();
       const profileUrl = window.location.origin + '/p/' + p.handle;
@@ -1807,6 +1819,13 @@ exports.handler = async () => {
 
     async function savePartnerModal() {
       if (!_session || !_profile) return;
+      // ── Prevent double-tap duplicate ──────────────────────────────
+      var _saveBtn = document.querySelector('#partnerModalOverlay .p-btn-log');
+      if (_saveBtn && _saveBtn.disabled) return;
+      if (_saveBtn) { _saveBtn.disabled = true; _saveBtn.textContent = '⏳ Saving…'; }
+      var _resetSaveBtn = function() {
+        if (_saveBtn) { _saveBtn.disabled = false; _saveBtn.textContent = 'Save'; }
+      };
       var partnerId = document.getElementById('pmPartnerId').value;
       var name      = document.getElementById('pmName').value.trim();
       if (!name) { alert('Name is required.'); return; }
@@ -1844,9 +1863,11 @@ exports.handler = async () => {
         } else {
           _partners.push(data.partner);
         }
+        _resetSaveBtn();
         closePartnerModal();
         renderPartnerGrid();
       } catch(e) {
+        _resetSaveBtn();
         alert('Network error. Please try again.');
       }
     }

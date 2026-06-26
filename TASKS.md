@@ -12,10 +12,10 @@ _Updated: 2026-06-26 by Bruce (morning auto-refresh)_
 
 ## 🟡 Up Next — PTorro Digital
 
-- [ ] **Beachhead: Walk FM 1825 corridor, Pflugerville TX 78660** — confirm 5 businesses with no/bad websites. Note business name, address, vertical. Report back so Snake Eyes can build.
-- [ ] **Snake Eyes: Mock-build 5 sites** — once Beachhead has the target list. Use trades or services template (both built + confirmed in repo).
+- [ ] **DEPLOY PITCH SITES** — Run `ptorro-digital/deploy-pitch-sites.bat`. Needs Netlify token from app.netlify.com/user/applications. Takes 2 min. Then run `_fix_deploy.bat` to deploy pitch-lead.js (email handler).
+- [ ] **Beachhead: Go pitch the 8 targets** — sites are live, pitch rundown at `ptorro-digital/pitch-rundown.html`. Open it on phone/tablet before you walk in.
 - [ ] **Create Stripe products for PTorro Digital tiers** — Launch ($529.28 one-time), Growth ($749 one-time), Maintenance ($59/mo or $499/yr)
-- [ ] **Beachhead pitches + closes** — laptop/tablet in hand, site already built
+- [ ] **After first close** — update pitch site: swap `.netlify.app` domain to client's real `.com`, update OWNER_EMAIL in pitch-lead.js to client's actual email
 
 ---
 
@@ -57,6 +57,11 @@ _Updated: 2026-06-26 by Bruce (morning auto-refresh)_
 - [x] Scarlett research — Pflugerville TX FM 1825 corridor recommended as first target
 - [x] web-design-tracker.md created
 - [x] Daily TASKS.md auto-refresh scheduled — runs every morning at 7am
+- [x] Scarlett — 100-business target list → Excel (PTorro_Digital_Target_List.xlsx) ✅
+- [x] Snake Eyes — 8 custom pitch sites built (all verified no-website targets) ✅
+- [x] Mainframe — pitch-lead.js email function built (owner notification + customer auto-reply) ✅
+- [x] Supabase pitch_pageviews table created — visitor tracking live ✅
+- [x] 8 Netlify sites created with reserved URLs (ready for deploy-pitch-sites.bat) ✅
 
 ---
 
@@ -78,9 +83,10 @@ _Quick health check_
 - Open bugs: none known
 
 ## PTorro Digital Status
-- Phase: Phase 2 — First 5 Targets (Foundation complete)
-- Templates built: ✅ Trades + Services both confirmed in repo
-- Clients: 0 — awaiting first pitch
+- Phase: Phase 2 — Ready to Pitch (8 custom sites built, deploy pending)
+- 8 pitch sites: built ✅ · Netlify sites reserved ✅ · Deploy = run deploy-pitch-sites.bat
+- Pitch rundown: `ptorro-digital/pitch-rundown.html` — open on phone before walking in
+- Clients: 0 — first pitch this week
 
 ## Waypoint Roofing Status
 - Outreach day: Day 5 (started 2026-06-22)

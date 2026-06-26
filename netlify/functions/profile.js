@@ -188,8 +188,11 @@ function getThemeCSS(theme = {}, backgroundImage = null) {
 
   };
 
-  const headerBg = backgroundImage
-    ? `background-image: url('${escHtml(backgroundImage)}'); background-size: cover; background-position: center; background-repeat: no-repeat;`
+  // Only allow https:// URLs as background images — base64 data: URLs would make the HTML
+  // response 6MB+ and crash with Netlify's ResponseSizeTooLarge limit (6291556 bytes).
+  const safeBgImage = backgroundImage && /^https?:\/\//i.test(backgroundImage) ? backgroundImage : null;
+  const headerBg = safeBgImage
+    ? `background-image: url('${escHtml(safeBgImage)}'); background-size: cover; background-position: center; background-repeat: no-repeat;`
     : (patterns[pattern] || patterns.solid);
 
 

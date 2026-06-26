@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Allison Electric — Hutto, TX</title>
+<meta name="description" content="Allison Electric — Residential & Commercial · Honest Pricing · Locally Owned. Call (512) 848-3975."/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2e;background:#fff}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+.nav{position:fixed;top:0;width:100%;z-index:1000;background:rgba(10,10,30,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{color:#fff;font-weight:800;font-size:1.1rem;letter-spacing:-.3px}
+.nav-logo span{color:#FDD835;font-size:.75rem;font-weight:500;display:block;margin-top:-2px;opacity:.8}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none}
+.nav-links a{color:rgba(255,255,255,.82);padding:6px 12px;border-radius:6px;font-size:.88rem;font-weight:500;transition:all .2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.1)}
+.nav-links .nav-call{background:#FDD835;color:#fff;padding:8px 16px;border-radius:7px;font-weight:700;font-size:.88rem}
+.nav-links .nav-call:hover{opacity:.9;background:#FDD835}
+.ham{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px}
+.ham span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;transition:all .3s}
+.ham.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.ham.open span:nth-child(2){opacity:0}
+.ham.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* HERO */
+.hero{min-height:100vh;background:linear-gradient(to bottom, rgba(0,0,0,.52) 0%, rgba(0,0,0,.72) 100%),url('https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;background-color:#0a1628;display:flex;align-items:center;padding:100px 24px 60px;position:relative;overflow:hidden}
+
+.hero-shape{position:absolute;right:-10%;top:10%;width:500px;height:500px;background:rgba(255,255,255,.04);border-radius:50%;border:1px solid rgba(255,255,255,.06)}
+.hero-shape2{position:absolute;right:5%;bottom:5%;width:200px;height:200px;background:rgba(255,255,255,.03);border-radius:50%}
+.hero-inner{max-width:680px;position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.9);padding:6px 16px;border-radius:20px;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;border:1px solid rgba(255,255,255,.15)}
+.hero-icon{font-size:2.5rem;margin-bottom:12px;display:block}
+.hero h1{font-size:clamp(2rem,5.5vw,3.4rem);color:#fff;font-weight:900;line-height:1.1;margin-bottom:16px;letter-spacing:-.5px}
+.hero h1 em{color:#FDD835;font-style:normal}
+.hero-sub{color:rgba(255,255,255,.8);font-size:1.05rem;margin-bottom:32px;line-height:1.65;max-width:540px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{background:#FDD835;color:#fff;padding:15px 30px;border-radius:9px;font-weight:800;font-size:1rem;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:transform .15s}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-outline{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.4);padding:14px 28px;border-radius:9px;font-weight:700;font-size:1rem;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
+.btn-outline:hover{background:rgba(255,255,255,.18)}
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.hbadge{background:rgba(255,255,255,.12);color:rgba(255,255,255,.88);padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;border:1px solid rgba(255,255,255,.2)}
+
+/* TRUST BAR */
+.trust-bar{background:#1A1A1A;padding:18px 24px}
+.trust-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.trust-item{display:flex;align-items:center;gap:10px;color:#fff}
+.trust-check{font-size:1.1rem;color:#FDD835}
+.trust-text{font-size:.85rem;font-weight:600;line-height:1.3}
+
+/* SECTIONS */
+section{padding:72px 24px}
+.sec-inner{max-width:1060px;margin:0 auto}
+.sec-tag{display:inline-block;background:#FDD83522;color:#FDD835;font-size:.73rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:12px}
+.sec-title{font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:900;color:#0a0a1e;margin-bottom:10px;line-height:1.2}
+.sec-sub{color:#666;font-size:1rem;max-width:560px;line-height:1.6;margin-bottom:40px}
+.accent-bar{width:44px;height:4px;background:#FDD835;border-radius:2px;margin:10px 0 24px}
+
+/* ABOUT */
+.about-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.about-vis{border-radius:20px;aspect-ratio:1;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.about-founded{display:inline-block;background:#FDD83518;color:#FDD835;padding:5px 14px;border-radius:20px;font-size:.8rem;font-weight:700;margin-bottom:16px}
+.about-body{color:#444;font-size:1rem;line-height:1.75;margin-bottom:20px}
+.about-edge{background:#f8f9fa;border-left:4px solid #FDD835;border-radius:8px;padding:16px 20px;font-size:.9rem;color:#333;line-height:1.6}
+.about-edge strong{color:#1A1A1A}
+
+/* SERVICES */
+.services-sec{background:#f8f9fa}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.svc-card{background:#fff;border-radius:14px;padding:26px;border:1px solid #eee;transition:all .25s;cursor:default}
+.svc-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.1);transform:translateY(-3px);border-color:#FDD83544}
+.svc-icon{font-size:2rem;margin-bottom:12px;display:block}
+.svc-name{font-weight:800;font-size:1rem;color:#1A1A1A;margin-bottom:8px}
+.svc-desc{color:#666;font-size:.9rem;line-height:1.65}
+
+/* GALLERY */
+.gal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.gal-item{border-radius:14px;aspect-ratio:4/3;overflow:hidden;position:relative;background:#1a2744}
+.gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+.gal-item:hover img{transform:scale(1.06)}
+.gal-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;padding:20px 14px 12px;font-size:.8rem;font-weight:700}
+.gal-swap-note{margin-top:20px;background:#fff8f0;border:1.5px solid #FF6B3544;border-radius:10px;padding:14px 18px;color:#555;font-size:.88rem;line-height:1.6}
+.gal-swap-note strong{color:#FF6B35}
+
+/* FAQ */
+.faq-sec{background:#fff}
+.faq-list{max-width:760px}
+.faq-item{border:1px solid #e8e8e8;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:#fff;border:none;cursor:pointer;font-size:.95rem;font-weight:700;color:#0a0a1e;text-align:left;gap:12px;transition:background .2s}
+.faq-q:hover{background:#f8f9fa}
+.faq-arrow{color:#FDD835;font-size:.8rem;flex-shrink:0;transition:transform .3s}
+.faq-a{padding:0 20px 18px;color:#555;font-size:.92rem;line-height:1.7;border-top:1px solid #f0f0f0}
+
+/* REVIEWS */
+.reviews-sec{background:#1A1A1A}
+.reviews-sec .sec-title{color:#fff}
+.reviews-sec .sec-tag{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7)}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.review-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px}
+.review-stars{font-size:1rem;margin-bottom:12px;letter-spacing:1px}
+.review-text{color:rgba(255,255,255,.82);font-size:.9rem;line-height:1.7;margin-bottom:14px;font-style:italic}
+.review-author{color:rgba(255,255,255,.5);font-size:.8rem;font-weight:600}
+.reviews-note{margin-top:20px;color:rgba(255,255,255,.4);font-size:.82rem;text-align:center}
+
+/* CONTACT */
+.contact-sec{background:#fff}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.contact-info h3{font-size:1.3rem;font-weight:800;color:#0a0a1e;margin-bottom:20px}
+.info-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:18px;font-size:.95rem;color:#444}
+.info-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+.info-val strong{display:block;font-weight:700;color:#0a0a1e;margin-bottom:2px}
+.info-val span{color:#666;font-size:.88rem}
+.contact-cta{background:linear-gradient(135deg,#1A1A1A 0%,#3A3A1A 40%,#E65100 100%);border-radius:14px;padding:24px;margin-top:24px;text-align:center}
+.contact-cta p{color:rgba(255,255,255,.85);margin-bottom:12px;font-size:.9rem}
+.contact-cta .btn-primary{display:inline-flex;width:100%;justify-content:center}
+.form-wrap{background:#f8f9fa;border-radius:16px;padding:32px;border:1px solid #eee}
+.form-wrap h3{font-size:1.2rem;font-weight:800;margin-bottom:6px;color:#0a0a1e}
+.form-wrap .form-sub{color:#888;font-size:.88rem;margin-bottom:24px}
+.fg{margin-bottom:15px}
+.fg label{display:block;font-size:.82rem;font-weight:700;color:#333;margin-bottom:5px}
+.fg input,.fg textarea,.fg select{width:100%;border:1.5px solid #ddd;border-radius:8px;padding:11px 14px;font-size:.93rem;font-family:inherit;outline:none;transition:border .2s;background:#fff}
+.fg input:focus,.fg textarea:focus{border-color:#E65100}
+.fg textarea{height:88px;resize:none}
+.form-btn{background:#FDD835;color:#fff;border:none;width:100%;padding:14px;border-radius:8px;font-size:1rem;font-weight:800;cursor:pointer;margin-top:4px;transition:opacity .2s}
+.form-btn:hover{opacity:.9}
+.form-success{display:none;background:#e8f5e9;border:1.5px solid #4caf50;border-radius:8px;padding:16px;text-align:center;color:#2e7d32;font-weight:700;margin-top:12px;font-size:.95rem}
+
+/* FOOTER */
+footer{background:#0a0a1e;color:rgba(255,255,255,.5);text-align:center;padding:32px 24px;font-size:.84rem}
+footer strong{color:#fff}
+footer a{color:#FDD835}
+.footer-links{display:flex;justify-content:center;gap:24px;margin-top:10px;flex-wrap:wrap}
+
+/* FLOAT CALL */
+.float-call{display:none;position:fixed;bottom:24px;right:24px;z-index:999;background:#FDD835;color:#fff;width:58px;height:58px;border-radius:50%;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 18px rgba(0,0,0,.3);animation:pulse 2.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 #FDD83566}50%{box-shadow:0 0 0 10px transparent}}
+
+/* VISITOR BAR */
+.vbar{background:#E65100;color:rgba(255,255,255,.9);text-align:center;padding:7px;font-size:.78rem;display:none}
+.vbar strong{color:#FDD835}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .ham{display:flex}
+  .nav-links{display:none;position:fixed;top:64px;left:0;right:0;bottom:0;background:#1A1A1A;flex-direction:column;padding:30px 24px;gap:4px;overflow-y:auto}
+  .nav-links.open{display:flex}
+  .nav-links li{border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:8px}
+  .nav-links a{font-size:1.1rem;display:block;padding:12px 0}
+  .nav-links .nav-call{text-align:center;margin-top:16px;padding:14px;font-size:1rem}
+  .about-wrap,.contact-wrap{grid-template-columns:1fr}
+  .about-vis{display:none}
+  .gal-grid{grid-template-columns:repeat(2,1fr)}
+  .trust-inner{grid-template-columns:repeat(2,1fr)}
+  .float-call{display:flex}
+}
+@media(max-width:480px){
+  .gal-grid{grid-template-columns:1fr 1fr}
+  .trust-inner{grid-template-columns:1fr 1fr}
+}
+
+/* HERO NAME — big & bold */
+.hero-bizname{font-size:clamp(2.6rem,7vw,5rem);font-weight:900;color:#fff;line-height:1.05;margin-bottom:12px;letter-spacing:-1.5px;text-shadow:0 2px 20px rgba(0,0,0,.25)}
+.hero-tagline{font-size:clamp(1rem,2.5vw,1.4rem);font-weight:700;margin-bottom:16px;letter-spacing:-.2px}
+
+/* MOBILE HERO — safe-area, no fixed bg (iOS bug) */
+@media(max-width:768px){
+  .hero{min-height:100svh;min-height:100vh}
+  .btn-primary,.btn-outline{min-height:48px;padding:13px 22px;font-size:.95rem}
+  .hero-bizname{font-size:clamp(2.2rem,10vw,3.5rem)}
+  .gal-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+}
+@media(max-width:420px){
+  .gal-grid{grid-template-columns:1fr 1fr}
+  .hero-bizname{font-size:clamp(1.9rem,9vw,3rem)}
+}
+
+/* STATS STRIP */
+.stats-strip{background:#0a0a1e;padding:28px 24px}
+.stats-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.stat-num{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:var(--accent);line-height:1}
+.stat-label{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.55);margin-top:6px;text-transform:uppercase;letter-spacing:.05em}
+@media(max-width:600px){.stats-inner{grid-template-columns:repeat(2,1fr);gap:20px}}
+
+/* WHY US SPLIT */
+.why-sec{padding:72px 24px;background:#fff}
+.why-inner{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.why-photo-wrap{border-radius:18px;overflow:hidden;aspect-ratio:4/3;box-shadow:0 20px 60px rgba(0,0,0,.14)}
+.why-photo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.why-bullets{list-style:none;margin:16px 0 24px;display:flex;flex-direction:column;gap:10px}
+.why-bullets li{display:flex;align-items:center;gap:10px;font-size:.92rem;color:#444}
+.why-bullets li::before{content:"✓";background:var(--accent);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0}
+@media(max-width:768px){.why-inner{grid-template-columns:1fr}.why-photo-wrap{aspect-ratio:16/9}}
+
+/* PHOTO DIVIDER */
+.photo-divider{position:relative;padding:64px 24px;background-attachment:scroll;background-size:cover;background-position:center}
+.photo-divider::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.68)}
+.photo-divider-inner{position:relative;z-index:1;max-width:700px;margin:0 auto;text-align:center}
+.photo-divider blockquote{font-size:clamp(1.1rem,2.5vw,1.5rem);color:#fff;font-style:italic;font-weight:600;line-height:1.55;margin-bottom:16px}
+.photo-divider cite{color:rgba(255,255,255,.55);font-size:.85rem;font-style:normal}
+
+</style>
+</head>
+<body>
+
+<div class="vbar" id="vbar">👁 <strong id="vcount">—</strong> people have visited this site recently</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Allison Electric<span>Hutto, TX · Electrical</span></div>
+    <button class="ham" id="ham" aria-label="Menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navlinks">
+      <li><a href="#home" onclick="closeMenu()">Home</a></li>
+      <li><a href="#about" onclick="closeMenu()">Our Story</a></li>
+      <li><a href="#services" onclick="closeMenu()">Services</a></li>
+      <li><a href="#gallery" onclick="closeMenu()">Gallery</a></li>
+      <li><a href="#faq" onclick="closeMenu()">FAQ</a></li>
+      <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
+      <li><a href="tel:5128483975" class="nav-call">📞 (512) 848-3975</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Electrical · Hutto, TX</div>
+    <h1 class="hero-bizname">Allison Electric</h1>
+    <p class="hero-tagline" style="color:#FDD835">⚡ Licensed Electrician in Hutto & Williamson County</p>
+    <p class="hero-sub">Residential & Commercial · Honest Pricing · Locally Owned</p>
+    <div class="hero-btns">
+      <a href="tel:5128483975" class="btn-primary">📞 Call (512) 848-3975</a>
+      <a href="#contact" class="btn-outline">✉ Free Quote</a>
+    </div>
+    <div class="hero-badges">
+      <span class="hbadge">✓ TDLR Licensed</span>
+      <span class="hbadge">✓ Fully Insured</span>
+      <span class="hbadge">✓ Free Estimates</span>
+      <span class="hbadge">✓ Williamson County Local</span>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-inner">
+    <div class="trust-item"><span class="trust-check">✓</span><span class="trust-text">TDLR Licensed</span></div>
+    <div class="trust-item"><span class="trust-check">✓</span><span class="trust-text">Fully Insured</span></div>
+    <div class="trust-item"><span class="trust-check">✓</span><span class="trust-text">Free Estimates</span></div>
+    <div class="trust-item"><span class="trust-check">✓</span><span class="trust-text">Williamson County Local</span></div>
+  </div>
+</div>
+
+<div class="stats-strip">
+  <div class="stats-inner"><div class="stat-item"><div class="stat-num" style="color:#1a1a2e">800+</div><div class="stat-label">Electrical Jobs Done</div></div><div class="stat-item"><div class="stat-num" style="color:#1a1a2e">10+</div><div class="stat-label">Years Serving the Area</div></div><div class="stat-item"><div class="stat-num" style="color:#1a1a2e">Same Day</div><div class="stat-label">Emergency Calls</div></div><div class="stat-item"><div class="stat-num" style="color:#1a1a2e">5.0 ★</div><div class="stat-label">Google Rating</div></div></div>
+</div>
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-inner">
+    <div class="about-wrap">
+      <div class="about-vis"><img src="https://images.unsplash.com/photo-1558449028-b53a39d100fc?auto=format&fit=crop&w=800&q=80" alt="Our work" style="width:100%;height:100%;object-fit:cover;border-radius:20px"/></div>
+      <div>
+        <div class="about-founded">Licensed Contractor</div>
+        <div class="sec-tag">Our Story</div>
+        <h2 class="sec-title">A Licensed Electrician Who Treats Your Home Like His Own</h2>
+        <div class="accent-bar"></div>
+        <p class="about-body">Allison Electric is a locally owned, TDLR-licensed electrical contractor serving Hutto and Williamson County. We specialize in residential and light commercial work — from panel upgrades and EV charger installations to troubleshooting that keeps other electricians guessing. What sets us apart is simple: honest pricing, no unnecessary work, and the skill to do the job right. No corporate markup. No rotating crew. Just licensed, reliable electrical work.</p>
+        <div class="about-edge">
+          <strong>Why choose Allison Electric over the competition?</strong><br/>
+          Licensed local operator with no markup vs. chain electrical services with dispatch fees and upsell pressure.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- WHY US -->
+<section class="why-sec">
+  <div class="why-inner">
+    <div class="why-photo-wrap">
+      <img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=900&q=80" alt="Our team at work" loading="lazy"/>
+    </div>
+    <div>
+      <div class="sec-tag">Why Choose Us</div>
+      <h2 class="sec-title">Licensed Electricians. Done Right the First Time.</h2>
+      <div class="accent-bar"></div>
+      <p class="about-body">Electrical work isn't a place to cut corners. Our licensed team follows code on every job, pulls permits when required, and gives you a written estimate before starting. No guessing, no callbacks needed.</p>
+      <ul class="why-bullets"><li>Licensed & bonded electricians</li><li>Code-compliant on every job</li><li>Permits handled for you</li><li>EV charger certified installers</li></ul>
+      <a href="#contact" class="btn-primary" style="display:inline-flex">Get a Free Quote →</a>
+    </div>
+  </div>
+</section>
+<!-- SERVICES -->
+<section class="services-sec" id="services">
+  <div class="sec-inner">
+    <div class="sec-tag">What We Do</div>
+    <h2 class="sec-title">Our Services</h2>
+    <div class="accent-bar"></div>
+    <p class="sec-sub">Professional electrical services for homeowners and businesses in Hutto, TX and surrounding areas.</p>
+    <div class="svc-grid">
+        <div class="svc-card">
+          <div class="svc-icon">⚡</div>
+          <div class="svc-name">Panel Upgrades</div>
+          <div class="svc-desc">Upgrade aging or undersized electrical panels for safety, capacity, and code compliance.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">🔌</div>
+          <div class="svc-name">Outlet & Switch Installation</div>
+          <div class="svc-desc">GFCI protection, USB outlets, smart switches, and new circuit installation done cleanly.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">💡</div>
+          <div class="svc-name">Lighting Installation</div>
+          <div class="svc-desc">Recessed lights, ceiling fans, landscape lighting, and fixture replacements — indoors and out.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">🚗</div>
+          <div class="svc-name">EV Charger Installation</div>
+          <div class="svc-desc">Level 2 home EV charger installation for all makes of electric vehicles. Panel assessment included.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">🔋</div>
+          <div class="svc-name">Generator Hookup</div>
+          <div class="svc-desc">Transfer switch installation and generator connection for whole-home backup power.</div>
+        </div>
+        <div class="svc-card">
+          <div class="svc-icon">🔍</div>
+          <div class="svc-name">Troubleshooting & Repair</div>
+          <div class="svc-desc">Mystery breaker trips, dead outlets, flickering lights — we find and fix the real cause.</div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="sec-inner">
+    <div class="sec-tag">Our Work</div>
+    <h2 class="sec-title">Project Gallery</h2>
+    <div class="accent-bar"></div>
+    <p class="sec-sub">A sample of recent electrical projects across Hutto, TX and the surrounding area.</p>
+    
+    <div class="gal-grid">
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=800&q=75" alt="Panel Upgrade" loading="lazy" onerror="this.parentElement.style.background='#1a2744';this.style.display='none'"/>
+        <div class="gal-caption">Panel Upgrade</div>
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1558449028-b53a39d100fc?auto=format&fit=crop&w=800&q=75" alt="Breaker Install" loading="lazy" onerror="this.parentElement.style.background='#1a2744';this.style.display='none'"/>
+        <div class="gal-caption">Breaker Install</div>
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=75" alt="Wiring Repair" loading="lazy" onerror="this.parentElement.style.background='#1a2744';this.style.display='none'"/>
+        <div class="gal-caption">Wiring Repair</div>
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=800&q=75" alt="EV Charger Install" loading="lazy" onerror="this.parentElement.style.background='#1a2744';this.style.display='none'"/>
+        <div class="gal-caption">EV Charger Install</div>
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=800&q=75" alt="Outlet & Switch Work" loading="lazy" onerror="this.parentElement.style.background='#1a2744';this.style.display='none'"/>
+        <div class="gal-caption">Outlet & Switch Work</div>
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1616763355548-1b606f439f86?auto=format&fit=crop&w=800&q=75" alt="Generator Hookup" loading="lazy" onerror="this.parentElement.style.background='#1a2744';this.style.display='none'"/>
+        <div class="gal-caption">Generator Hookup</div>
+      </div>
+    </div>
+    <div class="gal-swap-note">📸 <strong>These are professional stock photos.</strong> When you sign with us, we replace every image with your actual project photos — takes us 20 minutes.</div>
+
+  </div>
+</section>
+
+
+<!-- PHOTO DIVIDER -->
+<div class="photo-divider" style="background-image:url('https://images.unsplash.com/photo-1558449028-b53a39d100fc?auto=format&fit=crop&w=1600&q=80')">
+  <div class="photo-divider-inner">
+    <blockquote>"Professional, on time, and explained everything before they started. Highly recommend."</blockquote>
+    <cite>— Google Review</cite>
+  </div>
+</div>
+<!-- FAQ -->
+<section class="faq-sec" id="faq">
+  <div class="sec-inner">
+    <div class="sec-tag">FAQ</div>
+    <h2 class="sec-title">Frequently Asked Questions</h2>
+    <div class="accent-bar"></div>
+    <div class="faq-list">
+        <div class="faq-item" id="faq0">
+          <button class="faq-q" onclick="toggleFaq(0)">
+            <span>Do I need a permit for electrical work in Hutto?</span>
+            <span class="faq-arrow" id="arrow0">▼</span>
+          </button>
+          <div class="faq-a" id="ans0" style="display:none">Yes, for most major work including panel upgrades, new circuits, and structural wiring. Allison Electric handles all permit applications as part of the job.</div>
+        </div>
+        <div class="faq-item" id="faq1">
+          <button class="faq-q" onclick="toggleFaq(1)">
+            <span>How much does a panel upgrade cost?</span>
+            <span class="faq-arrow" id="arrow1">▼</span>
+          </button>
+          <div class="faq-a" id="ans1" style="display:none">Most residential panel upgrades run $1,500–$3,500 depending on amperage and complexity. We quote accurately upfront.</div>
+        </div>
+        <div class="faq-item" id="faq2">
+          <button class="faq-q" onclick="toggleFaq(2)">
+            <span>How long does an EV charger installation take?</span>
+            <span class="faq-arrow" id="arrow2">▼</span>
+          </button>
+          <div class="faq-a" id="ans2" style="display:none">Usually 2–4 hours for a standard Level 2 installation. We inspect your panel first to ensure it can handle the load.</div>
+        </div>
+        <div class="faq-item" id="faq3">
+          <button class="faq-q" onclick="toggleFaq(3)">
+            <span>Is my home's wiring safe?</span>
+            <span class="faq-arrow" id="arrow3">▼</span>
+          </button>
+          <div class="faq-a" id="ans3" style="display:none">Homes built before 1990 may have outdated wiring that doesn't meet current safety codes. We offer full safety inspections for older homes.</div>
+        </div>
+        <div class="faq-item" id="faq4">
+          <button class="faq-q" onclick="toggleFaq(4)">
+            <span>What's the difference between 100-amp and 200-amp service?</span>
+            <span class="faq-arrow" id="arrow4">▼</span>
+          </button>
+          <div class="faq-a" id="ans4" style="display:none">A 200-amp panel handles the demands of modern homes — EV chargers, multiple large appliances, HVAC systems. Most older homes with 100-amp service should upgrade.</div>
+        </div>
+        <div class="faq-item" id="faq5">
+          <button class="faq-q" onclick="toggleFaq(5)">
+            <span>What areas do you serve?</span>
+            <span class="faq-arrow" id="arrow5">▼</span>
+          </button>
+          <div class="faq-a" id="ans5" style="display:none">Hutto, Pflugerville, Round Rock, Taylor, Georgetown, Manor, and surrounding Williamson County.</div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-sec">
+  <div class="sec-inner">
+    <div class="sec-tag">Reviews</div>
+    <h2 class="sec-title">What Our Customers Say</h2>
+    <div class="accent-bar" style="background:#FDD835"></div>
+    <div class="rev-grid">
+        <div class="review-card">
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+          <div class="review-text">"Allison Electric installed our Level 2 EV charger and upgraded our panel. Quoted fairly, showed up on time, passed inspection first try. Will use again for everything electrical."</div>
+          <div class="review-author">— Lisa G., Hutto</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+          <div class="review-text">"Had flickering lights and random breaker trips for months. Called three electricians. Allison found the problem in 20 minutes that the others missed. Fixed same day."</div>
+          <div class="review-author">— Mike T., Round Rock</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">⭐⭐⭐⭐⭐</div>
+          <div class="review-text">"Completely professional. Explained everything in plain English before starting, kept the work area clean, and the price matched the quote exactly. Highly recommended."</div>
+          <div class="review-author">— Rebecca N., Georgetown</div>
+        </div>
+    </div>
+    <p class="reviews-note">More reviews available — ask us for our Google review link.</p>
+  </div>
+</section>
+
+<!-- CONTACT + QUOTE -->
+<section class="contact-sec" id="contact">
+  <div class="sec-inner">
+    <div class="sec-tag">Get In Touch</div>
+    <h2 class="sec-title">Contact & Free Quote</h2>
+    <div class="accent-bar"></div>
+    <div class="contact-wrap">
+      <div class="contact-info">
+        <h3>Reach Allison Electric</h3>
+        <div class="info-row">
+          <span class="info-icon">📞</span>
+          <div class="info-val"><strong>Phone</strong><span>(512) 848-3975</span></div>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">🕐</span>
+          <div class="info-val"><strong>Hours</strong><span>Mon–Fri: 7AM–6PM · Sat by appointment</span></div>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">📍</span>
+          <div class="info-val"><strong>Service Area</strong><span>Hutto · Pflugerville · Round Rock · Taylor · Georgetown · Manor</span></div>
+        </div>
+        <div class="info-row">
+          <span class="info-icon">✓</span>
+          <div class="info-val"><strong>Licensed & Insured</strong><span>All work meets Texas code requirements</span></div>
+        </div>
+        <div class="contact-cta">
+          <p>Prefer to call? We answer directly.</p>
+          <a href="tel:5128483975" class="btn-primary">📞 Call (512) 848-3975</a>
+        </div>
+      </div>
+      <div class="form-wrap">
+        <h3>Request a Free Quote</h3>
+        <p class="form-sub">We respond within 2 hours during business hours.</p>
+        <div id="qform">
+          <div class="fg"><label>Your Name *</label><input type="text" id="fn" placeholder="John Smith" required/></div>
+          <div class="fg"><label>What do you need? *</label><textarea id="fr" placeholder="Describe the work or issue..." required></textarea></div>
+          <div class="fg"><label>Best way to reach you *</label><input type="text" id="fc" placeholder="Phone or email" required/></div>
+          <div class="fg"><label>When works for you?</label><input type="text" id="ft" placeholder="e.g. Weekday mornings, ASAP..."/></div>
+          <button class="form-btn" onclick="submitForm()">Send My Request →</button>
+          <div class="form-success" id="fsuccess">✅ Got it! Allison Electric will reach out shortly.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong>Allison Electric</strong> &nbsp;·&nbsp; Hutto, TX &nbsp;·&nbsp; <a href="tel:5128483975">(512) 848-3975</a></p>
+  <div class="footer-links">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#faq">FAQ</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <p style="margin-top:14px;color:rgba(255,255,255,.25);font-size:.75rem">Website by <a href="https://ptorrodigital.com" style="color:rgba(255,255,255,.35)">PTorro Digital</a></p>
+</footer>
+
+<!-- FLOATING CALL -->
+<a href="tel:5128483975" class="float-call">📞</a>
+
+<script>
+const SUPABASE_URL="https://cayymmknkjpiybssiltu.supabase.co";
+const SUPABASE_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNheXltbWtua2pwaXlic3NpbHR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwNTc5NjcsImV4cCI6MjA5NjYzMzk2N30.Pjn5EATEysRcP-ENqiwA-L-2hH9hYwR5m2uQPaQgCbo";
+const LEAD_ENDPOINT="https://torrolink.netlify.app/.netlify/functions/pitch-lead";
+const BIZ_NAME="Allison Electric";
+const SITE_SLUG="allison-electric";
+
+// Hamburger
+function toggleMenu(){
+  const ham=document.getElementById('ham');
+  const nav=document.getElementById('navlinks');
+  ham.classList.toggle('open');
+  nav.classList.toggle('open');
+  document.body.style.overflow=nav.classList.contains('open')?'hidden':'';
+}
+function closeMenu(){
+  document.getElementById('ham').classList.remove('open');
+  document.getElementById('navlinks').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// Shrink nav on scroll
+window.addEventListener('scroll',()=>{
+  document.querySelector('.nav').style.background=
+    window.scrollY>60?'rgba(10,10,30,.97)':'rgba(10,10,30,.92)';
+});
+
+// FAQ accordion
+function toggleFaq(i){
+  const a=document.getElementById('ans'+i);
+  const ar=document.getElementById('arrow'+i);
+  const open=a.style.display==='block';
+  a.style.display=open?'none':'block';
+  ar.style.transform=open?'':'rotate(180deg)';
+}
+
+// Visitor tracking
+(async()=>{
+  try{
+    await fetch(SUPABASE_URL+'/rest/v1/pitch_pageviews',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body:JSON.stringify({site_slug:SITE_SLUG,business_name:BIZ_NAME,referrer:document.referrer||'direct'})
+    });
+    const r=await fetch(SUPABASE_URL+'/rest/v1/pitch_pageviews?site_slug=eq.'+SITE_SLUG+'&select=id',{
+      headers:{'apikey':SUPABASE_ANON,'Authorization':'Bearer '+SUPABASE_ANON}
+    });
+    const rows=await r.json();
+    if(rows.length>2){
+      document.getElementById('vcount').textContent=rows.length.toLocaleString();
+      document.getElementById('vbar').style.display='block';
+    }
+  }catch(e){}
+})();
+
+// Lead form
+async function submitForm(){
+  const name=document.getElementById('fn').value.trim();
+  const req=document.getElementById('fr').value.trim();
+  const contact=document.getElementById('fc').value.trim();
+  const timing=document.getElementById('ft').value.trim();
+  if(!name||!req||!contact){alert('Please fill in the required fields.');return;}
+  const btn=document.querySelector('.form-btn');
+  btn.textContent='Sending...';btn.disabled=true;
+  const msg=req+(timing?' · Timing: '+timing:'');
+  try{
+    await fetch(LEAD_ENDPOINT,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({businessName:BIZ_NAME,customerName:name,customerRequest:msg,customerContact:contact})
+    });
+  }catch(e){}
+  document.getElementById('qform').style.opacity='.4';
+  document.getElementById('fsuccess').style.display='block';
+}
+</script>
+</body>
+</html>
