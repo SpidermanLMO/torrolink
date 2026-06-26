@@ -1,22 +1,20 @@
 # Tasks — PTorro Holdings LLC
-_Updated: 2026-06-25 (overnight build by Bruce + full agent team)_
+_Updated: 2026-06-26 by Bruce (morning auto-refresh)_
 
 ---
 
 ## 🔴 Active Right Now
 
-- [ ] **Run `_fix_deploy.bat`** — commit message updated. Deploys:
-  - `stripe-webhook.js`: `metrics_active = true` now set on `subscription.created` event
-  - `reporting-scheduler.js`: now pulls real Supabase subscriber data (was using mockSubscribers = [])
-  - _After deploy: confirm no Netlify function errors in logs_
+- [ ] **Social campaign — Day 5 (Friday)** — post today on TikTok @lmorros + IG @laign_o. Content package in `marketing/torrolink/social/content-package-week1.md`
+- [ ] **Roofing visits — [STALE: Day 5, 0/15 visited]** — 15 targets identified, zero visits made since June 22. Today is ideal: 3–5 partner visits (realtors + insurance agents). See `memory/roofing-tracker.md` for names, addresses, pitches.
 
 ---
 
 ## 🟡 Up Next — PTorro Digital
 
-- [ ] **Beachhead: Walk FM 1825 corridor, Pflugerville TX 78660** — confirm 5 real businesses with no/bad websites. Note: business name, address, vertical. Report back so Snake Eyes can mock-build.
-- [ ] **Snake Eyes: Mock-build 5 sites** — once Beachhead has the target list. Use trades or services template. Fill in real business name, phone, and services.
-- [ ] **Create Stripe products for PTorro Digital tiers** — Launch ($529.28 one-time), Growth ($749 one-time), Monthly Maintenance ($59/mo), Annual Maintenance ($499/yr)
+- [ ] **Beachhead: Walk FM 1825 corridor, Pflugerville TX 78660** — confirm 5 businesses with no/bad websites. Note business name, address, vertical. Report back so Snake Eyes can build.
+- [ ] **Snake Eyes: Mock-build 5 sites** — once Beachhead has the target list. Use trades or services template (both built + confirmed in repo).
+- [ ] **Create Stripe products for PTorro Digital tiers** — Launch ($529.28 one-time), Growth ($749 one-time), Maintenance ($59/mo or $499/yr)
 - [ ] **Beachhead pitches + closes** — laptop/tablet in hand, site already built
 
 ---
@@ -29,23 +27,19 @@ _Updated: 2026-06-25 (overnight build by Bruce + full agent team)_
   - `marketing/torrolink/email/launch-announcement.md`
   - `marketing/torrolink/social/content-package-week1.md`
   - `marketing/BIOS.md` — pick TikTok + IG bios
-- [ ] **Execute 30-day social campaign** — Post daily TikTok @lmorros + IG @laign_o. Started 2026-06-21 (Day 4 today).
-- [ ] **Build roofing referral partner pipeline** — 15 targets in memory/roofing-tracker.md, none visited yet
 
 ---
 
 ## ⏳ Waiting On Laign
 
-- [ ] **Approve + run `_fix_deploy.bat`** — two TorroLink fixes ready to ship (see Active above)
-- [ ] **Fill [CITY] and [PHONE] in Waypoint email sequences** — 2 min, unlocks Huntress outreach
-- [ ] **Connect laign@wproofs.com to Cowork** — needed for Waypoint email outreach
+- [ ] **Start roofing visits** — 5 days in, 0 visits. Schedule time this week to walk target offices. (See roofing-tracker.md for the full list with addresses.)
+- [ ] **Fill [CITY] and [PHONE] in Waypoint email sequences** — 2 min fix, unlocks Huntress outreach
+- [ ] **Connect laign@wproofs.com to Cowork** — needed for Waypoint email outreach via Cowork
 - [ ] **Add phone number to ptorro-flyer.html** — then print at FedEx/Staples
-- [ ] **Beachhead field recon** — walk FM 1825, Pflugerville (see Up Next above)
-- [ ] **Approve PTorro Digital pricing** — $529.28 Launch | $749 Growth | $59/mo | $499/yr — locked in DUKE.md, confirm or adjust
 
 ---
 
-## 🟢 Done This Week (2026-06-21 to 2026-06-25)
+## 🟢 Done This Week (2026-06-21 to 2026-06-26)
 
 - [x] TorroLink launched — torrolink.com live, Stripe live (2026-06-21)
 - [x] Portal sign-in fixed — apostrophe bug causing JS crash (2026-06-24)
@@ -54,17 +48,14 @@ _Updated: 2026-06-25 (overnight build by Bruce + full agent team)_
 - [x] netlify.toml truncation fixed — was missing `/success` and `/*` redirects (2026-06-25)
 - [x] Feature A (Refer & Earn program) — live and verified ✅
 - [x] Feature B (Partners tab + referral_partners DB) — live and verified ✅
-- [x] **PTorro Digital — full overnight build:**
-  - [x] DUKE.md created — full business plan, GI Joe agent roster, competitive research
-  - [x] Pricing finalized — $529.28 Launch | $749 Growth | $59/mo | $499/yr annual
-  - [x] Trades template built — `ptorro-digital/templates/trades/index.html`
-  - [x] Services template built — `ptorro-digital/templates/services/index.html`
-  - [x] Lead form function template — `ptorro-digital/functions/lead-form-template.js`
-  - [x] Pitch playbook written (Roadblock) — `ptorro-digital/sales/pitch-playbook.md`
-  - [x] Scarlett research done — Pflugerville TX FM 1825 corridor recommended
-  - [x] Web design tracker created — `memory/web-design-tracker.md`
-- [x] stripe-webhook.js — metrics_active fix prepared (deploy pending)
-- [x] reporting-scheduler.js — real subscriber data fix prepared (deploy pending)
+- [x] stripe-webhook.js: `metrics_active = true` on `subscription.created` — deployed (2026-06-25)
+- [x] reporting-scheduler.js: real Supabase subscriber data (was using mockSubscribers) — deployed (2026-06-25)
+- [x] PTorro Digital — DUKE.md created, pricing set, pitch playbook written
+- [x] PTorro Digital — Trades template built (`ptorro-digital/templates/trades/index.html`) ✅
+- [x] PTorro Digital — Services template built (`ptorro-digital/templates/services/index.html`) ✅
+- [x] PTorro Digital — Lead form function template built
+- [x] Scarlett research — Pflugerville TX FM 1825 corridor recommended as first target
+- [x] web-design-tracker.md created
 - [x] Daily TASKS.md auto-refresh scheduled — runs every morning at 7am
 
 ---
@@ -75,26 +66,26 @@ _Updated: 2026-06-25 (overnight build by Bruce + full agent team)_
 - [ ] Decide on Waypoint email tool (Instantly.ai, Mailchimp, or Gmail scheduling)
 - [ ] Upload logo to roofing TorroLink profile
 - [ ] Add Google Reviews link to roofing profile
-- [ ] Build `memory/web-design-tracker.md` client section (first clients pending)
-- [ ] Build Scarlett's full 5-business target list for Pflugerville
 - [ ] Draft PTorro Digital simple 1-page contract/terms
+- [ ] Build Scarlett's full 5-business target list for Pflugerville (or delegate to Beachhead)
 
 ---
 
-## System Status
+## TorroLink Status
+_Quick health check_
+- Site: torrolink.com — 🟢 LIVE
+- Last deploy: 2026-06-25 (stripe-webhook + reporting-scheduler fixes)
+- Open bugs: none known
 
-| System | Status |
-|--------|--------|
-| torrolink.com | 🟢 LIVE |
-| Stripe payments | 🟢 LIVE (sk_live active) |
-| Supabase DB | 🟢 LIVE — all tables including referral_partners, referral_logs |
-| Resend email | 🟢 LIVE — all domains verified |
-| Feature A (Refer & Earn) | 🟢 DEPLOYED + VERIFIED |
-| Feature B (Partners Tab) | 🟢 DEPLOYED + VERIFIED |
-| metrics_active webhook fix | 🟡 BUILT — needs deploy |
-| reporting-scheduler fix | 🟡 BUILT — needs deploy |
-| PTorro Digital | 🟡 BUILDING — templates + pitch playbook ready, no sites sold yet |
-| Waypoint Roofing outreach | 🟡 DAY 3 — 15 targets identified, 0 visits made |
+## PTorro Digital Status
+- Phase: Phase 2 — First 5 Targets (Foundation complete)
+- Templates built: ✅ Trades + Services both confirmed in repo
+- Clients: 0 — awaiting first pitch
+
+## Waypoint Roofing Status
+- Outreach day: Day 5 (started 2026-06-22)
+- Partners visited: 0 of 15 identified — **needs action this week**
+- Pipeline: Empty — no referrals in yet
 
 ---
 
@@ -106,10 +97,14 @@ _Updated: 2026-06-25 (overnight build by Bruce + full agent team)_
 | `HAWK.md` | Waypoint Roofing agent |
 | `BRUCE.md` | Master agent — all domains |
 | `memory/web-design-tracker.md` | PTorro Digital client pipeline |
-| `memory/roofing-tracker.md` | Waypoint referral partner pipeline |
-| `memory/scarlett-target-research.md` | First target neighborhood — Pflugerville TX |
-| `ptorro-digital/templates/trades/` | Trades site template (plumber/HVAC/electrical) |
-| `ptorro-digital/templates/services/` | Services site template (salon/cleaning/lawn) |
+| `memory/roofing-tracker.md` | Waypoint referral partner pipeline (15 targets) |
+| `ptorro-digital/templates/trades/` | Trades site template ✅ |
+| `ptorro-digital/templates/services/` | Services site template ✅ |
 | `ptorro-digital/sales/pitch-playbook.md` | Beachhead's full sales scripts |
 | `ptorro-digital/functions/lead-form-template.js` | Client lead form Netlify function |
+| `ptorro-flyer.html` | Flyer — needs phone number added, then print |
 | `_fix_deploy.bat` | Git commit + push → Netlify deploy |
+
+---
+
+_Auto-refreshed by Bruce at 7am — 2026-06-26_
