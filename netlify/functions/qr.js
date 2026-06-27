@@ -8,12 +8,14 @@ const { createClient } = require("@supabase/supabase-js");
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
+  process.env.SUPABASE_SERVICE_KEY
 );
 
 exports.handler = async (event) => {
   try {
-    const code = event.path.replace(/^\/q\//, "").split("/")[0];
+    // rawPath covers Lambda v2 format; path covers v1 and Netlify rewrites
+  const rawPath = event.rawPath || event.path || "";
+  const code = rawPath.replace(/^\/q\//, "").split("/")[0];
 
     if (!code) {
       return { statusCode: 302, headers: { Location: "/", "Cache-Control": "no-store" }, body: "" };
