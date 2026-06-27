@@ -20,9 +20,9 @@ Bruce is the overseer. Every file, every system, every decision traces back here
 
 | Domain | Agent | Status | File |
 |--------|-------|--------|------|
-| TorroLink | El Chappo | 🟢 LIVE — torrolink.com, Stripe live, all systems go | EL_CHAPPO.md |
-| Roofing sales | Hawk | 🟡 Active — Day 1 outreach 2026-06-22 | HAWK.md · memory/roofing-tracker.md |
-| Web Design Business | Duke | 🟡 BUILDING — research complete, naming + templates next | DUKE.md |
+| TorroLink | El Chappo | 🟢 LIVE — 4 bugs fixed + deployed 2026-06-26, no open issues | EL_CHAPPO.md |
+| Roofing sales | Hawk | 🟡 Active — Day 5, 0 visits, 15 targets ready | HAWK.md · memory/roofing-tracker.md |
+| Web Design Business | Duke | 🟢 READY TO PITCH — 8 sites live, lead forms functional | DUKE.md |
 | Knowledge system | — | 🟢 Live | RAW.md · WIKI.md · INDEX.md |
 | TorroLink codebase | El Chappo | 🟢 Deployed — 31 functions, payment links, favicons, all healthy | memory/projects/torrolink.md |
 | Marketing | Nightwing + Vicki Vale + The Huntress | 🟢 30-day campaign live — Day 1 started 2026-06-21 | NIGHTWING.md |
@@ -65,12 +65,14 @@ BRUCE.md    ← this file — master view of everything
 
 ---
 
-## Current Priorities (as of 2026-06-21)
+## Current Priorities (as of 2026-06-26)
 
-1. **Execute 30-day social campaign** — Vicki Vale has Day 1 post ready (TikTok talking head). Laign posts daily.
-2. **Get first paying TorroLink customer** — door hangers, truck QR, job site outreach
-3. **Build roofing sales pipeline** — target real estate agents first
-4. **Grow PTorro Holdings social presence** (TikTok @lmorros, IG @laign_o)
+1. **Start roofing visits** — 5 days in, 0 visits, 15 targets ready. Make 3-5 visits NOW (realtors + insurance). See memory/roofing-tracker.md
+2. **Pitch PTorro Digital** — 8 sites live + functional, lead forms working. Beachhead walks in.
+3. **Execute Day 5 social posts** — TikTok @lmorros + IG @laign_o
+4. **Get first paying TorroLink customer** — portal bugs all fixed, site is clean now
+
+> **TorroLink is healthy** — 4 portal bugs fixed and deployed 2026-06-26. No open issues.
 
 ---
 

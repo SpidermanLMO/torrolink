@@ -12,7 +12,7 @@ Lucius owns the TorroLink codebase. He reports to **El Chappo**. He escalates to
 ## Domain — What Lucius Owns
 
 **Code:**
-- `netlify/functions/` — all serverless functions (added `refer-earn.js` 2026-06-23)
+- `netlify/functions/` — all serverless functions (36 total; last additions: `refer-earn.js` 2026-06-23, `pitch-lead.js` 2026-06-26)
 - `index.html` — homepage
 - `success.html` · `terms.html` · `privacy.html` · `google3f3079bc097c6a27.html`
 - `favicon.svg` · `logo.svg`
@@ -29,6 +29,42 @@ Lucius owns the TorroLink codebase. He reports to **El Chappo**. He escalates to
 **Live site:**
 - https://torrolink.com and all routes
 - https://torrolink.com/portal · /terms · /privacy
+
+
+---
+
+## Fix Log
+
+### 2026-06-26 — 4 Portal Bugs Fixed (deployed main@4dd557b)
+
+**Bug 1: Referral partner modal double-submit (portal.js ~line 1820)**
+- Symptom: clicking "Save" twice created duplicate referral_partners rows
+- Fix: disabled button immediately on click; re-enabled in finally block
+- Key code: `_saveBtn.disabled = true; _saveBtn.textContent = '⏳ Saving…'`
+
+**Bug 2: Lead gen checkbox repeat (portal.js line 1451)**  
+- Symptom: every time user opened lead gen tab, checkboxes doubled
+- Fix: `document.getElementById('checkboxList').innerHTML = ''` before repopulate
+- Root cause: `populateEditor()` called `addCheckbox()` without clearing container
+
+**Bug 2b: Content blocks exponential growth (portal.js ~line 1414)**
+- Symptom: 11,760 content_blocks entries for ptorro-holdings-llc profile
+- Fix: `contentList.innerHTML = ''` before rebuilding block list
+- DB fix: Supabase SQL truncation of content_blocks to first 2 entries
+- PREVENT: same DOM accumulation pattern as Bug 2
+
+**Bug 3: 6MB profile crash (profile.js line 193)**
+- Symptom: profile page returned 502/6MB error when backgroundImage was base64
+- Fix: `safeBgImage` — only embeds if value matches `/^https?:\/\//i`
+- Rejects: base64 data URLs (they exceed Netlify's 6MB function response limit)
+
+**Deploy blocker: Netlify secret scanner (netlify.toml)**
+- Symptom: builds failing with "Exposed secrets detected" on SUPABASE_URL
+- Root cause: all 8 pitch-site HTML files have SUPABASE_URL + anon key hardcoded (intentional, client-side)
+- Fix: added `SECRETS_SCAN_OMIT_PATHS = "ptorro-digital/"` to `[build.environment]` in netlify.toml
+- WARNING: netlify.toml is fragile on CIFS — use Python to rewrite it, NOT the Edit tool
+
+---
 
 ---
 
@@ -122,41 +158,4 @@ validates Node.js syntax, not the browser JS inside the template string).
 After any edit to these files, run the full audit scanner:
 `python3 -c "..."` (see LUCIUS_fix_admin_csv_escape.py for the scanner pattern)
 
-Always run `node --check netlify/functions/<file>.js` after any edit too.
-
-**Large file rule (CIFS):**
-Never use the Edit tool on portal.js, profile.js, admin.js, stripe-webhook.js, or any file over ~300 lines.
-Use Python via bash — save scripts as `LUCIUS_*.py` in the repo root:
-```python
-path = '/sessions/nice-vigilant-sagan/mnt/Torrolink/netlify/functions/portal.js'
-with open(path, 'r', encoding='utf-8') as f: src = f.read()
-src = src.replace(old, new, 1)
-with open(path, 'w', encoding='utf-8') as f: f.write(src)
-```
-Always run `node --check` after. Watch for truncation on Windows paths — use Linux mount paths in scripts.
-
-**Referral system (added 2026-06-23):**
-- `refer-earn.js` — GET referral data for portal tab
-- `stripe-webhook.js` — referral code gen, crediting, Stripe discount application
-- `portal.js` — Refer & Earn tab (loadReferral, renderReferral, copyReferralLink)
-- `script.js` — ?ref= URL param capture → sessionStorage → checkout
-- Supabase: `referral_partners`, `referral_logs` tables + customers columns (referral_code, referred_by, referral_credits, stripe_subscription_id)
-
----
-
-## Chain of Command
-
-```
-Laign
-  └── Bruce
-        └── El Chappo
-              └── LUCIUS ← you are here
-```
-
-Next agent: ALFRED (Customer Success)
-
----
-
-## Protocol
-
-This agent follows PROTOCOL.md — self-validation loop, research request format, universal hard stops, and escalation chain. PROTOCOL wins if any conflict arises.
+Always 
