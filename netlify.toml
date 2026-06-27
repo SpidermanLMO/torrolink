@@ -5,6 +5,10 @@
   command = "npm install"
   functions = "netlify/functions"
 
+[build.environment]
+  # Pitch sites use public Supabase URL + anon key client-side (intentional, not secrets)
+  SECRETS_SCAN_OMIT_PATHS = "ptorro-digital/"
+
 [functions]
   node_bundler = "esbuild"
 
