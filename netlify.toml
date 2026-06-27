@@ -22,7 +22,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-# CSS/JS — NOT content-hashed, so use short TTL with stale-while-revalidate
+# CSS/JS -- NOT content-hashed, so use short TTL with stale-while-revalidate
 [[headers]]
   for = "/styles.css"
   [headers.values]
