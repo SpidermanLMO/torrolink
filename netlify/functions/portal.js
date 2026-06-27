@@ -934,6 +934,7 @@ exports.handler = async () => {
     let _selectedPattern = 'solid';
     let _expandedGroup    = null;
     let _dirty = false; // true when profile has unsaved changes
+    let _initialized = false; // guard: prevents onSignedIn from firing twice
     let _selectedCardStyle = 'rounded';
 
     // ── Pattern definitions (mirrors profile.js) ───────────────────
@@ -1341,6 +1342,8 @@ exports.handler = async () => {
 
     // ── After sign-in ──────────────────────────────────────────────
     async function onSignedIn(session) {
+      if (_initialized) return; // prevent double-call (getSession + SIGNED_IN event both fire on page load)
+      _initialized = true;
       _session = session;
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('editorScreen').style.display = 'block';
