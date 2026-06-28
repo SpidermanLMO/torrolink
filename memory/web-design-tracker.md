@@ -1,5 +1,5 @@
 # Web Design Tracker — PTorro Digital
-_GM: Duke | Field: Beachhead | Updated: 2026-06-25_
+_GM: Duke | Field: Beachhead | Updated: 2026-06-27_
 
 ---
 
@@ -8,8 +8,8 @@ _GM: Duke | Field: Beachhead | Updated: 2026-06-25_
 | Metric | Value |
 |--------|-------|
 | Target neighborhoods scouted | 0 |
-| Businesses targeted | 0 |
-| Mock sites built | 0 |
+| Businesses targeted | 8 |
+| Mock sites built | 8 |
 | Pitches made | 0 |
 | Sales closed | 0 |
 | Revenue collected | $0 |
@@ -19,9 +19,16 @@ _GM: Duke | Field: Beachhead | Updated: 2026-06-25_
 
 ## Target Pipeline
 
-| # | Business Name | Vertical | Address | Has Website? | Quality | Mock Site | Pitched | Result | Notes |
-|---|--------------|---------|---------|-------------|---------|-----------|---------|--------|-------|
-| — | — | — | — | — | — | — | — | — | Scarlett picking first neighborhood |
+| # | Business Name | Vertical | Area | Has Website? | Platform | Est. Cost/yr | Quality | Mock Site | Pitched | Result | Notes |
+|---|--------------|---------|------|-------------|----------|-------------|---------|-----------|---------|--------|-------|
+| 1 | 4 A Plumber | Plumbing | Pflugerville | ✅ Yes | Wix | ~$204/yr | ⚠️ Weak | ✅ Built | ⏳ | ⏳ | Wix Core — locked in, no lead optimization |
+| 2 | The Plumber Gary | Plumbing | Pflugerville | ❓ Check | — | — | — | ✅ Built | ⏳ | ⏳ | — |
+| 3 | 5 Star AC & Heating | HVAC | Pflugerville | ❓ Check | — | — | — | ✅ Built | ⏳ | ⏳ | — |
+| 4 | Capital City HVAC | HVAC | Area | ❓ Check | — | — | — | ✅ Built | ⏳ | ⏳ | — |
+| 5 | Allison Electric | Electrical | Hutto | ❓ Check | — | — | — | ✅ Built | ⏳ | ⏳ | — |
+| 6 | Independent Electric | Electrical | Hutto | ❓ Check | — | — | — | ✅ Built | ⏳ | ⏳ | — |
+| 7 | Revive Electric | Electrical | Hutto | ❓ Check | — | — | — | ✅ Built | ⏳ | ⏳ | — |
+| 8 | Pinar Fence | Fencing | Area | ❓ Check | — | — | — | ✅ Built | ⏳ | ⏳ | — |
 
 **Result key:** ⏳ Not yet | 🗣️ Pitched | ✅ Closed | ❌ Hard no | 🔄 Follow up
 
@@ -73,10 +80,11 @@ _GM: Duke | Field: Beachhead | Updated: 2026-06-25_
 - [ ] Trades vertical template built (Snake Eyes)
 - [ ] Services vertical template built (Snake Eyes)
 
-### Phase 2 — First 5 Targets
-- [ ] Scarlett picks target neighborhood
-- [ ] Beachhead builds target list of 5 businesses
-- [ ] Snake Eyes mock-builds all 5 sites
+### Phase 2 — First 8 Targets
+- [x] Target list built — 8 businesses across Pflugerville/Hutto ✅
+- [x] Snake Eyes mock-built all 8 sites ✅
+- [ ] Laign approves each pitch site (in progress — reviewing one by one)
+- [ ] Research which prospects have websites + quality (1 found: 4 A Plumber on Wix)
 - [ ] Beachhead pitches + closes
 
 ### Phase 3 — Systems
@@ -90,6 +98,21 @@ _GM: Duke | Field: Beachhead | Updated: 2026-06-25_
 - [ ] Referral system for satisfied clients
 
 ---
+
+## Website Intel — Prospect Research
+_Update as you check each business online_
+
+**Wix pricing cheat sheet (for pitch):**
+- Free tier: Wix ads all over site, `.wixsite.com` URL — looks unprofessional
+- Core $17/mo ($204/yr): custom domain, no ads — most small businesses here
+- Business $36/mo ($432/yr): adds payments
+- Pitch line: *"You're paying $204/year to rent a template Wix owns. For $529 you own it forever — built for calls, not for photographers."*
+
+**Platform quality cheat sheet:**
+- ⚠️ Weak = Wix/GoDaddy/Squarespace free or basic, no lead capture, bad mobile
+- 😐 Okay = WordPress but outdated or DIY, poor mobile
+- ✅ Good = Modern, fast, lead-optimized (rare — means harder pitch)
+- ❌ None = No website at all (easiest close)
 
 ## Notes / Intel
 

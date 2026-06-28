@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revive Electric — Hutto's Modern Electrician | EV & Smart Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#C62828;
+  --accent-dark:#B71C1C;
+  --dark:#0D1020;
+  --trust:#7B1FA2;
+  --light:#F8F9FC;
+  --text:#1A1D2E;
+  --muted:#6B7280;
+  --border:#E5E7EB;
+  --white:#FFFFFF;
+  --card-bg:#FFFFFF;
+  --section-alt:#F3F4F8;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(13,16,32,0.97);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(198,40,40,0.3);
+}
+.nav-inner{
+  max-width:1200px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:68px;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-mark{
+  width:38px;height:38px;border-radius:8px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.nav-logo-mark svg{width:22px;height:22px;fill:#fff}
+.nav-brand-text{display:flex;flex-direction:column;line-height:1.15}
+.nav-brand-name{font-size:1.05rem;font-weight:800;color:#fff;letter-spacing:-0.3px}
+.nav-brand-sub{font-size:0.7rem;font-weight:500;color:rgba(255,255,255,0.55);letter-spacing:0.5px;text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{color:rgba(255,255,255,0.75);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{
+  background:var(--accent);color:#fff;padding:9px 20px;border-radius:8px;
+  font-size:0.88rem;font-weight:700;text-decoration:none;
+  transition:background 0.2s;display:flex;align-items:center;gap:8px;
+}
+.nav-cta:hover{background:var(--accent-dark)}
+.nav-cta svg{width:16px;height:16px;fill:#fff}
+.nav-phone{color:#fff;font-size:0.95rem;font-weight:700;text-decoration:none;letter-spacing:-0.3px}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-phone{display:none}
+}
+
+/* HERO */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;overflow:hidden;
+}
+.hero-bg-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+  z-index:0;
+}
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(100deg,rgba(8,10,30,0.95) 40%,rgba(198,40,40,0.45) 100%);
+}
+.hero-content{
+  position:relative;z-index:2;
+  max-width:1200px;margin:0 auto;padding:80px 24px 60px;
+  width:100%;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(198,40,40,0.18);border:1px solid rgba(198,40,40,0.5);
+  color:rgba(255,255,255,0.92);padding:7px 16px;border-radius:100px;
+  font-size:0.8rem;font-weight:600;letter-spacing:0.4px;margin-bottom:28px;
+}
+.hero-badge svg{width:14px;height:14px;fill:var(--accent);flex-shrink:0}
+h1{
+  font-size:clamp(3.6rem,7.5vw,6.2rem);
+  font-weight:900;line-height:0.97;letter-spacing:-3px;
+  color:#fff;margin-bottom:28px;max-width:820px;
+}
+h1 em{
+  display:block;color:var(--accent);font-style:normal;
+}
+.hero-sub{
+  font-size:clamp(1rem,1.8vw,1.2rem);color:rgba(255,255,255,0.78);
+  max-width:660px;line-height:1.65;margin-bottom:40px;font-weight:400;
+}
+.hero-actions{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:48px}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--accent);color:#fff;padding:16px 32px;border-radius:10px;
+  font-size:1rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;
+  transition:all 0.2s;letter-spacing:-0.2px;
+}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.btn-primary svg{width:18px;height:18px;fill:#fff}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:10px;
+  background:transparent;color:#fff;padding:16px 32px;border-radius:10px;
+  font-size:1rem;font-weight:600;text-decoration:none;
+  border:2px solid rgba(255,255,255,0.35);transition:all 0.2s;
+}
+.btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,0.07)}
+.btn-ghost svg{width:18px;height:18px;stroke:#fff;fill:none}
+.hero-trust{display:flex;flex-wrap:wrap;gap:24px;align-items:center}
+.trust-chip{
+  display:flex;align-items:center;gap:7px;
+  color:rgba(255,255,255,0.8);font-size:0.82rem;font-weight:600;
+}
+.trust-chip svg{width:15px;height:15px;fill:var(--accent)}
+.hero-watermark{
+  position:absolute;bottom:32px;right:32px;z-index:2;
+  color:rgba(255,255,255,0.18);font-size:0.78rem;font-weight:700;
+  letter-spacing:0.5px;text-align:right;
+}
+
+/* STATS BAR */
+.stats-bar{background:var(--trust);padding:0}
+.stats-inner{
+  max-width:1200px;margin:0 auto;padding:0 24px;
+  display:flex;flex-wrap:wrap;
+}
+.stat-item{
+  flex:1;min-width:160px;
+  padding:28px 20px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  border-right:1px solid rgba(255,255,255,0.12);
+  text-align:center;
+}
+.stat-item:last-child{border-right:none}
+.stat-num{font-size:1.9rem;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1}
+.stat-label{font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:0.8px}
+
+/* SECTIONS */
+.section{padding:80px 24px}
+.section-alt{background:var(--section-alt)}
+.container{max-width:1200px;margin:0 auto}
+.section-eyebrow{
+  font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:12px;
+}
+.section-title{
+  font-size:clamp(2rem,3.5vw,2.8rem);font-weight:900;
+  letter-spacing:-1.5px;line-height:1.05;color:var(--dark);margin-bottom:16px;
+}
+.section-sub{font-size:1.05rem;color:var(--muted);max-width:580px;line-height:1.65}
+
+/* SERVICES */
+.services-header{margin-bottom:52px}
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:24px;
+}
+.service-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;
+  transition:all 0.25s;display:flex;flex-direction:column;
+}
+.service-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.1);border-color:var(--accent)}
+.service-thumb{
+  width:100%;height:200px;overflow:hidden;position:relative;
+}
+.service-thumb img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 0.4s;
+}
+.service-card:hover .service-thumb img{transform:scale(1.05)}
+.service-body{padding:24px;flex:1;display:flex;flex-direction:column}
+.service-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:rgba(198,40,40,0.1);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;
+}
+.service-icon svg{width:22px;height:22px;fill:var(--accent)}
+.service-title{font-size:1.05rem;font-weight:800;color:var(--dark);margin-bottom:8px;letter-spacing:-0.3px}
+.service-desc{font-size:0.9rem;color:var(--muted);line-height:1.6;flex:1}
+
+/* STORY */
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.story-img-wrap{position:relative}
+.story-img{width:100%;border-radius:20px;object-fit:cover;height:520px;display:block}
+.story-img-accent{
+  position:absolute;bottom:-20px;left:-20px;
+  background:var(--accent);border-radius:16px;
+  padding:20px 24px;color:#fff;
+}
+.story-img-accent-num{font-size:2rem;font-weight:900;letter-spacing:-1px;line-height:1}
+.story-img-accent-text{font-size:0.75rem;font-weight:600;opacity:0.85;margin-top:2px}
+.story-content .section-title{margin-bottom:20px}
+.story-body{font-size:1rem;color:var(--muted);line-height:1.75;margin-bottom:28px}
+.story-quote{
+  border-left:4px solid var(--accent);padding:16px 20px;
+  background:rgba(198,40,40,0.05);border-radius:0 12px 12px 0;
+  font-style:italic;font-size:0.95rem;color:var(--dark);font-weight:500;
+}
+.story-quote cite{
+  display:block;margin-top:10px;font-size:0.82rem;font-weight:700;
+  color:var(--accent);font-style:normal;
+}
+@media(max-width:900px){
+  .story-grid{grid-template-columns:1fr}
+  .story-img{height:320px}
+  .story-img-accent{bottom:-12px;left:12px}
+}
+
+/* RECENT JOBS */
+.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
+.job-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:14px;padding:24px;
+  transition:all 0.2s;
+}
+.job-card:hover{border-color:var(--accent);box-shadow:0 8px 32px rgba(198,40,40,0.08)}
+.job-meta{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:12px;
+}
+.job-pin{
+  display:flex;align-items:center;gap:5px;
+  color:var(--accent);font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+}
+.job-pin svg{width:13px;height:13px;fill:var(--accent)}
+.job-title{font-size:0.98rem;font-weight:800;color:var(--dark);margin-bottom:8px;letter-spacing:-0.2px}
+.job-detail{font-size:0.86rem;color:var(--muted);line-height:1.55}
+.job-tag{
+  display:inline-block;margin-top:12px;
+  background:rgba(198,40,40,0.08);color:var(--accent);
+  padding:4px 10px;border-radius:6px;font-size:0.75rem;font-weight:700;
+}
+
+/* FAQ */
+.faq-list{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:4px}
+.faq-item{
+  border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;
+}
+.faq-q{
+  width:100%;background:none;border:none;text-align:left;
+  padding:20px 24px;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  font-size:0.98rem;font-weight:700;color:var(--dark);
+  transition:background 0.2s;
+}
+.faq-q:hover{background:rgba(198,40,40,0.04)}
+.faq-q svg{width:20px;height:20px;stroke:var(--accent);fill:none;flex-shrink:0;transition:transform 0.3s}
+.faq-item.open .faq-q svg{transform:rotate(45deg)}
+.faq-a{
+  max-height:0;overflow:hidden;transition:max-height 0.35s ease;
+  font-size:0.92rem;color:var(--muted);line-height:1.7;
+}
+.faq-a-inner{padding:0 24px 20px}
+.faq-item.open .faq-a{max-height:200px}
+
+/* LEAD FORM */
+.form-section{background:var(--dark)}
+.form-wrap{
+  max-width:680px;margin:0 auto;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:24px;padding:48px 40px;
+}
+.form-title{
+  font-size:clamp(1.8rem,3vw,2.4rem);font-weight:900;
+  color:#fff;letter-spacing:-1.5px;margin-bottom:8px;
+}
+.form-sub{font-size:0.95rem;color:rgba(255,255,255,0.6);margin-bottom:32px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:0.8rem;font-weight:700;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:0.5px}
+.form-input,.form-select,.form-textarea{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;border-radius:10px;padding:13px 16px;
+  font-size:0.95rem;font-family:'Inter',sans-serif;
+  transition:border-color 0.2s;outline:none;width:100%;
+}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,255,255,0.3)}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-select option{background:var(--dark);color:#fff}
+.form-textarea{min-height:100px;resize:vertical}
+.form-submit{
+  width:100%;margin-top:8px;
+  background:var(--accent);color:#fff;
+  border:none;border-radius:10px;
+  padding:16px;font-size:1rem;font-weight:800;
+  cursor:pointer;transition:all 0.2s;letter-spacing:-0.2px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.form-submit:hover:not(:disabled){background:var(--accent-dark);transform:translateY(-1px)}
+.form-submit:disabled{opacity:0.6;cursor:not-allowed}
+.form-submit svg{width:18px;height:18px;fill:#fff}
+.form-guarantee{
+  text-align:center;margin-top:16px;
+  font-size:0.8rem;color:rgba(255,255,255,0.4);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.form-guarantee svg{width:14px;height:14px;fill:rgba(255,255,255,0.4)}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}.form-wrap{padding:32px 24px}}
+
+/* FOOTER */
+footer{background:rgba(0,0,0,0.5);border-top:1px solid rgba(255,255,255,0.06);padding:40px 24px}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.footer-brand{color:rgba(255,255,255,0.85);font-size:0.88rem}
+.footer-brand strong{font-weight:800;color:#fff}
+.footer-links{display:flex;flex-wrap:wrap;gap:20px}
+.footer-links a{color:rgba(255,255,255,0.45);font-size:0.82rem;text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:#fff}
+.footer-copy{width:100%;color:rgba(255,255,255,0.25);font-size:0.78rem;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <div class="nav-logo-mark">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4.5 13.5H11L10 22L20 10H13.5L13 2Z"/></svg>
+      </div>
+      <div class="nav-brand-text">
+        <span class="nav-brand-name">Revive Electric</span>
+        <span class="nav-brand-sub">Hutto, TX</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#story">About</a>
+      <a href="#jobs">Recent Work</a>
+      <a href="#faq">FAQ</a>
+      <a href="tel:5125550000" class="nav-phone">(512) 555-0000</a>
+    </div>
+    <a href="#contact" class="nav-cta">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      Free Estimate
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <img class="hero-bg-img"
+    src="https://images.unsplash.com/photo-1676630656246-3047520adfdf?auto=format&fit=crop&w=1800&q=85"
+    alt="Electrician working on modern electrical panel"
+    onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=1800&q=85'">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      Hutto's Go-To Electrician for Modern Homes — EV &amp; Smart Home Specialists
+    </div>
+    <h1>Dead Outlets. Tripped Breakers.<em>Fixed Today Or It's Free.</em></h1>
+    <p class="hero-sub">Derek Ruiz built Revive Electric around one idea: the electrician your grandparents called doesn't know how to wire a Tesla charger or a smart panel. We do. Modern problems, modern solutions, and a guarantee that we won't leave until it works.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">
+        <svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11L10 22L20 10H13.5L13 2Z"/></svg>
+        Get a Free Estimate
+      </a>
+      <a href="tel:5125550000" class="btn-ghost">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.72 19.79 19.79 0 01.22 1.11 2 2 0 012.22 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+        (512) 555-0000
+      </a>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-chip">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        5.0★ Google Rating
+      </div>
+      <div class="trust-chip">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        Licensed &amp; Insured
+      </div>
+      <div class="trust-chip">
+        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+        48-Hour or Free
+      </div>
+      <div class="trust-chip">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+        900+ Jobs Done
+      </div>
+    </div>
+  </div>
+  <div class="hero-watermark">Revive Electric &nbsp;•&nbsp; Hutto, TX</div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <span class="stat-num">2019</span>
+      <span class="stat-label">Founded</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">900+</span>
+      <span class="stat-label">Jobs Completed</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">5.0★</span>
+      <span class="stat-label">Google Rating</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">48-Hr</span>
+      <span class="stat-label">Or It's Free</span>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="services-header">
+      <p class="section-eyebrow">What We Do</p>
+      <h2 class="section-title">Modern Electrical.<br>For Modern Homes.</h2>
+      <p class="section-sub">From EV chargers to smart panels — we install, repair, and upgrade what today's homes actually need.</p>
+    </div>
+    <div class="services-grid">
+
+      <div class="service-card">
+        <div class="service-thumb">
+          <img src="https://images.unsplash.com/photo-1758101755915-462eddc23f57?auto=format&fit=crop&w=600&q=80" alt="EV Charger Installation" onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80'">
+        </div>
+        <div class="service-body">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 10H4l1.5-6h13L20 10zm-16 3a1 1 0 011-1h14a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zm5 4h6M8 17h.01M16 17h.01"/><rect x="6" y="8" width="2" height="4" rx="1" fill="var(--accent)"/><path d="M13 2L4.5 13.5H11L10 22L20 10H13.5L13 2Z" transform="scale(0.5) translate(14,2)"/></svg>
+          </div>
+          <h3 class="service-title">EV Charger Installation</h3>
+          <p class="service-desc">Level 1 &amp; 2 chargers for Tesla, Rivian, Ford, GM. Usually installed same-week. Permit pulled, inspection passed.</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-thumb">
+          <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80" alt="Smart Home Electrical" onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80'">
+        </div>
+        <div class="service-body">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          </div>
+          <h3 class="service-title">Smart Home Electrical</h3>
+          <p class="service-desc">Smart panels, whole-home automation wiring, Lutron, Nest, Ring integration. Your home, intelligently wired.</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-thumb">
+          <img src="https://images.unsplash.com/photo-1595856619767-ab739fa7daae?auto=format&fit=crop&w=600&q=80" alt="Panel Upgrades" onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80'">
+        </div>
+        <div class="service-body">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+          </div>
+          <h3 class="service-title">Panel Upgrades &amp; Smart Panels</h3>
+          <p class="service-desc">Leviton or Square D smart panels with circuit-level monitoring. Know exactly what's drawing power — from your phone.</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-thumb">
+          <img src="https://images.unsplash.com/photo-1597502310092-31cdaa35b46d?auto=format&fit=crop&w=600&q=80" alt="Emergency Electrical" onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80'">
+        </div>
+        <div class="service-body">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><path d="M1 21L12 2l11 19H1zm11-3h.01M11 13v-4h2v4h-2z"/></svg>
+          </div>
+          <h3 class="service-title">Emergency Electrical</h3>
+          <p class="service-desc">Tripped main, sparking outlets, dead half the house. Same-day response. We don't leave until your power is back.</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-thumb">
+          <img src="https://images.unsplash.com/photo-1615774925655-a0e97fc85c14?auto=format&fit=crop&w=600&q=80" alt="Solar and Battery Prep" onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80'">
+        </div>
+        <div class="service-body">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm1 14.93V15a1 1 0 00-2 0v1.93A8.001 8.001 0 014.07 13H6a1 1 0 000-2H4.07A8.001 8.001 0 0111 4.07V6a1 1 0 002 0V4.07A8.001 8.001 0 0119.93 11H18a1 1 0 000 2h1.93A8.001 8.001 0 0113 16.93z"/></svg>
+          </div>
+          <h3 class="service-title">Solar &amp; Battery Prep</h3>
+          <p class="service-desc">Pre-wiring for solar, Powerwall and Enphase battery backup sub-panels. Ready for energy independence.</p>
+        </div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-thumb">
+          <img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80" alt="Outlet and Circuit Additions" onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=600&q=80'">
+        </div>
+        <div class="service-body">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          </div>
+          <h3 class="service-title">Outlet &amp; Circuit Additions</h3>
+          <p class="service-desc">New 240V circuits, dedicated appliance lines, GFCI/AFCI everywhere code requires. Done right, first time.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- OUR STORY -->
+<section class="section section-alt" id="story">
+  <div class="container">
+    <div class="story-grid">
+      <div class="story-img-wrap">
+        <img class="story-img"
+          src="https://images.unsplash.com/photo-1660330590022-9f4ff56b63f6?auto=format&fit=crop&w=800&q=85"
+          alt="Derek Ruiz — Revive Electric founder"
+          onerror="this.src='https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&w=800&q=85'">
+        <div class="story-img-accent">
+          <div class="story-img-accent-num">2019</div>
+          <div class="story-img-accent-text">Founded in Hutto</div>
+        </div>
+      </div>
+      <div class="story-content">
+        <p class="section-eyebrow">Our Story</p>
+        <h2 class="section-title">Built for the Homes You Actually Live In</h2>
+        <p class="story-body">Derek Ruiz noticed something in 2019: the electricians in Hutto knew how to wire a house from 1985 but were scratching their heads at Tesla chargers and smart panels. He'd been in the trade since 18, kept up with every code update, and knew there was a market for an electrician who could handle what modern homes actually needed.</p>
+        <p class="story-body">Revive Electric opened with zero marketing and grew entirely on referrals. Derek holds a Journeyman Electrician license, pulls every permit, and passes every inspection.</p>
+        <blockquote class="story-quote">
+          "We touch your wiring once, and you tell three neighbors."
+          <cite>— Derek Ruiz, Journeyman Electrician &amp; Founder</cite>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECENT JOBS -->
+<section class="section" id="jobs">
+  <div class="container">
+    <div class="services-header" style="margin-bottom:40px">
+      <p class="section-eyebrow">Recent Work</p>
+      <h2 class="section-title">Jobs We've Done<br>Near You</h2>
+      <p class="section-sub">Real jobs from real customers across Hutto, Pflugerville, Round Rock, Taylor and Austin.</p>
+    </div>
+    <div class="jobs-grid">
+
+      <div class="job-card">
+        <div class="job-meta">
+          <span class="job-pin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Hutto, TX
+          </span>
+        </div>
+        <h4 class="job-title">Tesla Wall Connector + Panel Upgrade</h4>
+        <p class="job-detail">100A to 200A upgrade, dedicated 60A Tesla circuit. Same-week installation, permit pulled and closed.</p>
+        <span class="job-tag">EV Charger</span>
+      </div>
+
+      <div class="job-card">
+        <div class="job-meta">
+          <span class="job-pin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Pflugerville, TX
+          </span>
+        </div>
+        <h4 class="job-title">Full Smart Home Wiring (New Construction)</h4>
+        <p class="job-detail">3,200 sq ft, Lutron smart switches throughout, pre-wired for 4 cameras, Ring doorbell system.</p>
+        <span class="job-tag">Smart Home</span>
+      </div>
+
+      <div class="job-card">
+        <div class="job-meta">
+          <span class="job-pin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Round Rock, TX
+          </span>
+        </div>
+        <h4 class="job-title">Whole-Home Surge + Smart Panel Install</h4>
+        <p class="job-detail">Square D smart panel, app-controlled circuit monitoring, whole-home surge protection.</p>
+        <span class="job-tag">Panel Upgrade</span>
+      </div>
+
+      <div class="job-card">
+        <div class="job-meta">
+          <span class="job-pin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Taylor, TX
+          </span>
+        </div>
+        <h4 class="job-title">Solar Battery Backup Sub-Panel</h4>
+        <p class="job-detail">Enphase IQ battery system, transfer switch, critical load panel wiring. Full energy independence setup.</p>
+        <span class="job-tag">Solar &amp; Battery</span>
+      </div>
+
+      <div class="job-card">
+        <div class="job-meta">
+          <span class="job-pin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Austin, TX
+          </span>
+        </div>
+        <h4 class="job-title">Emergency: Partial Power Loss (Half House Dead)</h4>
+        <p class="job-detail">Main lug failure. Diagnosed and repaired same-day, house back on in 4 hours. No upsell, just fixed.</p>
+        <span class="job-tag">Emergency</span>
+      </div>
+
+      <div class="job-card">
+        <div class="job-meta">
+          <span class="job-pin">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            Hutto, TX
+          </span>
+        </div>
+        <h4 class="job-title">Commercial EV Charging Station (4 Ports)</h4>
+        <p class="job-detail">Office parking lot, 4x Level 2 J1772 chargers, 200A dedicated service. Permitted and inspected.</p>
+        <span class="job-tag">Commercial EV</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section section-alt" id="faq">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px">
+      <p class="section-eyebrow">Got Questions?</p>
+      <h2 class="section-title">Frequently Asked</h2>
+    </div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q">
+          Can you install any EV charger brand?
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes — Tesla Wall Connector, ChargePoint, JuiceBox, Grizzl-E, ClipperCreek, and hardwired units. If it plugs in or hardwires, we can install it.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          Do smart panels require an upgrade?
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Usually not if you're already at 200A. We assess before recommending — no unnecessary upgrades, ever.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          What does "fixed today or free" mean?
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">If we diagnose the problem and can't resolve it on the first visit, the service call is free. Simple as that.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          Do you do commercial EV installations?
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Yes — commercial Level 2 and DCFC rough-in and installation. Parking lots, office buildings, multi-family. Call for a quote.</div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q">
+          Are you licensed?
+          <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Journeyman Electrician license, fully insured, we pull all permits. Every job is done to code and inspected.</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LEAD FORM -->
+<section class="section form-section" id="contact">
+  <div class="container">
+    <div class="form-wrap">
+      <h2 class="form-title">Get a Free Estimate</h2>
+      <p class="form-sub">Tell us what you need — Derek will call you back, usually within the hour.</p>
+      <form id="lead-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="name">Your Name</label>
+            <input class="form-input" type="text" id="name" name="name" placeholder="Jane Smith" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input class="form-input" type="tel" id="phone" name="phone" placeholder="(512) 000-0000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input class="form-input" type="email" id="email" name="email" placeholder="jane@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="service">Service Needed</label>
+            <select class="form-select" id="service" name="service" required>
+              <option value="" disabled selected>Select a service</option>
+              <option>EV Charger Installation</option>
+              <option>Smart Home Electrical</option>
+              <option>Panel Upgrade / Smart Panel</option>
+              <option>Emergency Electrical</option>
+              <option>Solar &amp; Battery Prep</option>
+              <option>Outlet &amp; Circuit Addition</option>
+              <option>Other / Not Sure</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="message">Tell Us More</label>
+            <textarea class="form-textarea" id="message" name="message" placeholder="Describe what you need — type of charger, panel age, any issues you've noticed..."></textarea>
+          </div>
+        </div>
+        <button type="submit" class="form-submit">
+          <svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11L10 22L20 10H13.5L13 2Z"/></svg>
+          Submit Request →
+        </button>
+        <p class="form-guarantee">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+          No spam. No obligation. We call, you decide.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--dark)">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <strong>Revive Electric</strong><br>
+      Hutto's Modern Electrician — Serving Hutto, Pflugerville, Round Rock, Taylor &amp; Austin
+    </div>
+    <div class="footer-links">
+      <a href="#services">Services</a>
+      <a href="#story">About</a>
+      <a href="#jobs">Recent Work</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Free Estimate</a>
+      <a href="tel:5125550000">(512) 555-0000</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Revive Electric LLC &mdash; Hutto, TX 78634 &mdash; Licensed Journeyman Electrician &mdash; All Rights Reserved</p>
+  </div>
+</footer>
+
+<script>
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const item = this.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+// Lead form
+document.getElementById('lead-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = this.querySelector('.form-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Sending...';
+  const data = Object.fromEntries(new FormData(this));
+  data.business = 'revive-electric-hutto';
+  try {
+    const res = await fetch('https://torrolink.netlify.app/.netlify/functions/pitch-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      btn.innerHTML = "Request Sent! We'll call you soon.";
+      btn.style.background = '#22c55e';
+      this.reset();
+    } else throw new Error();
+  } catch {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff" width="18" height="18"><path d="M13 2L4.5 13.5H11L10 22L20 10H13.5L13 2Z"/></svg>Submit Request →';
+  }
+});
+</script>
+</body>
+</html>

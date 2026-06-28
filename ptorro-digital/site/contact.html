@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get a Free Preview — PTorro Digital</title>
+  <meta name="description" content="We'll build a real preview of your website before you spend a dollar. See it first. No commitment.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="page-body">
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="navbar-brand">PTorro<span>Digital</span></a>
+    <div class="navbar-links">
+      <a href="services.html">Services</a>
+      <a href="why-us.html">Why Us</a>
+      <a href="about.html">About</a>
+      <a href="contact.html" class="btn btn-gold btn-sm navbar-cta">Get a Free Preview</a>
+    </div>
+    <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="services.html">Our Services</a>
+    <a href="why-us.html">Why PTorro Digital</a>
+    <a href="about.html">About Us</a>
+    <a href="contact.html">Get a Free Preview</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="container">
+    <h1>Get Your Free Preview</h1>
+    <p>Tell us about your business. We'll build a real site and show it to you — no commitment required.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <!-- LEFT: Info -->
+      <div class="contact-info">
+        <h2>Here's what happens next</h2>
+        <div class="gold-line" style="margin-top:10px;"></div>
+        <div class="about-values" style="margin-top:24px;">
+          <div class="about-value">
+            <div class="about-value-icon" style="background:var(--teal);color:var(--white);font-weight:800;">1</div>
+            <div class="about-value-text">
+              <h4>We receive your info</h4>
+              <p>We look up your business — Google, social media, existing site if you have one.</p>
+            </div>
+          </div>
+          <div class="about-value">
+            <div class="about-value-icon" style="background:var(--teal);color:var(--white);font-weight:800;">2</div>
+            <div class="about-value-text">
+              <h4>We build your preview</h4>
+              <p>A real site with your actual business name, services, and branding — not a template.</p>
+            </div>
+          </div>
+          <div class="about-value">
+            <div class="about-value-icon" style="background:var(--teal);color:var(--white);font-weight:800;">3</div>
+            <div class="about-value-text">
+              <h4>We reach out within 24 hours</h4>
+              <p>We'll contact you to schedule a time to show you what we built — in person or by phone.</p>
+            </div>
+          </div>
+          <div class="about-value">
+            <div class="about-value-icon" style="background:var(--gold);color:var(--white);font-weight:800;">✓</div>
+            <div class="about-value-text">
+              <h4>You decide — zero pressure</h4>
+              <p>If you love it, we close the deal and go live. If not, no charge, no hard feelings.</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:32px;padding:20px;background:var(--teal-light);border-radius:var(--radius);border-left:4px solid var(--teal);">
+          <p style="font-weight:700;color:var(--teal);margin-bottom:6px;">Prefer to reach out directly?</p>
+          <div class="contact-detail"><span>✉️</span><a href="mailto:laign@ptorro.com">laign@ptorro.com</a></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Form -->
+      <div>
+        <div class="form-card">
+          <h3 style="color:var(--teal);font-size:1.2rem;margin-bottom:6px;">Tell us about your business</h3>
+          <p style="color:var(--grey);font-size:.88rem;margin-bottom:24px;">Takes 2 minutes. We do the rest.</p>
+          <div id="formSuccess" class="form-success">
+            <div style="font-size:2rem;margin-bottom:12px;">✅</div>
+            <h3 style="color:var(--teal);margin-bottom:8px;">We got it — thank you!</h3>
+            <p>We'll have a preview of your site ready and reach out within 24 hours.</p>
+          </div>
+          <form id="contactForm" onsubmit="handleSubmit(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Your Name *</label>
+                <input type="text" id="name" name="name" required placeholder="Jane Smith">
+              </div>
+              <div class="form-group">
+                <label for="business">Business Name *</label>
+                <input type="text" id="business" name="business" required placeholder="Smith's Plumbing">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="industry">Industry *</label>
+              <select id="industry" name="industry" required>
+                <option value="">Select your industry...</option>
+                <option>Plumbing</option>
+                <option>HVAC</option>
+                <option>Electrical</option>
+                <option>Landscaping / Lawn Care</option>
+                <option>Cleaning Service</option>
+                <option>Hair Salon / Barber</option>
+                <option>Auto Repair</option>
+                <option>Catering / Food Truck</option>
+                <option>Personal Training / Fitness</option>
+                <option>Home Services / Handyman</option>
+                <option>Roofing / Contractor</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone">Phone *</label>
+                <input type="tel" id="phone" name="phone" required placeholder="(512) 555-0100">
+              </div>
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required placeholder="jane@smithplumbing.com">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="current_site">Current website (if any)</label>
+              <input type="text" id="current_site" name="current_site" placeholder="mysite.com or 'none'">
+            </div>
+            <div class="form-group">
+              <label for="message">Anything else we should know?</label>
+              <textarea id="message" name="message" placeholder="Services you offer, your location, any specific requests..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-gold btn-lg form-submit-btn" id="submitBtn">
+              Build My Free Preview →
+            </button>
+            <p style="color:var(--grey);font-size:.8rem;margin-top:12px;text-align:center;">No commitment. No credit card. We reach out within 24 hours.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">PTorro<span>Digital</span></div>
+        <p class="footer-tagline">A PTorro Holdings Company · Austin, TX</p>
+      </div>
+      <div class="footer-col">
+        <h4>Site</h4>
+        <a href="index.html">Home</a>
+        <a href="services.html">Our Services</a>
+        <a href="why-us.html">Why Us</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:laign@ptorro.com">laign@ptorro.com</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 PTorro Holdings LLC. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+
+async function handleSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  const form = document.getElementById('contactForm');
+  const data = {
+    name:         document.getElementById('name').value,
+    business:     document.getElementById('business').value,
+    industry:     document.getElementById('industry').value,
+    phone:        document.getElementById('phone').value,
+    email:        document.getElementById('email').value,
+    current_site: document.getElementById('current_site').value,
+    message:      document.getElementById('message').value,
+  };
+
+  try {
+    const res = await fetch('/.netlify/functions/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('formSuccess').classList.add('show');
+    } else {
+      throw new Error('Server error');
+    }
+  } catch (err) {
+    btn.textContent = 'Build My Free Preview →';
+    btn.disabled = false;
+    alert('Something went wrong. Please email us directly at laign@ptorro.com');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTorro Digital — How We Compare</title>
+  <style>
+    :root {
+      --teal:      #0A3F3F;
+      --teal-mid:  #0f6b6b;
+      --teal-light:#e8f4f4;
+      --gold:      #E8951A;
+      --charcoal:  #1e1e1e;
+      --grey:      #555;
+      --border:    #d4e8e8;
+      --white:     #ffffff;
+      --light:     #f8fbfb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: var(--light);
+      color: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 8px 48px rgba(10,63,63,.14);
+      max-width: 960px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .card-header {
+      background: var(--teal);
+      padding: 32px 40px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .brand { font-size: 1.5rem; font-weight: 800; color: var(--white); }
+    .brand span { color: var(--gold); }
+    .header-tag {
+      background: var(--gold);
+      color: var(--white);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    /* Title row */
+    .card-title {
+      padding: 28px 40px 4px;
+      text-align: center;
+    }
+    .card-title h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--teal);
+    }
+    .gold-bar {
+      width: 52px; height: 4px;
+      background: var(--gold);
+      border-radius: 2px;
+      margin: 10px auto 0;
+    }
+    .card-sub {
+      text-align: center;
+      color: var(--grey);
+      font-size: .95rem;
+      padding: 10px 40px 24px;
+    }
+
+    /* Table */
+    .table-wrap { padding: 0 32px 0; overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .92rem;
+    }
+    thead tr th {
+      padding: 14px 16px;
+      text-align: center;
+      font-weight: 700;
+      font-size: .88rem;
+      border-bottom: 3px solid var(--border);
+      color: var(--charcoal);
+    }
+    thead tr th:first-child { text-align: left; width: 22%; }
+    thead tr th.us-head {
+      background: var(--teal);
+      color: var(--white);
+      border-radius: 10px 10px 0 0;
+      font-size: .95rem;
+    }
+
+    tbody tr td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      vertical-align: middle;
+      color: var(--grey);
+      font-size: .9rem;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--charcoal);
+      font-size: .92rem;
+    }
+    tbody tr:nth-child(even) td { background: rgba(232,244,244,.35); }
+    tbody tr:nth-child(even) td.us { background: rgba(15,107,107,.07); }
+
+    td.us {
+      background: rgba(15,107,107,.05);
+      font-weight: 700;
+    }
+    td.us .yes-text { color: var(--teal-mid); }
+    td.win { color: var(--teal); font-weight: 800; font-size: .95rem; }
+    td.price-win { color: var(--teal); font-weight: 800; font-size: 1.05rem; }
+    td.bad  { color: #c0392b; }
+    td.meh  { color: #888; }
+    td .check { color: #1a8a3a; font-weight: 700; }
+    td .cross { color: #c0392b; font-weight: 700; }
+
+    /* Price row special */
+    .price-row td.us { background: var(--teal-light); }
+
+    /* Footer */
+    .card-footer {
+      padding: 24px 40px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    .footer-msg {
+      font-size: .88rem;
+      color: var(--grey);
+      max-width: 480px;
+    }
+    .footer-msg strong { color: var(--teal); }
+    .cta-btn {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--white);
+      font-weight: 800;
+      font-size: .95rem;
+      padding: 13px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Key insight banner */
+    .insight {
+      margin: 0 32px 24px;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--teal-mid) 100%);
+      border-radius: 10px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .insight-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .insight-text { color: var(--white); font-size: .92rem; line-height: 1.55; }
+    .insight-text strong { color: var(--gold); }
+
+    @media (max-width: 640px) {
+      .card-header, .card-footer, .card-title, .card-sub, .table-wrap, .insight { padding-left: 20px; padding-right: 20px; }
+      .card-header { flex-direction: column; }
+      .card-title h1 { font-size: 1.5rem; }
+      table { font-size: .8rem; }
+      thead tr th, tbody tr td { padding: 10px 10px; }
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .card { box-shadow: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Header -->
+  <div class="card-header">
+    <div class="brand">PTorro<span>Digital</span></div>
+    <div class="header-tag">Competitive Overview</div>
+  </div>
+
+  <!-- Title -->
+  <div class="card-title">
+    <h1>How We Compare</h1>
+    <div class="gold-bar"></div>
+  </div>
+  <p class="card-sub">Before you spend a dollar anywhere, see what you're actually comparing.</p>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th class="us-head">PTorro Digital</th>
+          <th>Agency</th>
+          <th>Wix / GoDaddy</th>
+          <th>Freelancer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="price-row">
+          <td>Starting price</td>
+          <td class="us price-win">$529.28</td>
+          <td>$4,000–$35,000</td>
+          <td>$200–$600/yr<br><small style="color:#c0392b;">(+ you build it yourself)</small></td>
+          <td>$1,500–$8,000</td>
+        </tr>
+        <tr>
+          <td>Time to go live</td>
+          <td class="us win">Under 1 week</td>
+          <td class="meh">2–6 months</td>
+          <td class="bad">You build it yourself</td>
+          <td class="meh">4–12 weeks</td>
+        </tr>
+        <tr>
+          <td>You own the site</td>
+          <td class="us"><span class="check">✓</span> <span class="yes-text">Yes — forever</span></td>
+          <td><span class="check">✓</span> Usually</td>
+          <td class="bad"><span class="cross">✗</span> Locked in — can't export</td>
+          <td><span class="check">✓</span> Usually</td>
+        </tr>
+        <tr>
+          <td>Built for mobile</td>
+          <td class="us"><span class="check">✓</span> <span class="yes-text">Every site</span></td>
+          <td>Depends on budget</td>
+          <td class="bad"><span class="cross">✗</span> Templates — not optimized</td>
+          <td>Varies</td>
+        </tr>
+        <tr>
+          <td>Real SEO built in</td>
+          <td class="us"><span class="check">✓</span> <span class="yes-text">Every site</span></td>
+          <td>At higher tiers</td>
+          <td class="bad"><span class="cross">✗</span> Only 1.4% get traffic</td>
+          <td>Varies</td>
+        </tr>
+        <tr>
+          <td>Built for phone leads</td>
+          <td class="us"><span class="check">✓</span> <span class="yes-text">Click-to-call standard</span></td>
+          <td>Varies</td>
+          <td class="bad"><span class="cross">✗</span> Built for creatives, not trades</td>
+          <td>Varies</td>
+        </tr>
+        <tr>
+          <td>Security &amp; SSL</td>
+          <td class="us"><span class="check">✓</span> <span class="yes-text">We handle it</span></td>
+          <td><span class="check">✓</span> Usually</td>
+          <td class="meh">Basic only</td>
+          <td class="bad"><span class="cross">✗</span> Usually left to you</td>
+        </tr>
+        <tr>
+          <td>You do the work</td>
+          <td class="us win">Nothing — we handle it</td>
+          <td>Nothing</td>
+          <td class="bad">You do everything</td>
+          <td>Mostly nothing</td>
+        </tr>
+        <tr>
+          <td>Support after launch</td>
+          <td class="us"><span class="check">✓</span> <span class="yes-text">Ongoing plans available</span></td>
+          <td class="bad">Expensive retainers</td>
+          <td class="bad"><span class="cross">✗</span> Knowledge base only</td>
+          <td class="bad"><span class="cross">✗</span> Usually disappears</td>
+        </tr>
+        <tr>
+          <td>See it before you pay</td>
+          <td class="us win">Free preview — no commitment</td>
+          <td class="bad"><span class="cross">✗</span> Proposal process first</td>
+          <td class="bad"><span class="cross">✗</span> Build it yourself first</td>
+          <td class="bad"><span class="cross">✗</span> Deposit required</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Insight banner -->
+  <div class="insight" style="margin-top:24px;">
+    <div class="insight-icon">💡</div>
+    <div class="insight-text">
+      For a plumber where one call = $800, a <strong>$529.28 website pays for itself in a single job</strong> — and keeps paying forever.
+      An agency charges what a roofer earns on an entire project. We charge less than one service call.
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <div class="footer-msg">
+      <strong>PTorro Digital · PTorro Holdings LLC · Austin, TX</strong><br>
+      We show up with your site already built. You approve it, you own it, you go live the same week.
+      <br><span style="font-size:.82rem;margin-top:4px;display:block;">laign@ptorro.com · ptorrodigital.com</span>
+    </div>
+    <a href="contact.html" class="cta-btn">Get Your Free Preview →</a>
+  </div>
+
+</div>
+
+</body>
+</html>
