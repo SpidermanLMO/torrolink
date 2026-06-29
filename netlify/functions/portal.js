@@ -1345,37 +1345,26 @@ exports.handler = async () => {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('editorScreen').style.display = 'block';
       document.getElementById('signOutBtn').style.display = 'inline-block';
-      // changePwBtn is now inside Profile tab — always visible after sign-in
 
-      // Load profile for this customer email
-      const email = session.user.email;
-      const { data: customer } = await _supabase
-        .from('customers')
-        .select('id, plan, metrics_active')
-        .eq('email', email)
-        .maybeSingle();
+      // Load customer + profile via server-side function (bypasses RLS, auto-creates if needed)
+      try {
+        const res = await fetch('/.netlify/functions/portal-load', {
+          headers: { 'Authorization': 'Bearer ' + session.access_token }
+        });
+        const data = await res.json();
 
-      if (!customer) {
-        showMsg('error', 'No account found for ' + escHtml(email) + '. Use the email you purchased with.');
-        return;
+        if (!res.ok) {
+          showMsg('error', data.error || 'Failed to load your profile. Please refresh and try again.');
+          return;
+        }
+
+        _customer = data.customer;
+        _profile  = data.profile;
+        populateEditor(data.profile);
+      } catch (err) {
+        console.error('portal-load error:', err);
+        showMsg('error', 'Could not load your profile. Please refresh the page or contact orders@torrolink.com');
       }
-      _customer = customer;
-
-      const { data: profile } = await _supabase
-        .from('profiles')
-        .select('*')
-        .eq('customer_id', customer.id)
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      if (!profile) {
-        showMsg('error', 'No profile found. Contact orders@torrolink.com for help.');
-        return;
-      }
-
-      _profile = profile;
-      populateEditor(profile);
     }
 
     // ── Populate form fields ───────────────────────────────────────
