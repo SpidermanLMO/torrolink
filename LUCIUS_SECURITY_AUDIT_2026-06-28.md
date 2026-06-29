@@ -54,3 +54,11 @@ These are lower severity and each has a reason I didn't change it unattended:
 
 ## Net result
 The member portal and public landing pages are now hardened against the high-impact web vulns: no stored XSS, no cross-tenant read/write of profiles, analytics, leads, partners, reviews, or customer emails. All fixes were verified by actually attacking the live site as a logged-in member.
+
+---
+
+## ROUND 2 — Hardening of the deferred items (deploy 04fd79b)
+- **Admin password hashing** — `admin.js` now uses scrypt (`hashPassword`/`verifyPassword`) + constant-time `_safeEq` for Basic-auth, token check, and change_password. Change-password stores a `scrypt$salt$hash` (no more plaintext in `admin_config`). Legacy/env plaintext still verified (constant-time) so current login is unaffected. Logic unit-tested.
+- **agent-mailer** — constant-time `x-agent-secret` compare; recipients validated as emails, capped at 50.
+- **Signup rate limit** — per-IP throttle (5 / 10 min) via new `rate_limits` table (RLS on, service-role only); fail-open. Verified it records attempts + would 429 past the limit.
+- Remaining/by-design: signup enumeration message kept (needed for the signup→signin UX; rate limit mitigates abuse). `leads` stays read-denied to clients (secure); add owner-scoped GRANT+policy later if the paid leads dashboard needs client reads.
