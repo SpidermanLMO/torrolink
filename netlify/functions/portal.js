@@ -1336,7 +1336,9 @@ exports.handler = async () => {
       }
     }
     async function signOut() {
-      await _supabase.auth.signOut();
+      _dirty = false; // prevent unsaved-changes prompt from blocking sign-out
+      try { await _supabase.auth.signOut(); } catch (e) {}
+      window.location.href = '/portal'; // hard reload -> shows login screen, fully signed out
     }
 
     // ── After sign-in ──────────────────────────────────────────────
