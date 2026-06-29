@@ -24,11 +24,28 @@ if %errorlevel% neq 0 (
 echo Removing git lock if present...
 if exist .git\index.lock del /f .git\index.lock
 
+:: Self-heal a corrupt git index (CIFS sometimes corrupts .git\index).
+:: The index is just the staging area -- safe to rebuild from HEAD; working files untouched.
+echo Checking git index health...
+%GIT% status >nul 2>&1
+if errorlevel 1 (
+  echo Git index corrupt - rebuilding from HEAD...
+  if exist .git\index del /f .git\index
+  %GIT% read-tree HEAD
+  %GIT% status >nul 2>&1
+  if errorlevel 1 (
+    echo ERROR: index still unhealthy after rebuild. Stopping so nothing is damaged.
+    pause
+    exit /b 1
+  )
+  echo Index rebuilt OK.
+)
+
 echo Staging all changes...
 %GIT% add -A
 
 echo Committing...
-%GIT% commit -m "design: premium depth pass on public profiles (elevation, refined type, polished cards + rows)"
+%GIT% commit -m "ops: upgrade agent definitions, sharpen sales playbook+rundown, fix pitch-site drafts; harden deploy script (self-heal corrupt index)"
 
 echo Pushing...
 %GIT% push origin main

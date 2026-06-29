@@ -13,7 +13,7 @@ _Updated: 2026-06-27 by Bruce (morning auto-refresh)_
 
 ## 🟡 Up Next
 
-- [ ] **Create Stripe products for PTorro Digital tiers** — Launch ($529.28), Growth ($749), Maintenance ($59/mo or $499/yr). Needed before first close.
+- [ ] **Create Stripe products for PTorro Digital tiers** — Launch ($529.28), Growth ($693.88), Maintenance ($59/mo or $499/yr). Needed before first close.
 - [ ] **After first PTorro Digital close** — update pitch site: swap `.netlify.app` domain to client's real `.com`, update OWNER_EMAIL in pitch-lead.js.
 - [ ] **Review marketing content** — Claude built these, Laign approves before publishing: `email/cold-smb-sequence.md`, `email/nurture-sequence.md`, `email/launch-announcement.md`, `social/content-package-week1.md`, `BIOS.md` (pick TikTok + IG bios).
 - [ ] **Get first paying TorroLink customer** — Site is clean, all bugs fixed. Push via social or outreach.

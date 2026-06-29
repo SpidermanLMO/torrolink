@@ -26,6 +26,7 @@ Fast lookup. One line per topic. Go to WIKI.md for full detail.
 |------|---------|
 | BRUCE.md | Master agent — oversees everything |
 | EL_CHAPPO.md | TorroLink operations agent — runs torrolink.com |
+| HAWK.md | Waypoint Roofing field agent — referral partners, pipeline |
 | LUCIUS.md | Tech & QA — owns all code and deploys |
 | ALFRED.md | Customer Success — every human touchpoint |
 | ORACLE.md | Intelligence — metrics and billing |
@@ -33,6 +34,7 @@ Fast lookup. One line per topic. Go to WIKI.md for full detail.
 | VICKI_VALE.md | Social & Content — TorroLink + Waypoint Roofing (hard brand firewall) |
 | THE_HUNTRESS.md | Email & Outreach — TorroLink + Waypoint Roofing (hard brand firewall) |
 | PETER_PARKER.md | Web research — delegated by Bruce to any agent |
+| DUKE.md | PTorro Digital — web design division GM (Beachhead, Snake Eyes, Mainframe) |
 | PROTOCOL.md | Shared standards — self-validation loop, hard stops, escalation |
 | RAW.md | Everything input raw — never deleted |
 | WIKI.md | Organized, usable knowledge |
