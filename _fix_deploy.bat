@@ -1,7 +1,7 @@
 @echo off
 cd /d C:\Laign\Claude\Torrolink
 
-:: Try to find git -- check common install locations if not in PATH
+:: Find git
 where git >nul 2>&1
 if %errorlevel% neq 0 (
   if exist "C:\Program Files\Git\cmd\git.exe" (
@@ -17,40 +17,32 @@ if %errorlevel% neq 0 (
   set GIT=git
 )
 
-:: Set identity (required for commits)
+:: Identity (required for commits)
 %GIT% config --global user.email "laign@ptorro.com"
 %GIT% config --global user.name "Laign"
 
-echo Removing git lock if present...
-if exist .git\index.lock del /f .git\index.lock
+:: Remove a stale lock if present
+if exist ".git\index.lock" del /f /q ".git\index.lock"
 
-:: Self-heal a corrupt git index (CIFS sometimes corrupts .git\index).
-:: The index is just the staging area -- safe to rebuild from HEAD; working files untouched.
-echo Checking git index health...
+:: Self-heal a corrupt git index using git only (NO file deletion).
+:: read-tree rebuilds the index from HEAD; working files are never touched.
+echo Checking git index...
 %GIT% status >nul 2>&1
 if errorlevel 1 (
-  echo Git index corrupt - rebuilding from HEAD...
-  if exist .git\index del /f .git\index
+  echo Index unhealthy - rebuilding from HEAD...
   %GIT% read-tree HEAD
-  %GIT% status >nul 2>&1
-  if errorlevel 1 (
-    echo ERROR: index still unhealthy after rebuild. Stopping so nothing is damaged.
-    pause
-    exit /b 1
-  )
-  echo Index rebuilt OK.
 )
 
-echo Staging all changes...
+echo Staging changes...
 %GIT% add -A
 
 echo Committing...
-%GIT% commit -m "ops: upgrade agent definitions, sharpen sales playbook+rundown, fix pitch-site drafts; harden deploy script (self-heal corrupt index)"
+%GIT% commit -m "deploy: ptorro-digital favicon + pending site/agent/pricing updates"
 
 echo Pushing...
 %GIT% push origin main
 
 echo.
-echo Done! Netlify deploying (2-3 min).
+echo Done. Netlify deploying (2-3 min).
 echo.
 pause

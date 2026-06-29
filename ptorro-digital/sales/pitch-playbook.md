@@ -113,7 +113,7 @@ Never invent fake deadlines — owners smell it. Use the urgency that's actually
 | If they ask... | Say... |
 |---------------|--------|
 | "How much?" | "$529 one time. Already built — live on your own name within a week." |
-| "Is there a monthly fee?" | "Only if you want us to keep it updated — $59/month, or $499 for the year and you save $208. Totally optional. Most people start with the one-time and add it once they see the calls come in." |
+| "Is there a monthly fee?" | "Only if you want us to keep it updated. Hosting + security is $18.94/month. If you want us making your changes for you too, it's $29.28/month or $299 for the year. Totally optional — most people start with the one-time and add it once they see the calls come in." |
 | "What's the difference in plans?" | "Launch is $529 and gets you the full site. Growth is $693.88 — adds your Google Business Profile setup and unlimited updates. For most folks starting out, Launch is plenty." |
 | "What if I want more pages?" | "We can quote that. But honestly, you don't need more than the core pages to start getting calls. Let's get you found first." |
 | "Can I keep the site if I stop paying?" | "Yes. You own it, the domain stays yours. No contract, no lock-in — that's the whole point." |

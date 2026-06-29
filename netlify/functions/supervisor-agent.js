@@ -118,6 +118,9 @@ async function diagnoseFailure(agentName, error) {
   return msg.content[0].text;
 }
 
+// NOTE: decideNextAgent is intentionally ADVISORY. It returns the suggested
+// next agent only; a human/flow decides whether to invoke it. Do NOT wire this
+// to auto-trigger agents — that would violate the "draft-first, never auto-send" guardrail.
 async function decideNextAgent(completedAgent, result) {
   const handoffs = {
     "order-agent": "qr-generator-agent",

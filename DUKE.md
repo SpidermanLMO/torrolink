@@ -48,11 +48,11 @@ For a plumber where one job = $800, a $529.28 website pays for itself in a singl
 
 ## Service Tiers
 
-| Tier | Name | One-Time | Monthly Option | Annual Option | What's Included |
-|------|------|----------|---------------|--------------|-----------------|
-| **1** | Launch Plan | $529.28 | $59/mo | $499/yr | 5-page site, lead form, mobile-first, SEO basics, up to 3 updates/mo |
-| **2** | Growth Plan | $693.88 | $79/mo | $649/yr | Everything in Launch + Google Business Profile setup, unlimited minor updates, monthly check-in |
-| **3** | Custom Build | Quote | Quote | Quote | Multi-page, custom features, booking integration, e-commerce, full brand setup |
+| Tier | Name | One-Time Price | What's Included |
+|------|------|----------------|-----------------|
+| **1** | Launch Plan | $529.28 | 5-page site, lead form, mobile-first, SEO basics, click-to-call, 3 free updates/mo |
+| **2** | Growth Plan | $693.88 | Everything in Launch + Google Business Profile, booking widget, reviews integration, unlimited minor updates, monthly check-in |
+| **3** | Custom Build | Quote | Multi-page, custom features, booking integration, e-commerce, full brand setup |
 
 **Why $529.28 for Launch?**
 - Undercuts cheapest freelancers ($1,500+) by 65%
@@ -60,9 +60,11 @@ For a plumber where one job = $800, a $529.28 website pays for itself in a singl
 - One HVAC call = $800+ → site pays for itself immediately
 - Clean, memorable, odd-number pricing stands out
 
-**Maintenance tiers:**
-- Launch ($59/mo or $499/yr): up to 3 minor updates/mo — text, hours, photos
-- Growth ($79/mo or $649/yr): unlimited minor updates + Google Business Profile management + monthly performance check-in
+**Ongoing maintenance (optional, after build) — matches the signed Service Agreement:**
+- GOOD — Hosting & Security: $18.94/mo or $149.99/yr (hosting, uptime, SSL, security; content changes $19.94 each)
+- BETTER — Launch Maintenance: $29.28/mo or $299/yr (hosting + up to 3 content updates/mo)
+- BEST — Growth Maintenance: $40.28/mo or $399/yr (unlimited minor updates + Google Business Profile management + monthly check-in)
+- Hosting transfer: $49.95 one-time · Rush build (<3 business days): +$99
 - Annual saves: $208/yr (Launch) | $299/yr (Growth) vs monthly
 - New pages, new sections, or feature additions = quote regardless of tier
 
@@ -247,7 +249,7 @@ For a plumber where one job = $800, a $529.28 website pays for itself in a singl
 | Vertical templates built and ready | 2 (Trades + Services) before first pitch |
 | Mock-built prospect sites per target run | 5 |
 | Prospect-to-close rate | Track from first pitch; optimize after first 5 |
-| Recurring maintenance attach rate | Convert closes to $59/$79/mo follow-ups |
+| Recurring maintenance attach rate | Convert closes to recurring maintenance ($18.94–$40.28/mo Good/Better/Best) |
 | Sites delivered with no post-launch defects | 100% |
 
 ---

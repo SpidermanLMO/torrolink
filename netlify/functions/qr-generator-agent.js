@@ -8,6 +8,8 @@ const QRCode = require("qrcode");
 const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function escHtml(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#x27;");}
+
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "laign@ptorro.com";
 
 exports.handler = async (event) => {
@@ -47,13 +49,13 @@ exports.handler = async (event) => {
       html: `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
           <h2 style="color:#0f6b6b;">Your QR Code is ready!</h2>
-          <p>Hey ${name?.split(" ")[0] || "there"}, your Torrolink QR code for <strong>${business || "your business"}</strong> is attached to this email.</p>
+          <p>Hey ${escHtml(name?.split(" ")[0] || "there")}, your Torrolink QR code for <strong>${escHtml(business || "your business")}</strong> is attached to this email.</p>
 
           <h3>How to use it:</h3>
           <ul>
             <li>Download the attached PNG file</li>
             <li>Print it, put it on your business cards, signage, menus, or anywhere customers will see it</li>
-            <li>Anyone who scans it will go straight to: <strong>${url}</strong></li>
+            <li>Anyone who scans it will go straight to: <strong>${escHtml(url)}</strong></li>
           </ul>
 
           <h3>Tips for best results:</h3>
@@ -81,7 +83,7 @@ exports.handler = async (event) => {
       from: "Torrolink QR Agent <orders@torrolink.com>",
       to: OWNER_EMAIL,
       subject: `✅ QR Delivered: ${business || name} (${orderId})`,
-      html: `<p>QR code generated and emailed to <strong>${email}</strong> for order <strong>${orderId}</strong>.</p><p>URL encoded: ${url}</p>`,
+      html: `<p>QR code generated and emailed to <strong>${escHtml(email)}</strong> for order <strong>${escHtml(orderId)}</strong>.</p><p>URL encoded: ${escHtml(url)}</p>`,
     });
 
     return respond(200, { success: true, message: "QR code generated and delivered." });

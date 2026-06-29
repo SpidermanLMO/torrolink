@@ -7,6 +7,8 @@
 const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function escHtml(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#x27;");}
+
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "laign@ptorro.com";
 
 exports.handler = async (event) => {
@@ -33,11 +35,11 @@ exports.handler = async (event) => {
           <h2 style="color:#0f6b6b;">New Torrolink Order</h2>
           <table style="width:100%;border-collapse:collapse;">
             <tr><td style="padding:8px;font-weight:bold;">Order ID</td><td style="padding:8px;">${orderId}</td></tr>
-            <tr style="background:#f4f6f8;"><td style="padding:8px;font-weight:bold;">Customer</td><td style="padding:8px;">${name}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold;">Email</td><td style="padding:8px;">${email}</td></tr>
-            <tr style="background:#f4f6f8;"><td style="padding:8px;font-weight:bold;">Business</td><td style="padding:8px;">${business || "Not provided"}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold;">Plan</td><td style="padding:8px;">${plan}</td></tr>
-            <tr style="background:#f4f6f8;"><td style="padding:8px;font-weight:bold;">Notes</td><td style="padding:8px;">${message || "None"}</td></tr>
+            <tr style="background:#f4f6f8;"><td style="padding:8px;font-weight:bold;">Customer</td><td style="padding:8px;">${escHtml(name)}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Email</td><td style="padding:8px;">${escHtml(email)}</td></tr>
+            <tr style="background:#f4f6f8;"><td style="padding:8px;font-weight:bold;">Business</td><td style="padding:8px;">${escHtml(business || "Not provided")}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;">Plan</td><td style="padding:8px;">${escHtml(plan)}</td></tr>
+            <tr style="background:#f4f6f8;"><td style="padding:8px;font-weight:bold;">Notes</td><td style="padding:8px;">${escHtml(message || "None")}</td></tr>
             <tr><td style="padding:8px;font-weight:bold;">Time</td><td style="padding:8px;">${timestamp} CT</td></tr>
           </table>
           <p style="margin-top:24px;color:#888;font-size:0.85rem;">QR Generator Agent has been triggered automatically.</p>
@@ -54,11 +56,11 @@ exports.handler = async (event) => {
       html: `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
           <h2 style="color:#0f6b6b;">Your order is confirmed!</h2>
-          <p>Hey ${name.split(" ")[0]}, thanks for choosing Torrolink. Here's a summary of your order:</p>
+          <p>Hey ${escHtml(name.split(" ")[0])}, thanks for choosing Torrolink. Here's a summary of your order:</p>
           <table style="width:100%;border-collapse:collapse;margin:16px 0;">
             <tr style="background:#f4f6f8;"><td style="padding:10px;font-weight:bold;">Order ID</td><td style="padding:10px;">${orderId}</td></tr>
-            <tr><td style="padding:10px;font-weight:bold;">Plan</td><td style="padding:10px;">${plan}</td></tr>
-            <tr style="background:#f4f6f8;"><td style="padding:10px;font-weight:bold;">Business</td><td style="padding:10px;">${business || name}</td></tr>
+            <tr><td style="padding:10px;font-weight:bold;">Plan</td><td style="padding:10px;">${escHtml(plan)}</td></tr>
+            <tr style="background:#f4f6f8;"><td style="padding:10px;font-weight:bold;">Business</td><td style="padding:10px;">${escHtml(business || name)}</td></tr>
           </table>
           <p><strong>What happens next:</strong> We'll have your QR code built and in your inbox within 48 hours. If you have questions in the meantime, reply to this email.</p>
           <p style="margin-top:32px;">Welcome to Torrolink,<br/><strong>The Torrolink Team</strong><br/>A PTorro Holdings Company</p>

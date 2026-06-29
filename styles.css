@@ -932,3 +932,21 @@ details[open] .faq-question::after { content: '−'; }
   }
   .sticky-cta-mobile .btn { display: block; width: 100%; text-align: center; }
 }
+
+
+/* ════════ PORTAL PREMIUM POLISH (member editor — scoped to .tl-page only) ════════ */
+.tl-page{background:radial-gradient(1100px 520px at 50% -10%,rgba(15,107,107,0.06),transparent 70%),linear-gradient(#f6f8fb,#eef2f5);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+.tl-topbar{background:linear-gradient(120deg,#0a4d4d 0%,#0f6b6b 100%);box-shadow:0 2px 18px rgba(10,77,77,0.28);position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.06);}
+.tl-card{border-radius:18px;border:1px solid rgba(17,24,39,0.06);box-shadow:0 1px 2px rgba(16,24,40,0.04),0 10px 24px rgba(16,24,40,0.06),0 30px 56px rgba(16,24,40,0.05);}
+.tl-card h2{font-size:1.18rem;letter-spacing:-0.01em;display:flex;align-items:center;gap:10px;}
+.tl-card h2::before{content:"";width:4px;height:18px;border-radius:3px;background:linear-gradient(#0f6b6b,#16a085);flex-shrink:0;}
+.tl-page input:focus,.tl-page textarea:focus,.tl-page select:focus{box-shadow:0 0 0 3px rgba(15,107,107,0.13);}
+.tl-page .tab-btn{border-radius:10px;transition:all .2s cubic-bezier(.4,0,.2,1);}
+.tl-page .tab-btn.active{box-shadow:0 4px 12px rgba(15,107,107,0.28);}
+.tl-page .tab-btn:not(.active):hover{border-color:#0f6b6b;color:#0f6b6b;background:#f0faf9;}
+.tl-page .tl-btn{border-radius:10px;box-shadow:0 4px 14px rgba(244,117,43,0.28);transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s,background .2s;}
+.tl-page .tl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(244,117,43,0.36);}
+.tl-page .tl-btn-teal{box-shadow:0 4px 14px rgba(15,107,107,0.28);}
+.tl-page .tl-btn-teal:hover{box-shadow:0 8px 22px rgba(15,107,107,0.34);}
+.tl-page .tl-avatar,.tl-page .tl-avatar-placeholder{box-shadow:0 4px 14px rgba(16,24,40,0.12);}
+@media (prefers-reduced-motion:no-preference){.tl-page .tab-panel.active .tl-card{animation:tlCardRise .5s cubic-bezier(.4,0,.2,1) both;}@keyframes tlCardRise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}}

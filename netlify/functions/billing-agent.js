@@ -8,6 +8,8 @@ const { Resend } = require("resend");
 const { createClient } = require("@supabase/supabase-js");
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function escHtml(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#x27;");}
+
 const OWNER_EMAIL = process.env.OWNER_EMAIL || "laign@ptorro.com";
 
 exports.handler = async (event) => {
@@ -44,7 +46,7 @@ exports.handler = async (event) => {
           from: "Torrolink Billing <billing@torrolink.com>",
           to: OWNER_EMAIL,
           subject: `💰 New Subscriber: ${customer.email}`,
-          html: `<p><strong>${customer.name || customer.email}</strong> just subscribed to <strong>${data.items.data[0]?.price?.nickname || "a plan"}</strong>.</p><p>Amount: $${(data.items.data[0]?.price?.unit_amount / 100).toFixed(2)}/mo</p>`,
+          html: `<p><strong>${escHtml(customer.name || customer.email)}</strong> just subscribed to <strong>${escHtml(data.items.data[0]?.price?.nickname || "a plan")}</strong>.</p><p>Amount: $${(data.items.data[0]?.price?.unit_amount / 100).toFixed(2)}/mo</p>`,
         });
         // Unlock metrics dashboard in Supabase
         const supabaseOnCreate = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
@@ -55,19 +57,25 @@ exports.handler = async (event) => {
       // ── PAYMENT SUCCESS ──────────────────────────────
       case "invoice.payment_succeeded": {
         const customer = await stripe.customers.retrieve(data.customer);
-        await resend.emails.send({
-          from: "Torrolink <billing@torrolink.com>",
-          to: customer.email,
-          subject: "Your Torrolink payment was received ✅",
-          html: `
-            <div style="font-family:sans-serif;max-width:500px;">
-              <h2 style="color:#0f6b6b;">Payment Confirmed</h2>
-              <p>Hi ${customer.name?.split(" ")[0] || "there"}, your payment of <strong>$${(data.amount_paid / 100).toFixed(2)}</strong> has been received.</p>
-              <p>Your QR code and services will continue uninterrupted.</p>
-              <p style="color:#888;font-size:0.85rem;">Torrolink — A PTorro Holdings Company</p>
-            </div>
-          `,
-        });
+        // Guard: a deleted/guest Stripe customer may have no email. Skip the
+        // customer-facing email gracefully rather than throwing.
+        if (customer && customer.email) {
+          await resend.emails.send({
+            from: "Torrolink <billing@torrolink.com>",
+            to: customer.email,
+            subject: "Your Torrolink payment was received ✅",
+            html: `
+              <div style="font-family:sans-serif;max-width:500px;">
+                <h2 style="color:#0f6b6b;">Payment Confirmed</h2>
+                <p>Hi ${escHtml(customer.name?.split(" ")[0] || "there")}, your payment of <strong>$${(data.amount_paid / 100).toFixed(2)}</strong> has been received.</p>
+                <p>Your QR code and services will continue uninterrupted.</p>
+                <p style="color:#888;font-size:0.85rem;">Torrolink — A PTorro Holdings Company</p>
+              </div>
+            `,
+          });
+        } else {
+          console.warn("billing-agent: payment_succeeded with no customer email; skipped customer email.");
+        }
         break;
       }
 
@@ -80,24 +88,28 @@ exports.handler = async (event) => {
           from: "Torrolink Billing <billing@torrolink.com>",
           to: OWNER_EMAIL,
           subject: `⚠️ Payment Failed: ${customer.email}`,
-          html: `<p>Payment failed for <strong>${customer.email}</strong>. Amount: $${(data.amount_due / 100).toFixed(2)}. Stripe will retry automatically.</p>`,
+          html: `<p>Payment failed for <strong>${escHtml(customer.email)}</strong>. Amount: $${(data.amount_due / 100).toFixed(2)}. Stripe will retry automatically.</p>`,
         });
 
-        // Alert customer
-        await resend.emails.send({
-          from: "Torrolink Billing <billing@torrolink.com>",
-          to: customer.email,
-          subject: "Action needed: Your Torrolink payment failed",
-          html: `
-            <div style="font-family:sans-serif;max-width:500px;">
-              <h2 style="color:#e06420;">Payment Issue</h2>
-              <p>Hi ${customer.name?.split(" ")[0] || "there"}, we were unable to process your payment of <strong>$${(data.amount_due / 100).toFixed(2)}</strong>.</p>
-              <p>Please update your payment method to keep your QR code and services active.</p>
-              <a href="https://torrolink.com/portal" style="background:#f4752b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">Update Payment Method</a>
-              <p style="color:#888;font-size:0.85rem;margin-top:24px;">Torrolink — A PTorro Holdings Company</p>
-            </div>
-          `,
-        });
+        // Alert customer — guard against deleted/guest customers with no email.
+        if (customer && customer.email) {
+          await resend.emails.send({
+            from: "Torrolink Billing <billing@torrolink.com>",
+            to: customer.email,
+            subject: "Action needed: Your Torrolink payment failed",
+            html: `
+              <div style="font-family:sans-serif;max-width:500px;">
+                <h2 style="color:#e06420;">Payment Issue</h2>
+                <p>Hi ${escHtml(customer.name?.split(" ")[0] || "there")}, we were unable to process your payment of <strong>$${(data.amount_due / 100).toFixed(2)}</strong>.</p>
+                <p>Please update your payment method to keep your QR code and services active.</p>
+                <a href="https://torrolink.com/portal" style="background:#f4752b;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:16px;">Update Payment Method</a>
+                <p style="color:#888;font-size:0.85rem;margin-top:24px;">Torrolink — A PTorro Holdings Company</p>
+              </div>
+            `,
+          });
+        } else {
+          console.warn("billing-agent: payment_failed with no customer email; skipped customer email.");
+        }
         break;
       }
 
@@ -108,7 +120,7 @@ exports.handler = async (event) => {
           from: "Torrolink Billing <billing@torrolink.com>",
           to: OWNER_EMAIL,
           subject: `📉 Cancellation: ${customer.email}`,
-          html: `<p><strong>${customer.email}</strong> has cancelled their subscription. Consider a win-back email.</p>`,
+          html: `<p><strong>${escHtml(customer.email)}</strong> has cancelled their subscription. Consider a win-back email.</p>`,
         });
         // Lock metrics dashboard in Supabase
         const supabaseOnDelete = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);

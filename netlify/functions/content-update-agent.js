@@ -10,6 +10,8 @@ const { Resend } = require("resend");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+function escHtml(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#x27;");}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") return respond(405, { error: "Method not allowed" });
 
@@ -25,15 +27,15 @@ exports.handler = async (event) => {
     await resend.emails.send({
       from: "Torrolink <orders@torrolink.com>",
       to: subscriberEmail,
-      subject: `✅ Your ${business} page has been updated`,
+      subject: `✅ We received your ${business} update request`,
       html: `
         <div style="font-family:sans-serif;max-width:500px;margin:0 auto;">
-          <h2 style="color:#0f6b6b;">Page Updated!</h2>
-          <p>Your landing page has been updated. Here's what changed:</p>
+          <h2 style="color:#0f6b6b;">Update Request Received</h2>
+          <p>Thanks! We've received your update request and it's queued to be applied to your landing page shortly. Here's what we understood you wanted changed:</p>
           <div style="background:#f4f6f8;padding:16px;border-radius:8px;">
-            <pre style="margin:0;white-space:pre-wrap;font-family:sans-serif;">${parsedUpdate.summary}</pre>
+            <pre style="margin:0;white-space:pre-wrap;font-family:sans-serif;">${escHtml(parsedUpdate.summary)}</pre>
           </div>
-          <p style="margin-top:16px;">Anyone who scans your QR code will now see the updated content immediately.</p>
+          <p style="margin-top:16px;">We'll send you a confirmation as soon as the change is live on your QR code page. If anything above looks off, just reply to this email.</p>
           <p style="color:#888;font-size:0.85rem;">Torrolink — A PTorro Holdings Company</p>
         </div>
       `,

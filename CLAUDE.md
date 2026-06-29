@@ -102,4 +102,11 @@ PTorro Holdings runs on a named-agent system. Each agent owns a domain.
 - Run `_fix_deploy.bat` to deploy (I run it, Claude updates the commit message first)
 - Netlify env vars hold all secrets — never hardcode keys in files
 - Full autonomous permission for code fixes during active sessions
-→ Full 
+→ Full
+
+
+## Infrastructure & Backup (recorded 2026-06-29)
+- **This computer** — dedicated to Claude + PTorro operations (primary work machine).
+- **Touchscreen laptop** — Laign uses it for in-person sales pitches; also currently the only off-machine copy of Claude's memory (no dedicated backup server yet).
+- **Backups:** Code → GitHub (SpidermanLMO/torrolink) + Netlify auto-deploy. Claude's memory/context (CLAUDE.md, all agent .md, memory/, key reports) → **PTorro Google Drive** (manual backup, run by Claude on request).
+- **Top infrastructure priority:** buy an upgraded computer + dedicated backup server — right after bills are paid, once revenue starts. Until then, keep the Google Drive memory backup current.
