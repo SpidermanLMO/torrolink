@@ -104,10 +104,21 @@ exports.handler = async (event) => {
 
 // ── THEME ENGINE ───────────────────────────────────────────────────────────────
 
+// Sanitize a user-supplied CSS color to prevent <style> breakout / CSS injection.
+// Allows hex, rgb/rgba, hsl/hsla, and plain named colors; anything else -> fallback.
+function _safeCssColor(c, fallback) {
+  c = String(c == null ? "" : c).trim();
+  if (/^#[0-9a-fA-F]{3,8}$/.test(c)) return c;
+  if (/^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(,\s*(?:0|1|0?\.\d+)\s*)?\)$/.test(c)) return c;
+  if (/^hsla?\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*(,\s*(?:0|1|0?\.\d+)\s*)?\)$/.test(c)) return c;
+  if (/^[a-zA-Z]{3,20}$/.test(c)) return c;
+  return fallback;
+}
+
 function getThemeCSS(theme = {}, backgroundImage = null) {
   const pattern    = theme.pattern    || "solid";
-  const color1     = theme.color1     || "#0f6b6b";
-  const color2     = theme.color2     || "#0a4d4d";
+  const color1     = _safeCssColor(theme.color1, "#0f6b6b");
+  const color2     = _safeCssColor(theme.color2, "#0a4d4d");
   const darkMode   = theme.darkMode   || false;
   const cardStyle  = theme.cardStyle  || "rounded";
 
@@ -530,9 +541,9 @@ function renderProfile(p, reviews = [], photos = [], documents = []) {
   <meta name="twitter:description" content="${escHtml(p.tagline || p.bio?.slice(0,160) || "")}" />
   ${p.logo_url ? `<meta name="twitter:image" content="${escHtml(p.logo_url)}" />` : ""}
   <link rel="canonical" href="https://torrolink.com/p/${escHtml(p.handle || "")}" />
-  <script type="application/ld+json">${jsonLd}</script>
+  <script type="application/ld+json">${jsonLd.replace(/</g, "\\u003c")}</script>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="theme-color" content="${t.color1 || '#0f6b6b'}" />
+  <meta name="theme-color" content="${escHtml(t.color1 || '#0f6b6b')}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />

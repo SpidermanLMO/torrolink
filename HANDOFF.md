@@ -8,7 +8,7 @@ _Read this at the start of every new session BEFORE doing anything else._
 
 | Domain | Status | Next Action |
 |--------|--------|-------------|
-| **TorroLink Portal** | 🔴 BROKEN — root cause found, fix half-written | DEPLOY the fix (see below) |
+| **TorroLink Portal** | 🟢 FIXED & LIVE (deploys 46dc1fa + 2631df3, verified 2026-06-28) | See LUCIUS_QA_REPORT_2026-06-28.md. Follow-up QA on uploads/Links/Themes/Reviews tabs |
 | **PTorro Digital** | 🟢 LIVE at ptorro-digital.netlify.app | DNS pending (user action needed) |
 | **Pitch Sites** | 🟢 All 9 at 10/10 standard | Ready to pitch |
 

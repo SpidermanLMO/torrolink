@@ -89,44 +89,29 @@ exports.handler = async (event) => {
     return respond(404, { error: "Profile not found" });
   }
 
-  // Verify ownership — two paths, fail-closed
-  // Path A: look up customer by customer_id from the profile, compare email
-  const { data: customer } = await supabaseAdmin
+  // Verify ownership — FAIL CLOSED.
+  // Resolve the caller's own customer record from their verified JWT email,
+  // then confirm the requested profileId belongs to that customer.
+  // Never proceed unless ownership is affirmatively confirmed.
+  const { data: callerCustomer, error: callerErr } = await supabaseAdmin
     .from("customers")
-    .select("id, email")
-    .eq("id", profile.customer_id)
+    .select("id")
+    .eq("email", userEmail)
     .maybeSingle();
 
-  const ownerEmail = customer?.email;
+  if (callerErr || !callerCustomer) {
+    return respond(403, { error: "You don't have permission to edit this profile." });
+  }
 
-  if (ownerEmail) {
-    // Path A succeeded — enforce strictly
-    if (ownerEmail !== userEmail) {
-      return respond(403, { error: "You don't have permission to edit this profile." });
-    }
-  } else {
-    // Path A failed (likely GRANT not yet applied) — try reverse lookup
-    // Look up customer by email, then verify they own this profileId
-    const { data: customerByEmail } = await supabaseAdmin
-      .from("customers")
-      .select("id")
-      .eq("email", userEmail)
-      .maybeSingle();
+  const { data: ownedProfile, error: ownedErr } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("id", profileId)
+    .eq("customer_id", callerCustomer.id)
+    .maybeSingle();
 
-    if (customerByEmail) {
-      // Found customer — verify the requested profileId belongs to them
-      const { data: ownedProfile } = await supabaseAdmin
-        .from("profiles")
-        .select("id")
-        .eq("id", profileId)
-        .eq("customer_id", customerByEmail.id)
-        .maybeSingle();
-
-      if (!ownedProfile) {
-        return respond(403, { error: "You don't have permission to edit this profile." });
-      }
-    }
-    // If both lookups fail (GRANT missing on all tables), proceed — migrations pending
+  if (ownedErr || !ownedProfile) {
+    return respond(403, { error: "You don't have permission to edit this profile." });
   }
 
   // ── 4. Handle image uploads ──────────────────────
