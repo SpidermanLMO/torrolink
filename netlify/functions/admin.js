@@ -19,6 +19,31 @@ const OWNER_EMAIL = process.env.OWNER_EMAIL || "laign@ptorro.com";
 const ENV_PASS    = process.env.ADMIN_PASSWORD || "changeme";
 let EFFECTIVE_PASS = ENV_PASS;
 
+// ── Password hashing (scrypt) + constant-time comparison ───────────────
+function _safeEq(a, b) {
+  const ha = crypto.createHash("sha256").update(String(a)).digest();
+  const hb = crypto.createHash("sha256").update(String(b)).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
+function hashPassword(plain) {
+  const salt = crypto.randomBytes(16);
+  const dk = crypto.scryptSync(String(plain), salt, 32);
+  return "scrypt$" + salt.toString("hex") + "$" + dk.toString("hex");
+}
+function verifyPassword(plain, stored) {
+  stored = String(stored || "");
+  if (stored.startsWith("scrypt$")) {
+    const parts = stored.split("$");
+    try {
+      const salt = Buffer.from(parts[1], "hex");
+      const expected = Buffer.from(parts[2], "hex");
+      const dk = crypto.scryptSync(String(plain), salt, expected.length);
+      return crypto.timingSafeEqual(dk, expected);
+    } catch { return false; }
+  }
+  return _safeEq(plain, stored); // legacy plaintext (env var / unmigrated)
+}
+
 async function loadEffectivePass() {
   try {
     const { data } = await supabaseAdmin.from("admin_config").select("value").eq("key", "admin_password").single();
@@ -57,7 +82,7 @@ function makeToken() {
 function checkToken(tok) {
   const ts = Math.floor(Date.now() / 3600000);
   for (const t of [ts, ts - 1, ts - 2]) { // 3-hour grace window
-    if (tok === crypto.createHmac("sha256", EFFECTIVE_PASS).update(String(t)).digest("hex").slice(0, 32)) return true;
+    if (_safeEq(tok, crypto.createHmac("sha256", EFFECTIVE_PASS).update(String(t)).digest("hex").slice(0, 32))) return true;
   }
   return false;
 }
@@ -69,7 +94,7 @@ function isAuthed(event) {
     const h = authHdr.replace(/^Basic\s+/i, "");
     try {
       const [, pass] = Buffer.from(h, "base64").toString("utf-8").split(":");
-      return pass === EFFECTIVE_PASS;
+      return verifyPassword(pass, EFFECTIVE_PASS);
     } catch { return false; }
   }
   // Bearer token (AJAX actions — token is HMAC, not the raw password)
@@ -197,10 +222,11 @@ async function handleAction(event) {
       case "change_password": {
         const { currentPassword, newPassword } = body;
         if (!currentPassword || !newPassword) return json(400, { error: "Missing fields" });
-        if (currentPassword !== EFFECTIVE_PASS) return json(403, { error: "Current password is incorrect" });
+        if (!verifyPassword(currentPassword, EFFECTIVE_PASS)) return json(403, { error: "Current password is incorrect" });
         if (newPassword.length < 8) return json(400, { error: "New password must be at least 8 characters" });
-        await supabaseAdmin.from("admin_config").upsert({ key: "admin_password", value: newPassword }, { onConflict: "key" });
-        EFFECTIVE_PASS = newPassword;
+        const _hashedPw = hashPassword(newPassword);
+        await supabaseAdmin.from("admin_config").upsert({ key: "admin_password", value: _hashedPw }, { onConflict: "key" });
+        EFFECTIVE_PASS = _hashedPw;
         return json(200, { ok: true, msg: "Password updated. Reload and log in with your new password." });
       }
       case "create_beta": {

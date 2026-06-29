@@ -7,6 +7,8 @@
 // ================================================
 
 const { Resend } = require("resend");
+const crypto = require("crypto");
+function _safeEq(a, b){ const ha=crypto.createHash("sha256").update(String(a)).digest(); const hb=crypto.createHash("sha256").update(String(b)).digest(); return crypto.timingSafeEqual(ha,hb); }
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const ALLOWED_SENDERS = [
@@ -25,7 +27,8 @@ exports.handler = async (event) => {
 
   // Auth check
   const secret = event.headers["x-agent-secret"] || event.headers["X-Agent-Secret"];
-  if (!secret || secret !== process.env.ADMIN_SECRET) {
+  const expectedSecret = process.env.ADMIN_SECRET || "";
+  if (!secret || !expectedSecret || !_safeEq(secret, expectedSecret)) {
     return respond(401, { error: "Unauthorized" });
   }
 
@@ -48,7 +51,12 @@ exports.handler = async (event) => {
     return respond(400, { error: `Sender not allowed: ${sender}. Use one of: ${ALLOWED_SENDERS.join(", ")}` });
   }
 
-  const recipients = Array.isArray(to) ? to : [to];
+  let recipients = Array.isArray(to) ? to : [to];
+  const _EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  recipients = recipients.filter(r => typeof r === "string" && _EMAIL_RE.test(r.trim())).map(r => r.trim());
+  if (recipients.length === 0 || recipients.length > 50) {
+    return respond(400, { error: "Invalid recipients: provide 1-50 valid email addresses." });
+  }
 
   // Draft mode — return preview without sending
   if (action === "draft") {

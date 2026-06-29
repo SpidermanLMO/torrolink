@@ -29,6 +29,22 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: "Email and password are required." }) };
   }
 
+  // Per-IP signup rate limit (fail-open: never block legit users on errors).
+  try {
+    const ip = String(event.headers["x-nf-client-connection-ip"] || event.headers["x-forwarded-for"] || "unknown").split(",")[0].trim();
+    const key = "signup:" + ip;
+    const WINDOW_MS = 10 * 60 * 1000, MAX = 5, now = Date.now();
+    const { data: rl } = await supabase.from("rate_limits").select("count, window_start").eq("key", key).maybeSingle();
+    if (rl && (now - new Date(rl.window_start).getTime()) < WINDOW_MS) {
+      if (rl.count >= MAX) {
+        return { statusCode: 429, body: JSON.stringify({ error: "Too many signups from your network. Please try again in a few minutes." }) };
+      }
+      await supabase.from("rate_limits").update({ count: rl.count + 1 }).eq("key", key);
+    } else {
+      await supabase.from("rate_limits").upsert({ key, count: 1, window_start: new Date(now).toISOString() }, { onConflict: "key" });
+    }
+  } catch (_e) { /* fail-open */ }
+
   // Server-side password validation
   if (password.length < 8) {
     return { statusCode: 400, body: JSON.stringify({ error: "Password must be at least 8 characters." }) };
