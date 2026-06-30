@@ -1,103 +1,78 @@
 // ================================================
 // TORROLINK — QR REDIRECT FUNCTION
-// Handles /q/:code — logs the scan, then redirects
-// to the business's profile page at /p/:handle
+// Handles /q/:code — resolves the member's QR code to their
+// public profile at /p/:handle, logs the scan (best-effort).
+//
+// Hardened: no module-level client init (so it can never fail to
+// load / 502), env read inside the handler, anon-key REST read
+// (active profiles are anon-readable — same access profile.js uses),
+// and every path wrapped so a failure degrades to the homepage,
+// never an error page.
 // ================================================
 
-const { createClient } = require("@supabase/supabase-js");
-
-// Public read of profiles (active rows are anon-readable, same as profile.js).
-// Uses the ANON key — the service key path was failing on this endpoint.
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
-
 exports.handler = async (event) => {
+  const HOME = { statusCode: 302, headers: { Location: "/", "Cache-Control": "no-store" }, body: "" };
   try {
-    // Resolve the QR code from the request. The Netlify redirect passes it as
-    // ?code=:code (most reliable). Fall back to parsing the request PATH the
-    // same way profile.js does (event.path — NOT rawPath, which can hold the
-    // rewritten function path and yield an empty code → false "not found").
+    // 1) Resolve the code: prefer the ?code=:code the redirect passes,
+    //    fall back to parsing the request path (event.path, like profile.js).
     const qsp = event.queryStringParameters || {};
     let code = (qsp.code || "").trim();
     if (!code) {
       const reqPath = event.path || event.rawPath || "";
       code = reqPath.replace(/^\/q\//, "").split("/").filter(Boolean)[0] || "";
     }
+    if (!code) return HOME;
 
-    if (!code) {
-      return { statusCode: 302, headers: { Location: "/", "Cache-Control": "no-store" }, body: "" };
-    }
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_ANON_KEY;
+    if (!url || !key) return HOME;
+    const base = url.replace(/\/+$/, "");
+    const authHeaders = { apikey: key, Authorization: "Bearer " + key };
 
-    // Look up the profile by QR code
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("id, handle, is_active")
-      .eq("code", code)
-      .maybeSingle();
+    // 2) Look up the profile by code (anon REST — returns only active rows).
+    const lookup = await fetch(
+      `${base}/rest/v1/profiles?select=id,handle,is_active&code=eq.${encodeURIComponent(code)}&limit=1`,
+      { headers: authHeaders }
+    );
+    if (!lookup.ok) return HOME;
+    const rows = await lookup.json();
+    const profile = Array.isArray(rows) ? rows[0] : null;
+    if (!profile || !profile.handle || profile.is_active === false) return HOME;
 
-    if (error || !profile || !profile.is_active) {
-      return { statusCode: 302, headers: { Location: "/", "Cache-Control": "no-store" }, body: "" };
-    }
+    // 3) Best-effort scan logging — must never block or break the redirect.
+    try {
+      const h = event.headers || {};
+      const ua = h["user-agent"] || "";
+      const ip = (h["x-forwarded-for"] || "").split(",")[0].trim() || h["client-ip"] || null;
+      const country = h["x-country"] || h["x-nf-country"] || null;
+      const deviceType = /ipad/i.test(ua) || (/android/i.test(ua) && !/mobile/i.test(ua))
+        ? "tablet"
+        : /mobile|android|iphone/i.test(ua) ? "mobile" : "desktop";
+      const os = /android/i.test(ua) ? "Android"
+        : /iphone|ipad/i.test(ua) ? "iOS"
+        : /windows/i.test(ua) ? "Windows"
+        : /mac/i.test(ua) ? "macOS" : "Other";
+      await fetch(`${base}/rest/v1/scan_events`, {
+        method: "POST",
+        headers: { ...authHeaders, "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({
+          profile_id: profile.id,
+          ip_address: ip,
+          country,
+          device_type: deviceType,
+          os,
+          referrer: h["referer"] || null,
+        }),
+      }).catch(() => {});
+    } catch (_) { /* logging is optional */ }
 
-    // ── LOG SCAN EVENT ────────────────────────────────────────────────────────
-    const headers = event.headers || {};
-    const ua = headers["user-agent"] || "";
-    const ip = headers["x-forwarded-for"]?.split(",")[0]?.trim()
-      || headers["client-ip"]
-      || null;
-
-    // Netlify CDN injects x-country at the edge (fallback if geo API fails)
-    const countryFallback = headers["x-country"] || headers["x-nf-country"] || null;
-
-    const deviceType = /ipad/i.test(ua) || (/android/i.test(ua) && !/mobile/i.test(ua))
-      ? "tablet"
-      : /mobile|android|iphone/i.test(ua)
-      ? "mobile"
-      : "desktop";
-
-    const os = /android/i.test(ua) ? "Android"
-      : /iphone|ipad/i.test(ua) ? "iOS"
-      : /windows/i.test(ua) ? "Windows"
-      : /mac/i.test(ua) ? "macOS"
-      : "Other";
-
-    // Geo lookup — ip-api.com free tier (no key, HTTP ok from server-side)
-    let geoCity = null, geoRegion = null, geoCountry = countryFallback;
-    if (ip && ip !== "127.0.0.1" && ip !== "::1") {
-      try {
-        const geoRes = await fetch(
-          `http://ip-api.com/json/${ip}?fields=status,city,regionName,countryCode&lang=en`,
-          { signal: AbortSignal.timeout(1500) }
-        );
-        if (geoRes.ok) {
-          const geo = await geoRes.json();
-          if (geo.status === "success") {
-            geoCity    = geo.city       || null;
-            geoRegion  = geo.regionName || null;
-            geoCountry = geo.countryCode || countryFallback;
-          }
-        }
-      } catch (_) { /* geo lookup timed out — proceed without it */ }
-    }
-
-    // Insert scan record (best-effort — never block the redirect on logging)
-    await supabase.from("scan_events").insert({
-      profile_id:  profile.id,
-      ip_address:  ip,
-      country:     geoCountry,
-      region:      geoRegion,
-      city:        geoCity,
-      device_type: deviceType,
-      os,
-      referrer:    headers["referer"] || null,
-    }).catch(() => {});
-
-    // Redirect to the member's profile page
+    // 4) Send the visitor to the member's profile page.
     return {
       statusCode: 302,
-      headers: {
-        Location: `/p/${profile.handle}`,
-        "Cache-Control": "no-store",
-      },
+      headers: { Location: `/p/${profile.handle}`, "Cache-Control": "no-store" },
+      body: "",
+    };
+  } catch (_) {
+    return HOME;
+  }
+};
