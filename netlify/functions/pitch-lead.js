@@ -38,15 +38,36 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  const { businessName, customerName, customerRequest, customerContact } = data;
-  if (!businessName || !customerName || !customerRequest || !customerContact) {
+  // Accept BOTH the legacy camelCase contract and the field names the live
+  // pitch-site / ptorrodigital.com forms actually send:
+  //   name, business, business_name, phone, email, message, service
+  const prettifySlug = (s) =>
+    String(s).replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()).trim();
+
+  const rawBusiness = data.businessName || data.business || data.business_name;
+  const businessName = rawBusiness ? prettifySlug(rawBusiness) : 'Website';
+  const customerName = (data.customerName || data.name || '').trim();
+  const email = (data.email || '').trim();
+  const phone = (data.phone || '').trim();
+  const customerContact = (data.customerContact || email || phone).trim();
+
+  const detailParts = [];
+  const mainMsg = data.customerRequest || data.message || data.service;
+  if (mainMsg) detailParts.push(String(mainMsg).trim());
+  if (phone) detailParts.push(`Phone: ${phone}`);
+  if (email && email !== customerContact) detailParts.push(`Email: ${email}`);
+  if (data.business_name && prettifySlug(data.business_name) !== businessName) {
+    detailParts.push(`Their business: ${data.business_name}`);
+  }
+  const customerRequest = detailParts.join('\n') || 'No additional details provided';
+
+  if (!customerName || !customerContact) {
     return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Missing fields' }) };
   }
 
   const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerContact.trim());
   const ts = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
 
-  // 1. Notify owner
   await sendEmail(
     'leads@torrolink.com',
     OWNER_EMAIL,
@@ -55,7 +76,7 @@ exports.handler = async (event) => {
       <h2 style="color:#1a1a2e">New Lead from ${businessName} Website</h2>
       <table style="width:100%;border-collapse:collapse">
         <tr style="background:#f5f5f5"><td style="padding:10px;font-weight:bold;width:140px">Name</td><td style="padding:10px">${customerName}</td></tr>
-        <tr><td style="padding:10px;font-weight:bold">Request</td><td style="padding:10px">${customerRequest}</td></tr>
+        <tr><td style="padding:10px;font-weight:bold">Request</td><td style="padding:10px">${customerRequest.replace(/\n/g, '<br>')}</td></tr>
         <tr style="background:#f5f5f5"><td style="padding:10px;font-weight:bold">Contact</td><td style="padding:10px">${customerContact}</td></tr>
         <tr><td style="padding:10px;font-weight:bold">Time (CT)</td><td style="padding:10px">${ts}</td></tr>
       </table>
@@ -63,7 +84,6 @@ exports.handler = async (event) => {
     </div>`
   );
 
-  // 2. Auto-reply to customer if they gave an email
   if (isEmail) {
     await sendEmail(
       `${businessName} <hello@torrolink.com>`,
