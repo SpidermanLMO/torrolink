@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carter's Transmissions & Automotive — Veteran-Owned, North Austin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#15598A;--accent-dark:#0E3F63;--trust-bg:#0E2A40;--a10:rgba(21,89,138,0.10);--a15:rgba(21,89,138,0.15);--a20:rgba(21,89,138,0.20);--gold:#C8A24B;--dark:#0d1a26;--text:#1a1a2e;--muted:#5a6377;--light:#f5f8fb;--radius:12px;--shadow:0 2px 16px rgba(0,0,0,0.08);--shadow-h:0 8px 32px rgba(0,0,0,0.14)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:#fff;line-height:1.6}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+nav{position:sticky;top:0;z-index:100;background:rgba(13,26,38,0.97);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:68px;border-bottom:2px solid var(--accent)}
+.nav-logo{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-0.5px}
+.nav-logo span{color:var(--accent)}
+.nav-phone{display:flex;align-items:center;gap:8px;font-size:1rem;font-weight:700;color:#fff;white-space:nowrap}
+.nav-phone:hover{color:var(--accent)}
+.nav-cta{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;padding:10px 22px;border-radius:8px;font-weight:700;font-size:1rem;transition:background .2s}
+.nav-cta:hover{background:var(--accent-dark)}
+.hero{position:relative;min-height:90vh;display:flex;align-items:center;background:#0d1a26;overflow:hidden}
+.hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(100deg,rgba(10,18,28,0.95) 40%,rgba(14,63,99,0.5) 100%)}
+.hero-content{position:relative;z-index:2;max-width:900px;padding:80px 5% 80px 7%}
+.hero-badge{display:inline-block;background:var(--accent);color:#fff;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:20px;margin-bottom:20px}
+.hero-company{font-size:1rem;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:.18em;text-transform:uppercase;margin-bottom:18px}
+.hero h1{font-size:clamp(3rem,6.3vw,5.4rem);font-weight:900;color:#fff;line-height:0.99;letter-spacing:-2.5px;margin-bottom:26px;text-shadow:0 4px 40px rgba(0,0,0,0.5)}
+.hero h1 em{color:var(--accent);font-style:normal;display:block}
+.hero-sub{font-size:1.15rem;color:rgba(255,255,255,0.88);max-width:580px;margin-bottom:36px;line-height:1.75}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{background:var(--accent);color:#fff;padding:15px 32px;border-radius:8px;font-weight:700;font-size:1rem;transition:background .2s,transform .15s;border:none;cursor:pointer;display:inline-block}
+.btn-primary:hover{background:var(--accent-dark);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:#fff;padding:14px 32px;border-radius:8px;font-weight:600;font-size:1rem;border:2px solid rgba(255,255,255,0.5);transition:all .2s;display:inline-block}
+.btn-outline:hover{background:rgba(255,255,255,0.12)}
+.trust-bar{background:var(--trust-bg);padding:18px 5%;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:28px}
+.trust-item{display:flex;align-items:center;gap:8px;color:#fff;font-size:.88rem;font-weight:600;white-space:nowrap}
+.trust-check{width:20px;height:20px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trust-check svg{width:11px;height:11px;stroke:#fff;stroke-width:3;fill:none}
+.stats-strip{background:var(--light);padding:60px 5%;display:flex;justify-content:center;flex-wrap:wrap}
+.stat-item{text-align:center;padding:20px 44px;border-right:1px solid #dce4ec}
+.stat-item:last-child{border-right:none}
+.stat-number{font-size:3rem;font-weight:900;color:var(--accent);letter-spacing:-1.5px;line-height:1}
+.stat-label{font-size:.88rem;color:var(--muted);font-weight:600;margin-top:6px;text-transform:uppercase;letter-spacing:.04em}
+section{padding:84px 5%}
+.section-tag{display:inline-block;background:var(--a10);color:var(--accent);font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.section-title{font-size:clamp(1.9rem,3.5vw,2.7rem);font-weight:800;letter-spacing:-.5px;line-height:1.2;margin-bottom:14px}
+.section-sub{color:var(--muted);font-size:1.05rem;max-width:620px;line-height:1.7}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.about-text p{color:var(--muted);margin-bottom:18px;font-size:1rem;line-height:1.8}
+.about-photo{border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.12)}
+.about-photo img{width:100%;height:460px;object-fit:cover}
+.why-us{background:var(--light)}
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:52px}
+.why-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:36px 24px;text-align:center;transition:transform .2s,box-shadow .2s}
+.why-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-h)}
+.why-icon-box{width:64px;height:64px;background:var(--a10);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.why-icon-box svg{width:28px;height:28px;stroke:var(--accent);stroke-width:1.75;fill:none}
+.why-title{font-size:1rem;font-weight:700;margin-bottom:10px}
+.why-desc{font-size:.89rem;color:var(--muted);line-height:1.65}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:52px}
+.service-card{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;transition:transform .2s,box-shadow .2s;border:1px solid #eef0f5}
+.service-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-h)}
+.service-body{padding:26px 26px 28px}
+.service-icon-bar{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.service-icon-sm{width:42px;height:42px;background:var(--a10);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.service-icon-sm svg{width:22px;height:22px;stroke:var(--accent);stroke-width:1.75;fill:none}
+.service-title{font-size:1.05rem;font-weight:700}
+.service-desc{font-size:.9rem;color:var(--muted);line-height:1.65}
+.quote-divider{background:var(--dark);padding:84px 5%;text-align:center}
+.quote-divider blockquote{font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:700;color:#fff;line-height:1.45;max-width:820px;margin:0 auto;position:relative;padding:0 48px}
+.quote-divider blockquote::before{content:'\201C';font-size:6rem;color:var(--accent);line-height:0;position:absolute;top:28px;left:0;opacity:0.7;font-family:Georgia,serif}
+.quote-divider cite{display:block;margin-top:26px;font-size:.88rem;color:rgba(255,255,255,.4);font-style:normal;font-weight:500}
+.faq{background:var(--light)}
+.faq-list{max-width:780px;margin:52px auto 0}
+.faq-item{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:22px 28px;cursor:pointer;font-weight:700;font-size:.97rem;user-select:none}
+.faq-q:hover{color:var(--accent)}
+.faq-toggle{width:28px;height:28px;background:var(--light);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+.faq-item.open .faq-toggle{background:var(--accent)}
+.faq-toggle svg{width:14px;height:14px;stroke:var(--muted);stroke-width:2.5;fill:none;transition:stroke .2s,transform .3s}
+.faq-item.open .faq-toggle svg{stroke:#fff;transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .2s;padding:0 28px;color:var(--muted);font-size:.95rem;line-height:1.75}
+.faq-item.open .faq-a{max-height:240px;padding:0 28px 24px}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px}
+.review-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:32px 28px;border-top:4px solid var(--accent)}
+.review-stars{color:#f59e0b;font-size:1rem;margin-bottom:14px;letter-spacing:3px}
+.review-text{font-size:.95rem;color:var(--text);line-height:1.7;margin-bottom:18px;font-style:italic}
+.review-author{font-size:.85rem;font-weight:700;color:var(--muted)}
+.contact-section{background:var(--dark)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:72px;margin-top:52px}
+.contact-info-h{font-size:1.05rem;font-weight:700;color:var(--accent);margin-bottom:22px}
+.contact-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px}
+.contact-row-icon{width:40px;height:40px;background:var(--a15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-row-icon svg{width:20px;height:20px;stroke:var(--accent);stroke-width:1.75;fill:none}
+.contact-row-text{color:rgba(255,255,255,.8);font-size:.95rem;line-height:1.55}
+.contact-row-text strong{display:block;color:rgba(255,255,255,.45);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;font-weight:600}
+.hours-block{margin-top:32px}
+.hours-h{font-weight:700;color:var(--accent);font-size:1rem;margin-bottom:14px}
+.hours-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.65);font-size:.9rem}
+.hours-row:last-child{border-bottom:none}
+.hours-accent{color:var(--accent);font-weight:700}
+.lead-form{background:rgba(255,255,255,.05);border-radius:18px;padding:38px 34px;border:1px solid rgba(255,255,255,.08)}
+.lead-form h3{font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:26px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.55);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.fg input,.fg select,.fg textarea{width:100%;padding:13px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;color:#fff;font-family:'Inter',sans-serif;font-size:.95rem;appearance:none;-webkit-appearance:none}
+.fg input::placeholder,.fg textarea::placeholder{color:rgba(255,255,255,.3)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
+.fg select option{background:#1a1a2e;color:#fff}
+.fg textarea{resize:vertical;min-height:90px}
+.form-btn{width:100%;padding:16px;background:var(--accent);color:#fff;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s,transform .15s;margin-top:8px}
+.form-btn:hover{background:var(--accent-dark);transform:translateY(-1px)}
+.form-btn:disabled{cursor:not-allowed;transform:none;opacity:.85}
+footer{background:#091420;padding:44px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;border-top:1px solid rgba(255,255,255,.05)}
+.footer-left{color:rgba(255,255,255,.45);font-size:.85rem;line-height:1.8}
+.footer-left strong{color:#fff;font-size:1rem;display:block;margin-bottom:4px}
+.ptorro-badge{background:var(--a15);color:var(--accent);font-size:.75rem;font-weight:700;padding:7px 15px;border-radius:7px;border:1px solid var(--a20);letter-spacing:.03em}
+@media(max-width:900px){.about-grid,.contact-grid{grid-template-columns:1fr;gap:44px}.about-photo img{height:300px}.why-grid,.services-grid{grid-template-columns:1fr 1fr}.reviews-grid{grid-template-columns:1fr}.stats-strip{flex-direction:column;align-items:center}.stat-item{border-right:none;border-bottom:1px solid #dce4ec;width:100%;max-width:280px}.stat-item:last-child{border-bottom:none}}
+@media(max-width:600px){.why-grid,.services-grid{grid-template-columns:1fr}.hero-ctas{flex-direction:column}.trust-bar{gap:14px}footer{flex-direction:column;text-align:center}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">Carter's <span>Transmissions</span></div>
+  <a href="tel:5127487528" class="nav-phone">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.07 6.2a19.79 19.79 0 01-3.07-8.68A2 2 0 012.18 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.36a16 16 0 006.29 6.29l1.42-1.42a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    (512) 748-7528
+  </a>
+  <a class="nav-cta" href="tel:5127487528">Call Now &rarr;</a>
+</nav>
+
+<section class="hero">
+  <img class="hero-bg-img" src="https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1800&q=85" alt="Mechanic working on transmission">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Veteran-Owned &bull; 35+ Years &bull; 4.8&#9733;</div>
+    <div class="hero-company">Carter's Transmissions &amp; Automotive &nbsp;&bull;&nbsp; Austin, TX</div>
+    <h1>Transmission Experts<em>You Can Trust</em></h1>
+    <p class="hero-sub">A veteran-owned North Austin shop with a 35-year reputation for honest work. Transmission specialists who also handle full auto repair &mdash; quick diagnosis, fair pricing, quality you can count on.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="tel:5127487528">Call Now &mdash; (512) 748-7528</a>
+      <a class="btn-outline" href="#contact">Get a Quote &darr;</a>
+    </div>
+  </div>
+</section>
+
+<div class="trust-bar">
+  <div class="trust-item"><div class="trust-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>Veteran-Owned</div>
+  <div class="trust-item"><div class="trust-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>35+ Years</div>
+  <div class="trust-item"><div class="trust-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>Honest Pricing</div>
+  <div class="trust-item"><div class="trust-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>Imports &amp; Domestic</div>
+  <div class="trust-item"><div class="trust-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>Quick Diagnosis</div>
+</div>
+
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-number">4.8&#9733;</div><div class="stat-label">Google Rating</div></div>
+  <div class="stat-item"><div class="stat-number">35+</div><div class="stat-label">Years of Trust</div></div>
+  <div class="stat-item"><div class="stat-number">Vet</div><div class="stat-label">Owned &amp; Operated</div></div>
+  <div class="stat-item"><div class="stat-number">All</div><div class="stat-label">Makes &amp; Models</div></div>
+</div>
+
+<section>
+  <div class="about-grid">
+    <div class="about-text">
+      <div class="section-tag">About Us</div>
+      <h2 class="section-title">35 Years of <span style="color:var(--accent)">Honest Service</span></h2>
+      <p>Carter's Transmissions &amp; Automotive is a veteran-owned North Austin shop that's earned its reputation one fair repair at a time &mdash; some customers have trusted us with their vehicles for 35 years.</p>
+      <p>We specialize in transmissions but handle complete auto repair and maintenance on imports and domestics alike. We diagnose quickly, explain clearly, and quote honestly &mdash; no upsells, no surprises.</p>
+      <p>When a dealer quoted one customer $8,000, we did the job right for a fraction. That's the difference, and it's why we hold a 4.8-star rating.</p>
+      <a class="btn-primary" href="tel:5127487528" style="margin-top:10px">Call Carter's</a>
+    </div>
+    <div class="about-photo"><img src="https://images.unsplash.com/photo-1632823469850-1b7b1e8b7e2e?auto=format&fit=crop&w=900&q=85" alt="Transmission repair" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1486006920555-c77dcf18193c?auto=format&fit=crop&w=900&q=85'"></div>
+  </div>
+</section>
+
+<section class="why-us">
+  <div style="text-align:center">
+    <div class="section-tag">Why Choose Us</div>
+    <h2 class="section-title">Trust Earned Over Decades</h2>
+    <p class="section-sub" style="margin:0 auto">What every customer gets.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card"><div class="why-icon-box"><svg viewBox="0 0 24 24"><path d="M12 2l9 4.5v5C21 17 17 21.5 12 23 7 21.5 3 17 3 11.5v-5L12 2z"/></svg></div><div class="why-title">Veteran-Owned</div><div class="why-desc">Service, integrity, and accountability &mdash; the values we run on.</div></div>
+    <div class="why-card"><div class="why-icon-box"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="why-title">Honest Pricing</div><div class="why-desc">Fair quotes and no upselling &mdash; we fix what needs fixing.</div></div>
+    <div class="why-card"><div class="why-icon-box"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="why-title">Quick Diagnosis</div><div class="why-desc">We pinpoint the problem fast and explain it in plain English.</div></div>
+    <div class="why-card"><div class="why-icon-box"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg></div><div class="why-title">Transmission Experts</div><div class="why-desc">Decades of specialized transmission experience on every job.</div></div>
+  </div>
+</section>
+
+<section>
+  <div style="text-align:center">
+    <div class="section-tag">Our Services</div>
+    <h2 class="section-title">Transmissions &amp; Complete Auto Repair</h2>
+    <p class="section-sub" style="margin:0 auto">Specialists in transmissions, trusted for everything else.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card"><div class="service-body"><div class="service-icon-bar"><div class="service-icon-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></div><div class="service-title">Transmission Repair</div></div><div class="service-desc">Diagnosis, repair, and rebuilds for automatic and manual transmissions.</div></div></div>
+    <div class="service-card"><div class="service-body"><div class="service-icon-bar"><div class="service-icon-sm"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="service-title">Transmission Service</div></div><div class="service-desc">Fluid service and maintenance to extend your transmission's life.</div></div></div>
+    <div class="service-card"><div class="service-body"><div class="service-icon-bar"><div class="service-icon-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg></div><div class="service-title">Clutch Repair</div></div><div class="service-desc">Clutch diagnosis and replacement done right the first time.</div></div></div>
+    <div class="service-card"><div class="service-body"><div class="service-icon-bar"><div class="service-icon-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div><div class="service-title">Diagnostics</div></div><div class="service-desc">Check-engine lights and tough issues found fast and accurately.</div></div></div>
+    <div class="service-card"><div class="service-body"><div class="service-icon-bar"><div class="service-icon-sm"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 01-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 015.4-5.4l-3 3-2-2z"/></svg></div><div class="service-title">General Auto Repair</div></div><div class="service-desc">Brakes, engine, maintenance &mdash; complete care for imports and domestic.</div></div></div>
+    <div class="service-card"><div class="service-body"><div class="service-icon-bar"><div class="service-icon-sm"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7z"/></svg></div><div class="service-title">Maintenance</div></div><div class="service-desc">Scheduled service and recall checks to keep you running for years.</div></div></div>
+  </div>
+</section>
+
+<div class="quote-divider"><blockquote>&ldquo;35 years of trust and not a single web page to show for it. Let's put that reputation online where new customers can find it.&rdquo;<cite>&mdash; PTorro Digital</cite></blockquote></div>
+
+<section style="background:var(--light)">
+  <div style="text-align:center">
+    <div class="section-tag">Reviews</div>
+    <h2 class="section-title">What North Austin Says</h2>
+    <p class="section-sub" style="margin:0 auto">Trusted for decades.</p>
+  </div>
+  <div class="reviews-grid">
+    <div class="review-card"><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">&ldquo;I was quoted $8,000 from the dealership for repairs I didn't need. Carter's was honest and fair, and communicated through the entire process.&rdquo;</p><div class="review-author">&mdash; Verified Google Review</div></div>
+    <div class="review-card"><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">&ldquo;I've been going to Carter's for about 35 years and have never considered going elsewhere. The service is impeccable. He even services imports!&rdquo;</p><div class="review-author">&mdash; Verified Google Review</div></div>
+    <div class="review-card"><div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">&ldquo;Worked on my truck's transmission quickly and kept me well informed the entire process. Patient staff, fair pricing, quality work.&rdquo;</p><div class="review-author">&mdash; Verified Google Review</div></div>
+  </div>
+</section>
+
+<section class="faq">
+  <div style="text-align:center"><div class="section-tag">FAQ</div><h2 class="section-title">Questions We Hear Often</h2></div>
+  <div class="faq-list">
+    <div class="faq-item"><div class="faq-q" onclick="toggleFAQ(this)">Do you only do transmissions?<div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="faq-a">Transmissions are our specialty, but we handle complete auto repair and maintenance on most makes and models, imports included.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFAQ(this)">Will you give me an honest quote?<div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="faq-a">Always. We diagnose quickly and tell you exactly what's needed &mdash; no upselling, no surprises.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFAQ(this)">Do you work on imports?<div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="faq-a">Yes &mdash; imports and domestic vehicles alike.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFAQ(this)">Where are you located?<div class="faq-toggle"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div><div class="faq-a">6820 Guadalupe St, Austin, TX 78752 &mdash; serving North Austin for over 35 years.</div></div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <div class="section-tag" style="background:var(--a20)">Contact Us</div>
+  <h2 class="section-title" style="color:#fff">Get an Honest Quote</h2>
+  <p class="section-sub" style="color:rgba(255,255,255,.6)">Call us or send the form &mdash; we'll get right back to you.</p>
+  <div class="contact-grid">
+    <div>
+      <div class="contact-info-h">Reach Us Directly</div>
+      <div class="contact-row"><div class="contact-row-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11 19.79 19.79 0 01.22 2.47 2 2 0 012.22.5h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 8.09a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg></div><div class="contact-row-text"><strong>Phone</strong><a href="tel:5127487528" style="color:rgba(255,255,255,.85)">(512) 748-7528</a></div></div>
+      <div class="contact-row"><div class="contact-row-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="contact-row-text"><strong>Location</strong>6820 Guadalupe St, Austin, TX 78752</div></div>
+      <div class="hours-block"><div class="hours-h">Hours</div><div class="hours-row"><span>Mon &ndash; Fri</span><span>7:30 AM &ndash; 5:30 PM</span></div><div class="hours-row"><span class="hours-accent">Veteran-Owned</span><span class="hours-accent">Since Day One</span></div></div>
+    </div>
+    <div class="lead-form">
+      <h3>Request a Quote</h3>
+      <form onsubmit="submitForm(event)">
+        <div class="fg"><label>Your Name</label><input type="text" name="name" placeholder="John Smith" required></div>
+        <div class="fg"><label>Phone Number</label><input type="tel" name="phone" placeholder="(512) 555-0000" required></div>
+        <div class="fg"><label>What Do You Need?</label><select name="service" required><option value="" disabled selected>Select&hellip;</option><option>Transmission repair</option><option>Transmission service</option><option>Clutch</option><option>Diagnostics</option><option>General repair</option><option>Other</option></select></div>
+        <div class="fg"><label>Tell Us More (optional)</label><textarea name="message" placeholder="Describe the issue&hellip;"></textarea></div>
+        <button type="submit" class="form-btn">Get My Quote &rarr;</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left"><strong>Carter's Transmissions &amp; Automotive</strong>6820 Guadalupe St, Austin, TX 78752 &nbsp;&bull;&nbsp; (512) 748-7528<br>&copy; 2026 Carter's Transmissions &amp; Automotive. Veteran-owned. All rights reserved.</div>
+  <div class="ptorro-badge">Site by PTorro Digital</div>
+</footer>
+
+<script>
+function toggleFAQ(el){const item=el.parentElement;const isOpen=item.classList.contains('open');document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));if(!isOpen)item.classList.add('open');}
+async function submitForm(e){e.preventDefault();const btn=e.target.querySelector('button[type=submit]');btn.textContent='Sending...';btn.disabled=true;try{const data=Object.fromEntries(new FormData(e.target));data.business='carters-transmissions';await fetch('https://torrolink.netlify.app/.netlify/functions/pitch-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});btn.textContent='✓ Got it! We’ll call you shortly.';btn.style.background='#22c55e';}catch{btn.textContent='Submit';btn.disabled=false;}}
+</script>
+</body>
+</html>
