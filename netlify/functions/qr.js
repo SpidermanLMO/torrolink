@@ -6,9 +6,11 @@
 
 const { createClient } = require("@supabase/supabase-js");
 
+// Public read of profiles (active rows are anon-readable, same as profile.js).
+// Uses the ANON key — the service key path was failing on this endpoint.
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
+  process.env.SUPABASE_ANON_KEY
 );
 
 exports.handler = async (event) => {
@@ -99,17 +101,3 @@ exports.handler = async (event) => {
         Location: `/p/${profile.handle}`,
         "Cache-Control": "no-store",
       },
-      body: "",
-    };
-
-  } catch (err) {
-    // Safety net: if anything unexpected throws, redirect home instead of showing
-    // "Invocation Failed" — this guarantees a graceful response on every scan.
-    console.error("[qr] Unhandled error:", err);
-    return {
-      statusCode: 302,
-      headers: { Location: "/", "Cache-Control": "no-store" },
-      body: "",
-    };
-  }
-};
