@@ -13,9 +13,16 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
   try {
-    // rawPath covers Lambda v2 format; path covers v1 and Netlify rewrites
-  const rawPath = event.rawPath || event.path || "";
-  const code = rawPath.replace(/^\/q\//, "").split("/")[0];
+    // Resolve the QR code from the request. The Netlify redirect passes it as
+    // ?code=:code (most reliable). Fall back to parsing the request PATH the
+    // same way profile.js does (event.path — NOT rawPath, which can hold the
+    // rewritten function path and yield an empty code → false "not found").
+    const qsp = event.queryStringParameters || {};
+    let code = (qsp.code || "").trim();
+    if (!code) {
+      const reqPath = event.path || event.rawPath || "";
+      code = reqPath.replace(/^\/q\//, "").split("/").filter(Boolean)[0] || "";
+    }
 
     if (!code) {
       return { statusCode: 302, headers: { Location: "/", "Cache-Control": "no-store" }, body: "" };
@@ -73,7 +80,7 @@ exports.handler = async (event) => {
       } catch (_) { /* geo lookup timed out — proceed without it */ }
     }
 
-    // Insert scan record (await so Netlify doesn't cut it off before it fires)
+    // Insert scan record (best-effort — never block the redirect on logging)
     await supabase.from("scan_events").insert({
       profile_id:  profile.id,
       ip_address:  ip,
@@ -85,7 +92,7 @@ exports.handler = async (event) => {
       referrer:    headers["referer"] || null,
     }).catch(() => {});
 
-    // Redirect to the profile page
+    // Redirect to the member's profile page
     return {
       statusCode: 302,
       headers: {
@@ -104,5 +111,5 @@ exports.handler = async (event) => {
       headers: { Location: "/", "Cache-Control": "no-store" },
       body: "",
     };
-    }
+  }
 };

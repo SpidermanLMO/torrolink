@@ -56,7 +56,7 @@
 
 [[redirects]]
   from = "/q/:code"
-  to = "/.netlify/functions/qr"
+  to = "/.netlify/functions/qr?code=:code"
   status = 200
 
 [[redirects]]
