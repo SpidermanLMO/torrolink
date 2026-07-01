@@ -1,6 +1,7 @@
 // pitch-lead.js — Lead capture for PTorro Digital pitch sites
 // Routes all leads to laign@ptorro.com during pitch phase
 // Auto-replies to customer if they provide an email address
+// Also persists every lead to the public.ptorro_leads table (best-effort)
 
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const OWNER_EMAIL = process.env.OWNER_EMAIL || 'laign@ptorro.com';
@@ -21,6 +22,20 @@ async function sendEmail(from, to, subject, html) {
     body: JSON.stringify({ from, to, subject, html }),
   });
   return res.ok;
+}
+
+// Best-effort persistence to Supabase. Never throws — a DB error must not
+// stop the owner-notification email from going out.
+async function saveLead(lead) {
+  try {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) return;
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+    const { error } = await supabase.from('ptorro_leads').insert(lead);
+    if (error) console.error('ptorro_leads insert error:', error);
+  } catch (e) {
+    console.error('ptorro_leads insert failed:', e);
+  }
 }
 
 exports.handler = async (event) => {
@@ -50,10 +65,10 @@ exports.handler = async (event) => {
   const email = (data.email || '').trim();
   const phone = (data.phone || '').trim();
   const customerContact = (data.customerContact || email || phone).trim();
+  const messageText = (data.message || data.customerRequest || data.service || '').trim();
 
   const detailParts = [];
-  const mainMsg = data.customerRequest || data.message || data.service;
-  if (mainMsg) detailParts.push(String(mainMsg).trim());
+  if (messageText) detailParts.push(messageText);
   if (phone) detailParts.push(`Phone: ${phone}`);
   if (email && email !== customerContact) detailParts.push(`Email: ${email}`);
   if (data.business_name && prettifySlug(data.business_name) !== businessName) {
@@ -64,6 +79,17 @@ exports.handler = async (event) => {
   if (!customerName || !customerContact) {
     return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'Missing fields' }) };
   }
+
+  // Persist to the database (best-effort, non-blocking on failure)
+  await saveLead({
+    name: customerName,
+    business_name: data.business_name || null,
+    phone: phone || null,
+    email: email || null,
+    message: messageText || null,
+    business_slug: rawBusiness || null,
+    source: 'ptorrodigital.com',
+  });
 
   const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerContact.trim());
   const ts = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
